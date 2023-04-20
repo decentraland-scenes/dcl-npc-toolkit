@@ -29,6 +29,6 @@
     "@dcl/sdk": "^7.1.6"
   },
   "dependencies": {
-    "@dcl-sdk/utils": "^1.0.3"
+    "@dcl-sdk/utils": "latest"
   }
 }
