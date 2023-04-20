@@ -26,9 +26,7 @@
     "dist"
   ],
   "peerDependencies": {
-    "@dcl/sdk": "^7.1.6"
-  },
-  "dependencies": {
+    "@dcl/sdk": "^7.1.6",
     "@dcl-sdk/utils": "latest"
   }
 }
