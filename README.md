@@ -1,7 +1,7 @@
 
 # NPC-library
 
-A collection of tools for creating Non-Player-Characters (NPCs). These are capable of having conversations with the player, and play different animations.
+A collection of tools for creating Non-Player-Characters (NPCs) with SDK7. These are capable of having conversations with the player, and play different animations.
 
 Capabilities of the NPCs in this library:
 
