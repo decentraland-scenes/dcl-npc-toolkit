@@ -21,12 +21,9 @@
   "devDependencies": {
     "@dcl/sdk": "^7.1.6",
     "typescript": "^5.0.2",
-    "@dcl-sdk/utils": "1.0.3"
+    "@dcl-sdk/utils": "^1.0.3"
   },
   "files": [
     "dist"
-  ],
-  "peerDependencies": {
-    "@dcl/sdk": "^7.1.6"
-  }
+  ]
 }
