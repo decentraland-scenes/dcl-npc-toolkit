@@ -1,7 +1,7 @@
 
 # NPC-library
 
-A collection of tools for creating Non-Player-Characters (NPCs) with SDK7. These are capable of having conversations with the player, and play different animations.
+A collection of tools for creating Non-Player-Characters (NPCs). These are capable of having conversations with the player, and play different animations.
 
 Capabilities of the NPCs in this library:
 
@@ -18,7 +18,7 @@ To use NPCs in your scene:
 1. Install the library as an npm bundle. Run this command in your scene's project folder:
 
 ```
-npm i @dcl-sdk/npc-utils @dcl-sdk/sdk-utils -B
+npm i @dcl-sdk/npc-utils -B
 ```
 
 2. Run `dcl start` or `dcl build` so the dependencies are correctly installed.
@@ -410,7 +410,10 @@ class Dialog {
   fontSize?: number
   typeSpeed?: number
   isEndOfDialog?: boolean
+  isQuestion?:boolean
+  buttons?: ButtonData[]
   audio?: string
+  triggeredByNext?: () => void
 }
 ```
 
@@ -423,8 +426,119 @@ You can set the following fields to change the appearance of a dialog:
 - `fontSize`: Size of the text
 
 Other fields:
+- `buttons *`: An array of buttons to use in a question entry, covered in the next section.
 - `audio`: String with the path to an audio file to play once when this dialog is shown on the UI.
 - `typeSpeed`: The text appears one character at a time, simulating typing. Players can click to skip the animation. Tune the speed of this typing (30 by default) to go slower or faster. Set to _-1_ to skip the animation.
+
+#### Questions and conversation trees
+
+The script can include questions that prompt the player to pick between two or up to four options. These questions can branch the conversation out and trigger other actions in the scene.
+
+<img src="screenshots/NPC2.png" width="500">
+
+> Note: Questions are only used by UI dialogs. If used in a speech bubble, questions will be displayed as regular entries with no buttons or options.
+
+To make an entry a question, set the `isQuestion` field to _true_. This displays a set of buttons rather than the click icon. It also disables the click to advance to the next entry.
+
+The `buttons` property of an entry contains an array of `ButtonData` objects, each one of these defines one button.
+
+When on a question entry, you must provide at least the following for each button:
+
+- `label`: _(string)_ The label to show on the button.
+- `goToDialog`: _(number | string)_ The index or name of the next dialog entry to display when activated.
+
+> TIP: It's always better to refer to an entry by name, since the array index might shift if you add more entries and it can get hard to keep track of these references.
+
+You can also set the following:
+
+- `triggeredActions`: _( () => void )_ An additional function to run whenever the button is activated
+- `fontSize`: _(number)_ Font size of the text
+- `offsetX`: _(number)_ Offset of the label on the X axis, relative to its normal position.
+- `offsetY`: _(number)_ Offset of the label on the Y axis, relative to its normal position.
+
+All buttons can be clicked to activate them. Additionally, the first button in the array can be activated by pressing the _E_ key. The second button in the array can be activated by pressing the _F_ key,
+
+<img src="screenshots/NPC3.png" width="500">
+
+```ts
+export let GemsMission: Dialog[] = [
+  {
+    text: `Hello stranger`
+  },
+  {
+    text: `Can you help me finding my missing gems?`,
+    isQuestion: true,
+    buttons: [
+      { label: `Yes!`, goToDialog: 2 },
+      { label: `I'm busy`, goToDialog: 4 }
+    ]
+  },
+  {
+    text: `Ok, awesome, thanks!`
+  },
+  {
+    text: `I need you to find 10 gems scattered around this scene, go find them!`,
+    isEndOfDialog: true
+  },
+  {
+    text: `Ok, come back soon`,
+    isEndOfDialog: true
+  }
+]
+```
+
+#### Triggering functions from the dialog
+
+You can run functions that may affect any other part of your scene. These functions get triggered when the player interacts with the dialog window, or when the NPC displays speech bubbles.
+
+- `triggeredByNext`: Is executed when the player advances to the next dialog on a non-question dialog. The function also gets called if the dialog is the end of the conversation. It also gets called when a speech bubble advances to the next entry.
+
+- `triggeredActions`: This property is associated to a button and is executed on a question dialog if the player activates the corresponding button. You can have up to 4 different buttons per entry, each with its own actions.
+
+```ts
+export let GemsMission: Dialog[] = [
+  {
+	text: `Hello stranger`,
+	triggeredByNext: () => {
+		// NPC plays animation to show a gem
+	}
+  },
+   {
+    text: `Can you help me finding my missing gems?`,
+	isQuestion: true,
+	buttons: [
+	  {
+		label: `Yes!`,
+		goToDialog: 2,
+		triggeredActions:  () => {
+			// NPC plays an animation to celebrate
+		}
+	  },
+	  {
+		label: `I'm busy`,
+		goToDialog: 4
+		triggeredActions:  () => {
+			// NPC waves goodbye
+		}
+	  },
+	]
+  },
+  {
+    text: `Ok, awesome, thanks!`,
+  },
+  {
+	text: `I need you to find 10 gems scattered around this scene, go find them!`,
+	isEndOfDialog: true
+	triggeredByNext: () => {
+		// Gems are rendered all around the scene
+	}
+  },
+  {
+	text: `Ok, come back soon`,
+	isEndOfDialog: true
+  }
+]
+```
 
 
 ## Contribute
