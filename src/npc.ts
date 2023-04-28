@@ -1,5 +1,5 @@
 import { Animator, AvatarShape, Billboard, BillboardMode, engine, Entity, GltfContainer, InputAction,MeshCollider,MeshRenderer,pointerEventsSystem,Transform, TransformType } from '@dcl/sdk/ecs'
-import { Color3, Vector3 } from '@dcl/sdk/math'
+import { Color3, Quaternion, Vector3 } from '@dcl/sdk/math'
 import { FollowPathData, NPCData, NPCPathType, NPCState, NPCType, TriggerData } from './types';
 import * as utils from '@dcl-sdk/utils'
 import { IsFollowingPath } from './components';
@@ -30,12 +30,13 @@ export function getData(npc:Entity){
 }
 
 export function create(
-    transform: TransformType,
+    transform: any,
     data: NPCData
 ){
     let npc = engine.addEntity()
 
-    Transform.create(npc, transform)
+    let t:TransformType = {position: transform.position ? transform.position : Vector3.create(0,0,0), rotation: transform.rotation ? transform.rotation : Quaternion.Zero(), scale: transform.scale ? transform.scale : Vector3.One()}
+    Transform.create(npc, t)
 
     npcDataComponent.set(npc,{
         introduced: false,
@@ -63,13 +64,12 @@ export function create(
         data.onActivate()
     })
 
-    if (data && data.onWalkAway) {
+    if (data && data.hasOwnProperty("onWalkAway")) {
         onWalkAwayCbs.set(npc, ()=>{
             if(!data || !data.continueOnWalkAway){
                 if(npcDialogComponent.has(npc)){
                     npcDialogComponent.get(npc).visible = false
                 }
-                
             }
             else{
                 if(npcDialogComponent.has(npc)){
@@ -163,7 +163,6 @@ function addClickReactions(npc:Entity, data:NPCData){
         npc,
         function () {
             if (isCooldown.has(npc) || (npcDialogComponent.get(npc).visible)) return
-            console.log("clicked entity")
             activate(npc)
         },
         {
@@ -174,7 +173,6 @@ function addClickReactions(npc:Entity, data:NPCData){
         )
 
         if (data && data.onlyExternalTrigger) {
-        console.log("only external trigger, removed pointer")
         pointerEventsSystem.removeOnPointerDown(npc)
         } 
 }
@@ -414,7 +412,7 @@ function endInteraction(npc:Entity) {
             closeDialog(npc)
         }
 
-        if(Billboard.has(npc)){
+        if(npcData.faceUser){
             Billboard.deleteFrom(npc)
         }
 
@@ -439,10 +437,10 @@ export function handleWalkAway(npc:Entity) {
     }
 }
 
-export function playAnimation(npc:Entity, anim:string, loop?:boolean, duration?:number){
+export function playAnimation(npc:Entity, anim:string, noLoop?:boolean, duration?:number){
     let animations = Animator.getMutable(npc)
     if(animations.states.filter((animation)=> animation.name === anim).length == 0){
-        animations.states.push({name:anim, clip:anim, loop: loop? loop : false})
+        animations.states.push({name:anim, clip:anim, loop: noLoop? false : true})
     }
 
     let npcData = npcDataComponent.get(npc)
