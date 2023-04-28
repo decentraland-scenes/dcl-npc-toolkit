@@ -1,8 +1,11 @@
+import * as utils from '@dcl-sdk/utils'
+
 import { AudioSource, Entity, engine } from "@dcl/sdk/ecs";
 import { activeNPC, npcDataComponent } from "./npc";
 import { IsTypingDialog } from "./components";
 import { handleDialogTyping } from "./systems";
 import { Dialog, NPCState } from "./types";
+
 
 export const npcDialogComponent: Map<Entity, any> = new Map()
 export const npcDialogTypingSystems: Map<Entity, any> = new Map()
@@ -29,12 +32,26 @@ export function addDialog(npc:Entity, sound?:string){
         index:0,
         sound: sound ? sound : undefined,
         soundPlayer: sound ? engine.addEntity() : undefined,
-        fontSize:22
+        fontSize:22,
+        isQuestion:false,
+        buttons:0
     })
 }
 
 export function getText(){
     return activeNPC == 0 || !npcDialogComponent.has(activeNPC as Entity) ? "" : npcDialogComponent.get(activeNPC as Entity).visibleText
+}
+
+export function getButtonText(button:number){
+    let text = ""
+
+    if(activeNPC != 0 && npcDialogComponent.has(activeNPC as Entity)){
+        let dialogData = npcDialogComponent.get(activeNPC as Entity)
+        if(dialogData.isQuestion && dialogData.buttons > button){
+            text = dialogData.script[dialogData.index].buttons[button].label
+        }
+    }
+    return text
 }
 
 export function getFontSize(){
@@ -43,6 +60,29 @@ export function getFontSize(){
 
 export function displayDialog(){
     return activeNPC == 0 || !npcDialogComponent.has(activeNPC as Entity) ? false :  npcDialogComponent.get(activeNPC as Entity).visible
+}
+
+export function displayButton(button:number){
+    return activeNPC == 0 || !npcDialogComponent.has(activeNPC as Entity) ? false :  npcDialogComponent.get(activeNPC as Entity).isQuestion && npcDialogComponent.get(activeNPC as Entity).buttons >= button
+}
+
+export function displayFirstButtonContainer(){
+    return activeNPC == 0 || !npcDialogComponent.has(activeNPC as Entity) ? false :  npcDialogComponent.get(activeNPC as Entity).isQuestion && npcDialogComponent.get(activeNPC as Entity).buttons >= 1
+}
+
+export function displaySecondButtonContainer(){
+    return activeNPC == 0 || !npcDialogComponent.has(activeNPC as Entity) ? false :  npcDialogComponent.get(activeNPC as Entity).isQuestion && npcDialogComponent.get(activeNPC as Entity).buttons >= 3
+}
+
+export function getTextPosition(){
+    //console.log(npcDialogComponent.get(activeNPC as Entity).buttons)
+    return activeNPC == 0 || !npcDialogComponent.has(activeNPC as Entity) ? {top:0} : {top:npcDataComponent.get(activeNPC as Entity).margin}
+}
+
+export function buttonClick(button:number){
+    if(activeNPC != 0 && npcDataComponent.has(activeNPC as Entity)){
+        confirmText(activeNPC as Entity, button)
+    }
 }
 
 export function closeDialog(npc:Entity){
@@ -55,6 +95,8 @@ export function closeDialog(npc:Entity){
     dialogData.timer = 0
     dialogData.index = 0
     dialogData.script = []
+    dialogData.buttons = 0
+    dialogData.margin = 0
 }
 
 export function talk(npc:Entity, dialog:Dialog[], startIndex?:number, duration?:number){
@@ -94,7 +136,6 @@ function openDialog(npc:Entity, dialog:any[], startIndex:number){
         audio.playing = true
     }
 
-
     //TODO
     //set portrait
     //set image on the right
@@ -105,7 +146,6 @@ function openDialog(npc:Entity, dialog:any[], startIndex:number){
 }
 
 function beginTyping(npc:Entity){
-    console.log('begin typing for npc', npc)
     let dialogData = npcDialogComponent.get(npc)
     dialogData.fullText = dialogData.script[dialogData.index].text
     dialogData.visible = true
@@ -113,6 +153,28 @@ function beginTyping(npc:Entity){
     dialogData.visibleText = ""
     dialogData.visibleChars = 0
     dialogData.timer = 0
+    dialogData.isQuestion = false
+    dialogData.buttons = 0
+
+    if(dialogData.script[dialogData.index].isQuestion){
+        dialogData.buttons = dialogData.script[dialogData.index].buttons.length
+        if(dialogData.buttons >= 3){
+            dialogData.margin = -300
+        }
+        else if(dialogData.buttons >=1){
+            dialogData.margin = -300
+        }
+
+        console.log(dialogData)
+        utils.timers.setTimeout(
+            function() {
+                console.log('setting question to true')
+                dialogData.isQuestion = true
+            },
+            700
+          )
+    }
+
     dialogData.openTime = Math.floor(Date.now())
     if(dialogData.script[dialogData.index].fontSize){
         dialogData.fontSize = dialogData.script[dialogData.index].fontSize
@@ -188,7 +250,7 @@ function rushText(npc:Entity){
     dialogData.visibleText = dialogData.fullText
     //engine.removeSystem(npcDialogTypingSystems.get(npc))
 }
-function confirmText(npc:Entity, mode: ConfirmMode): void {
+export function confirmText(npc:Entity, mode: ConfirmMode): void {
     let dialogData = npcDialogComponent.get(npc)
     dialogData.openTime = Math.floor(Date.now())
 
@@ -205,7 +267,77 @@ function confirmText(npc:Entity, mode: ConfirmMode): void {
             }
             dialogData.index++
         }
-
-        beginTyping(npc)
     }
+
+    if (mode == ConfirmMode.Confirm) {
+        if (currentText.buttons && currentText.buttons.length >= 1) {
+          if (typeof currentText.buttons[0].goToDialog === 'number') {
+            dialogData.index = currentText.buttons[0].goToDialog
+          } 
+
+          //TODO
+          //allow dialogs to be index by name
+        //   else {
+        //     this.activeTextId = findDialogByName(this.NPCScript, currentText.buttons[0].goToDialog)
+        //   }
+          if (currentText.buttons[0].triggeredActions) {
+            currentText.buttons[0].triggeredActions()
+          }
+        }
+    }
+
+    if (mode == ConfirmMode.Cancel) {
+        if (currentText.buttons && currentText.buttons.length >= 1) {
+          if (typeof currentText.buttons[1].goToDialog === 'number') {
+            dialogData.index = currentText.buttons[1].goToDialog
+          } 
+
+          //TODO
+          //allow dialogs to be index by name
+        //   else {
+        //     this.activeTextId = findDialogByName(this.NPCScript, currentText.buttons[0].goToDialog)
+        //   }
+          if (currentText.buttons[1].triggeredActions) {
+            currentText.buttons[1].triggeredActions()
+          }
+        }
+    }
+
+    if (mode == ConfirmMode.Button3) {
+        if (currentText.buttons && currentText.buttons.length >= 1) {
+          if (typeof currentText.buttons[2].goToDialog === 'number') {
+            dialogData.index = currentText.buttons[2].goToDialog
+          } 
+
+          //TODO
+          //allow dialogs to be index by name
+        //   else {
+        //     this.activeTextId = findDialogByName(this.NPCScript, currentText.buttons[0].goToDialog)
+        //   }
+          if (currentText.buttons[2].triggeredActions) {
+            currentText.buttons[2].triggeredActions()
+          }
+        }
+    }
+
+    if (mode == ConfirmMode.Button4) {
+        if (currentText.buttons && currentText.buttons.length >= 1) {
+          if (typeof currentText.buttons[3].goToDialog === 'number') {
+            dialogData.index = currentText.buttons[3].goToDialog
+          } 
+
+          //TODO
+          //allow dialogs to be index by name
+        //   else {
+        //     this.activeTextId = findDialogByName(this.NPCScript, currentText.buttons[0].goToDialog)
+        //   }
+          if (currentText.buttons[3].triggeredActions) {
+            currentText.buttons[3].triggeredActions()
+          }
+        }
+    }
+
+
+    beginTyping(npc)
+
 }
