@@ -12,18 +12,68 @@ Capabilities of the NPCs in this library:
 - Play an animation in the NPC 3d model, optionally returning to loop the idle animation afterwards
 
 The dialog messages can also require that the player chooses options, and any action can be triggered when the player picks an option or advances past a message.
+## Using the UI utils library
 
-To use NPCs in your scene:
+To use any of the helpers provided by the utils library you must install it in your Decentrland project.
+
+### Via the Decentraland Editor
+
+Make sure you've [installed the Decentraland editor](https://docs.decentraland.org/creator/development-guide/sdk7/installation-guide/#the-decentraland-editor).
+
+1) Open your scene's folder using Visual Studio Code. 
+
+> **📔 Note**:  The Visual Studio window must be at the root folder of the scene project.
+2) Open the Decentraland Editor tab on Visual Studio. Note that the bottom section lists all of your project's currently installed dependencies.
+
+3) Click the `+` icon on the header of the **Dependencies** view.
+
+4) Visual Studio opens an input box at the top of the screen. Write `@dcl-sdk/npc-utils` and hit enter. The dependency is then installed to your scene.
+
+
+5. Import the library into the scene's script. Add this line at the start of your `index.ts` file, or any other TypeScript files that require it:
+
+```ts
+import * as npc from '@dcl-sdk/npc-utils'
+```
+
+6. In your TypeScript file, call the `create` function passing it a `TransformType` and a `NPCData` object. The `NPCData` object requires a minimum of a `NPCType` and a function to trigger when the NPC is activated:
+
+```ts
+export let myNPC = npc.create({position:  Vector3.create(8,0,8),rotation:Quaternion.Zero(), scale:  Vector3.create(1,1,1)},
+//NPC Data Object
+{ 
+	type: npc.NPCType.CUSTOM,
+	model: 'models/npc.glb',
+	onActivate:()=>{console.log('npc activated');}
+}
+)
+```
+
+7. Write a dialog script for your character, preferably on a separate file, making it of type `Dialog[]`.
+
+```ts
+import { Dialog } from '@dcl-sdk/npc-utils'
+
+export let ILoveCats: Dialog[] = [
+  {
+    text: `I really lo-ove cats`,
+    isEndOfDialog: true
+  }
+]
+```
+
+
+### Via the CLI
 
 1. Install the library as an npm bundle. Run this command in your scene's project folder:
 
 ```
-npm i @dcl-sdk/npc-utils -B
+npm i @dcl-sdk/npc-utils
 ```
 
-2. Run `dcl start` or `dcl build` so the dependencies are correctly installed.
+2. Run `npm run start` or `npm run build` so the dependencies are correctly installed.
 
-3. Import the library into the scene's script. Add this line at the start of your `game.ts` file, or any other TypeScript files that require it:
+3. Import the library into the scene's script. Add this line at the start of your `index.ts` file, or any other TypeScript files that require it:
 
 ```ts
 import * as npc from '@dcl-sdk/npc-utils'
