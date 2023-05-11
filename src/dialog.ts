@@ -5,6 +5,7 @@ import { activeNPC, npcDataComponent } from "./npc";
 import { IsTypingDialog } from "./components";
 import { handleDialogTyping } from "./systems";
 import { Dialog, NPCState } from "./types";
+import { section } from './ui';
 
 
 export const npcDialogComponent: Map<Entity, any> = new Map()
@@ -339,5 +340,42 @@ export function confirmText(npc:Entity, mode: ConfirmMode): void {
 
 
     beginTyping(npc)
-
 }
+
+export type ImageAtlasData = {
+    atlasWidth: number;
+    atlasHeight: number;
+    sourceWidth: number;
+    sourceHeight: number;
+    sourceLeft: number;
+    sourceTop: number;
+  }
+  
+
+export function getImageAtlasMapping(data?: ImageAtlasData): number[] {
+    if (!data) return []
+  
+    const {
+      atlasWidth,
+      atlasHeight,
+      sourceWidth,
+      sourceHeight,
+      sourceTop,
+      sourceLeft,
+    } = data
+  
+    return [
+      sourceLeft / atlasWidth, (atlasHeight - sourceTop - sourceHeight) / atlasHeight,
+      sourceLeft / atlasWidth, (atlasHeight - sourceTop) / atlasHeight,
+      (sourceLeft + sourceWidth) / atlasWidth, (atlasHeight - sourceTop) / atlasHeight,
+      (sourceLeft + sourceWidth) / atlasWidth, (atlasHeight - sourceTop - sourceHeight) / atlasHeight,
+    ]
+  }
+
+  export function realWidth(width?:number): number {
+    return width ? width : section.sourceWidth
+  }
+
+  export function realHeight(height?:number): number {
+    return height ? height : section.sourceHeight
+  }

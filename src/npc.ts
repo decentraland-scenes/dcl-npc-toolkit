@@ -4,7 +4,6 @@ import { FollowPathData, NPCData, NPCPathType, NPCState, NPCType, TriggerData } 
 import * as utils from '@dcl-sdk/utils'
 import { IsFollowingPath } from './components';
 import { handleDialogTyping, handlePathTimes } from './systems';
-import { createDialog } from './ui';
 import { addDialog, closeDialog, npcDialogComponent } from './dialog';
 
 export const walkingTimers: Map<Entity,number> = new Map()
@@ -50,14 +49,14 @@ export function create(
         currentPathData: [],
         manualStop:false,
         pathIndex:0,
-        state:NPCState.STANDING
+        state:NPCState.STANDING,
+        idleAnim: data && data.idleAnim ? data.idleAnim : "Idle"
     })
 
     if(data && data.noUI){}
     else if(data && data.portrait){}
     else{
         addDialog(npc, data && data.dialogSound ? data.dialogSound : undefined)
-        createDialog(npc)
     }
 
     onActivateCbs.set(npc, ()=>{
@@ -134,11 +133,12 @@ function addNPCBones(npc:Entity, data:NPCData){
                 }]
             })
 
-            npcDataComponent.get(npc).idleAnim = data && data.idleAnim ? data.idleAnim : 'Idle'
+            let npcData = npcDataComponent.get(npc)
+            npcData.idleAnim = data && data.idleAnim ? data.idleAnim : 'Idle'
+            npcData.lastPlayedAnim = npcDataComponent.get(npc).idleAnim
+
             Animator.playSingleAnimation(npc, npcDataComponent.get(npc).idleAnim)
 
-            let npcData = npcDataComponent.get(npc)
-            npcData.lastPlayedAnim = npcDataComponent.get(npc).idleAnim
 
             if (data && data.walkingAnim) {
                 npcDataComponent.get(npc).walkingAnim = data.walkingAnim
@@ -411,6 +411,8 @@ function endInteraction(npc:Entity) {
         if (npcDialogComponent.has(npc) && npcDialogComponent.get(npc).visible) {
             closeDialog(npc)
         }
+
+        playAnimation(npc, npcDataComponent.get(npc).idleAnim)
 
         if(npcData.faceUser){
             Billboard.deleteFrom(npc)
