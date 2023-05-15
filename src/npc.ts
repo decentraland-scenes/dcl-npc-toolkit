@@ -412,8 +412,6 @@ function endInteraction(npc:Entity) {
             closeDialog(npc)
         }
 
-        playAnimation(npc, npcDataComponent.get(npc).idleAnim)
-
         if(npcData.faceUser){
             Billboard.deleteFrom(npc)
         }
@@ -457,9 +455,14 @@ export function playAnimation(npc:Entity, anim:string, noLoop?:boolean, duration
 
     Animator.stopAllAnimations(npc)
     Animator.playSingleAnimation(npc, anim, true)
+
     if(duration){
         animTimers.set(npc, utils.timers.setTimeout(()=>{
             animTimers.delete(npc)
+            Animator.stopAllAnimations(npc)
+            if(npcData.idleAnim){
+                Animator.playSingleAnimation(npc, npcData.idleAnim, false)
+            }
         }, 1000 * duration))
     } 
 
