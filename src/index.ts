@@ -7,9 +7,13 @@ import {
     playAnimation, 
     showDebug,
     getData,
-    changeIdleAnim } from "./npc";
+    changeIdleAnim,
+    talkBubble
+ } from "./npc";
 import { talk } from "./dialog";
 import { Dialog, NPCPathType, NPCType } from "./types";
+
+import { closeBubble, closeBubbleEndAll } from "./bubble";
 
 export {
     activate, 
@@ -24,5 +28,8 @@ export {
     getData,
     NPCPathType,
     NPCType,
-    changeIdleAnim
+    changeIdleAnim,
+    talkBubble,
+    closeBubble,
+    closeBubbleEndAll
 }

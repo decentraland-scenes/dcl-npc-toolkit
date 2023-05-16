@@ -23,34 +23,64 @@ export const NpcUtilsUi = () =>{
     const height = realHeight(225)
 
 return (
-	<UiEntity
-	uiTransform={{
-	  display: displayDialog() ? 'flex' : 'none',
-	  flexDirection: 'column',
-	  alignItems: 'center',
-	  justifyContent: 'center',
-	  positionType: 'absolute',
-	  position: { top: '50%', left: '50%' },
-	  margin: { top: -height / 2, left: -width / 2 },
-	  width,
-	  height,
-	}}
-  >
-	<UiEntity
-	  uiTransform={{
-		positionType: 'absolute',
-		position: { top: 0, left: 0 },
-		width: '100%',
-		height: '100%',
-	  }}
-	  uiBackground={{
-		textureMode: 'stretch',
-		texture: {
-		  src: lightTheme,
-		},
-		uvs: getImageAtlasMapping(section),
-	  }}
-	/>
+// 	<UiEntity
+// 	uiTransform={{
+// 	  display: displayDialog() ? 'flex' : 'none',
+// 	  flexDirection: 'column',
+// 	  alignItems: 'center',
+// 	  justifyContent: 'center',
+// 	  positionType: 'absolute',
+// 	  position: { top: '50%' },
+// 	  width:'100%',
+// 	  height:"225px",
+// 	}}
+//   >
+// 	<UiEntity
+// 	  uiTransform={{
+// 		positionType: 'absolute',
+// 		position: { top: 0, left: 0 },
+// 		width: '100%',
+// 		height: '100%',
+// 	  }}
+// 	  uiBackground={{
+// 		textureMode: 'stretch',
+// 		texture: {
+// 		  src: lightTheme,
+// 		},
+// 		uvs: getImageAtlasMapping(section),
+// 	  }}
+// 	>
+
+<UiEntity
+		uiTransform={{
+		  width: '100%',
+		  height: '300px',
+		  display: displayDialog() ? 'flex' :'none',
+		  justifyContent: 'center',
+		  flexDirection:'row',
+		  alignItems:'flex-end',
+		  alignContent:"flex-end",
+		  alignSelf:'auto',
+		  position:{top:'50%', left:'50%'}
+		}}
+	  >
+		<UiEntity
+		  uiTransform={{
+			width: '700px',
+			height: '225px',
+			alignItems: 'center',
+			justifyContent:'center',
+		  }}
+		  uiBackground={{ 
+			color: Color4.White(),
+			textureMode: 'stretch',
+			texture: {
+		  	src: lightTheme,
+			},
+			uvs: getImageAtlasMapping(section),
+	 	  }}
+		  onMouseDown={() => { handleDialogClick() } }
+		  >
 
 	<UiEntity
 			uiTransform={{
@@ -150,9 +180,7 @@ return (
 	  onMouseDown={() => { buttonClick(4) } }
 	  ></UiEntity>
 	</UiEntity>
-
-
-
+	</UiEntity>
   </UiEntity>
 )
 }

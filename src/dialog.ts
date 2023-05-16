@@ -6,6 +6,7 @@ import { IsTypingDialog } from "./components";
 import { handleDialogTyping } from "./systems";
 import { Dialog, NPCState } from "./types";
 import { section } from './ui';
+import { getBubbleTextLength } from './bubble';
 
 
 export const npcDialogComponent: Map<Entity, any> = new Map()
@@ -202,10 +203,10 @@ function beginTyping(npc:Entity){
     }
 }
 
-function addLineBreaks(dialog:Dialog[]){
+export function addLineBreaks(dialog:Dialog[], bubble?:boolean){
     let cleaned:Dialog[] = []
     dialog.forEach((d)=>{
-        d.text = lineBreak(d.text, 50)
+        d.text = lineBreak(d.text, bubble? getBubbleTextLength(d.text)! : 50)
         cleaned.push(d)
     })
     return cleaned
@@ -251,6 +252,7 @@ function rushText(npc:Entity){
     dialogData.visibleText = dialogData.fullText
     //engine.removeSystem(npcDialogTypingSystems.get(npc))
 }
+
 export function confirmText(npc:Entity, mode: ConfirmMode): void {
     let dialogData = npcDialogComponent.get(npc)
     dialogData.openTime = Math.floor(Date.now())

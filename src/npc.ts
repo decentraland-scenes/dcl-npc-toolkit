@@ -1,17 +1,20 @@
+import ReactEcs from '@dcl/sdk/react-ecs'
 import { Animator, AvatarShape, Billboard, BillboardMode, engine, Entity, GltfContainer, InputAction,MeshCollider,MeshRenderer,pointerEventsSystem,Transform, TransformType } from '@dcl/sdk/ecs'
 import { Color3, Quaternion, Vector3 } from '@dcl/sdk/math'
-import { FollowPathData, NPCData, NPCPathType, NPCState, NPCType, TriggerData } from './types';
+import { Dialog, FollowPathData, NPCData, NPCPathType, NPCState, NPCType, TriggerData } from './types';
 import * as utils from '@dcl-sdk/utils'
 import { IsFollowingPath } from './components';
-import { handleDialogTyping, handlePathTimes } from './systems';
+import { handleBubbletyping, handleDialogTyping, handlePathTimes } from './systems';
 import { addDialog, closeDialog, npcDialogComponent } from './dialog';
+import { bubbles, closeBubble, createDialogBubble, openBubble } from './bubble';
 
 export const walkingTimers: Map<Entity,number> = new Map()
 export const npcDataComponent: Map<Entity, any> = new Map()
 export let activeNPC:number = 0
 
-const walkingSystem = engine.addSystem(handlePathTimes)
-const dialogSystem = engine.addSystem(handleDialogTyping)
+engine.addSystem(handlePathTimes)
+engine.addSystem(handleDialogTyping)
+engine.addSystem(handleBubbletyping)
 
 const isCooldown: Map<Entity, any> = new Map()
 const onActivateCbs: Map<Entity, any> = new Map()
@@ -44,13 +47,15 @@ export function create(
         faceUser:data.faceUser,
         walkingSpeed:2,
         walkingAnim: data && data.walkingAnim ? data.walkingAnim : undefined,
-        bubbleHeight:2,
         pathData: data.pathData ? data.pathData : undefined,
         currentPathData: [],
         manualStop:false,
         pathIndex:0,
         state:NPCState.STANDING,
-        idleAnim: data && data.idleAnim ? data.idleAnim : "Idle"
+        idleAnim: data && data.idleAnim ? data.idleAnim : "Idle",
+        bubbleHeight: data && data.textBubble && data.bubbleHeight ? data.bubbleHeight : undefined,
+        bubbleSound: data.dialogSound ? data.dialogSound : undefined,
+        hasBubble: data && data.textBubble ? true : false
     })
 
     if(data && data.noUI){}
@@ -58,6 +63,10 @@ export function create(
     else{
         addDialog(npc, data && data.dialogSound ? data.dialogSound : undefined)
     }
+
+    if (data && data.textBubble) {
+        createDialogBubble(npc, npcDataComponent.get(npc).bubbleHeight)
+      }
 
     onActivateCbs.set(npc, ()=>{
         data.onActivate()
@@ -412,13 +421,15 @@ function endInteraction(npc:Entity) {
             closeDialog(npc)
         }
 
+        playAnimation(npc, npcDataComponent.get(npc).idleAnim)
+
         if(npcData.faceUser){
             Billboard.deleteFrom(npc)
         }
 
-    // if (this.bubble && this.bubble.isBubleOpen) {
-    //   this.bubble.closeDialogWindow()
-    // }
+        if(npcData.hasBubble && bubbles.get(npc).isBubbleOpen){
+            closeBubble(npc)
+        }
 }
 
 /**
@@ -455,14 +466,9 @@ export function playAnimation(npc:Entity, anim:string, noLoop?:boolean, duration
 
     Animator.stopAllAnimations(npc)
     Animator.playSingleAnimation(npc, anim, true)
-
     if(duration){
         animTimers.set(npc, utils.timers.setTimeout(()=>{
             animTimers.delete(npc)
-            Animator.stopAllAnimations(npc)
-            if(npcData.idleAnim){
-                Animator.playSingleAnimation(npc, npcData.idleAnim, false)
-            }
         }, 1000 * duration))
     } 
 
@@ -476,4 +482,8 @@ export function changeIdleAnim(npc:Entity, animation:string, play?:boolean){
         playAnimation(npc, animation, true)
         npcDataComponent.get(npc).lastPlayedAnim = animation
     }
+}
+
+export function talkBubble(npc:Entity, script:Dialog[], startIndex?:number){
+    openBubble(npc, script,startIndex)
 }
