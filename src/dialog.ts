@@ -4,8 +4,8 @@ import { AudioSource, Entity, engine } from "@dcl/sdk/ecs";
 import { activeNPC, npcDataComponent } from "./npc";
 import { IsTypingDialog } from "./components";
 import { handleDialogTyping } from "./systems";
-import { Dialog, NPCState } from "./types";
-import { section } from './ui';
+import { Dialog, ImageData, NPCState } from "./types";
+import { lightTheme, section } from './ui';
 import { getBubbleTextLength } from './bubble';
 
 
@@ -20,7 +20,45 @@ export enum ConfirmMode {
     Button4 = 4
   }
 
-export function addDialog(npc:Entity, sound?:string){
+export let UIscaleMultiplier = 0.75
+
+let portraitXPos = -50 * UIscaleMultiplier 
+let portraitYPos = 20 * UIscaleMultiplier
+
+let imageXPos = 350 * UIscaleMultiplier
+let imageYPos = 50 * UIscaleMultiplier
+
+let portraitScale = 256 * UIscaleMultiplier 
+let imageScale = 256 * UIscaleMultiplier 
+
+let textSize = 24 * UIscaleMultiplier
+let textYPos = 10 * UIscaleMultiplier
+
+let buttonWidth = 174* UIscaleMultiplier
+let buttonHeight = 46* UIscaleMultiplier
+
+
+let buttonTextSize = 20 * UIscaleMultiplier
+
+let button1XPos = 150 * UIscaleMultiplier
+let button2XPos = -80 * UIscaleMultiplier
+let button3XPos = -80 * UIscaleMultiplier
+let button4XPos = 150 * UIscaleMultiplier
+
+let button1YPos = -65 * UIscaleMultiplier
+let button2YPos = -65 * UIscaleMultiplier
+let button1YPos4 = -20 * UIscaleMultiplier
+let button2YPos4 = -20 * UIscaleMultiplier
+let button3YPos = -80 * UIscaleMultiplier
+let button4YPos = -80 * UIscaleMultiplier
+
+let skipButtonXPos = -300 * UIscaleMultiplier
+let skipButtonYPos = -100 * UIscaleMultiplier
+
+let buttonIconWidth = 26 * UIscaleMultiplier
+let buttonIconHeight = 26 * UIscaleMultiplier
+
+export function addDialog(npc:Entity, sound?:string, defaultPortrait?:ImageData){
     console.log('adding dialog for npc', npc)
     npcDialogComponent.set(npc, {
         typing:true,
@@ -30,14 +68,46 @@ export function addDialog(npc:Entity, sound?:string){
         fullText:"",
         timer:0,
         speed:30,
+        originalScript:[],
         script:[],
         index:0,
         sound: sound ? sound : undefined,
         soundPlayer: sound ? engine.addEntity() : undefined,
         fontSize:22,
         isQuestion:false,
-        buttons:0
+        buttons:0,
+        defaultPortrait: defaultPortrait ? defaultPortrait : null,
+        defaultPortraitTexture: defaultPortrait ? defaultPortrait.path : lightTheme,
+        portraitWidth: defaultPortrait && defaultPortrait.width ? defaultPortrait.width * UIscaleMultiplier : portraitScale,
+        portraitHeight: defaultPortrait && defaultPortrait.height ? defaultPortrait.height * UIscaleMultiplier : portraitScale,
+        portraitX: defaultPortrait && defaultPortrait.offsetX ? defaultPortrait.offsetX * UIscaleMultiplier + portraitXPos : portraitXPos,
+        portraitY:  defaultPortrait && defaultPortrait.offsetY ? defaultPortrait.offsetY * UIscaleMultiplier + portraitYPos : portraitYPos,
+        displayPortrait:false
     })
+}
+
+export function displayPortrait(){
+  return activeNPC == 0 || !npcDialogComponent.has(activeNPC as Entity) ? "" : npcDialogComponent.get(activeNPC as Entity).displayPortrait
+}
+
+export function positionPortaitX(){
+  return activeNPC == 0 || !npcDialogComponent.has(activeNPC as Entity) ? "" : npcDialogComponent.get(activeNPC as Entity).portraitX
+}
+
+export function positionPortaitY(){
+  return activeNPC == 0 || !npcDialogComponent.has(activeNPC as Entity) ? "" : npcDialogComponent.get(activeNPC as Entity).portraitY
+}
+
+export function portraitWidth(){
+  return activeNPC == 0 || !npcDialogComponent.has(activeNPC as Entity) ? "" : npcDialogComponent.get(activeNPC as Entity).portraitWidth
+}
+
+export function portraitHeight(){
+  return activeNPC == 0 || !npcDialogComponent.has(activeNPC as Entity) ? "" : npcDialogComponent.get(activeNPC as Entity).portraitHeight
+}
+
+export function getPortrait(){
+  return activeNPC == 0 || !npcDialogComponent.has(activeNPC as Entity) ? "" : npcDialogComponent.get(activeNPC as Entity).defaultPortraitTexture
 }
 
 export function getText(){
@@ -96,25 +166,39 @@ export function closeDialog(npc:Entity){
     dialogData.fullText = ""
     dialogData.timer = 0
     dialogData.index = 0
-    dialogData.script = []
+    dialogData.script.length = 0
     dialogData.buttons = 0
     dialogData.margin = 0
+    dialogData.displayPortrait = false
+    console.log('dialog data is now ', dialogData)
 }
 
-export function talk(npc:Entity, dialog:Dialog[], startIndex?:number, duration?:number){
+export function talk(npc:Entity, dialog:Dialog[], startIndex?:number | string, duration?:number){
     npcDataComponent.get(npc).introduced = true
-    console.log('trying to talk npc')
     if(npcDialogComponent.has(npc)){
-        console.log('we have npc dialog compoentn for ', npc)
         npcDataComponent.get(npc).state = NPCState.TALKING
-        openDialog(npc,dialog, startIndex ? startIndex : 0)
+
+        let index:any
+
+        if (!startIndex) {
+          index = 0
+        } else if (typeof startIndex === 'number') {
+          index = startIndex
+        } else {
+          index = findDialogByName(dialog, startIndex)
+        }
+
+        openDialog(npc,dialog, index)
     }
 }
 
-function openDialog(npc:Entity, dialog:any[], startIndex:number){
+export function openDialog(npc:Entity, dialog:Dialog[], startIndex:number){
+    console.log('script to talk is', dialog)
     let dialogData = npcDialogComponent.get(npc)
-    dialogData.script = addLineBreaks(dialog)
+    dialogData.script = dialog.slice()
     dialogData.index = startIndex
+
+    console.log('dialog data is now', dialogData)
     
     let currentText: Dialog = dialog[startIndex] ? dialog[startIndex] : { text: '' }
 
@@ -145,11 +229,15 @@ function openDialog(npc:Entity, dialog:any[], startIndex:number){
     //global button actions
 
     beginTyping(npc)
+} 
+
+export function addLineBreak(text:string, bubble?:boolean){
+  return lineBreak(text, bubble? getBubbleTextLength(text)! : 45)
 }
 
 function beginTyping(npc:Entity){
     let dialogData = npcDialogComponent.get(npc)
-    dialogData.fullText = dialogData.script[dialogData.index].text
+    dialogData.fullText = addLineBreak(dialogData.script[dialogData.index].text) //dialogData.script[dialogData.index].text
     dialogData.visible = true
     dialogData.typing = true
     dialogData.visibleText = ""
@@ -157,6 +245,29 @@ function beginTyping(npc:Entity){
     dialogData.timer = 0
     dialogData.isQuestion = false
     dialogData.buttons = 0
+
+    let currentText: Dialog = dialogData.script[dialogData.index] ? dialogData.script[dialogData.index] : { text: '' }
+    if(currentText.portrait){
+      dialogData.defaultPortraitTexture = currentText.portrait.path
+
+      dialogData.portraitX = currentText.portrait.offsetX
+      ? currentText.portrait.offsetX * UIscaleMultiplier + portraitXPos
+      : portraitXPos
+
+      dialogData.portraitY = currentText.portrait.offsetY
+      ? currentText.portrait.offsetY * UIscaleMultiplier + portraitYPos
+      : portraitYPos
+
+      dialogData.portraitWidth = currentText.portrait.width ? currentText.portrait.width * UIscaleMultiplier : portraitScale
+
+      dialogData.portraitHeight = currentText.portrait.height ? currentText.portrait.height * UIscaleMultiplier : portraitScale
+      dialogData.displayPortrait = true
+    }else if(dialogData.defaultPortrait){
+      dialogData.displayPortrait = true
+    }
+    else{
+      dialogData.displayPortrait = false
+    }
 
     if(dialogData.script[dialogData.index].isQuestion){
         dialogData.buttons = dialogData.script[dialogData.index].buttons.length
@@ -204,10 +315,9 @@ function beginTyping(npc:Entity){
 }
 
 export function addLineBreaks(dialog:Dialog[], bubble?:boolean){
-    let cleaned:Dialog[] = []
-    dialog.forEach((d)=>{
-        d.text = lineBreak(d.text, bubble? getBubbleTextLength(d.text)! : 50)
-        cleaned.push(d)
+    let cleaned:Dialog[] = dialog.slice()
+    cleaned.forEach((d)=>{
+      d.text = lineBreak(d.text, bubble? getBubbleTextLength(d.text)! : 50)
     })
     return cleaned
 }
@@ -381,3 +491,13 @@ export function getImageAtlasMapping(data?: ImageAtlasData): number[] {
   export function realHeight(height?:number): number {
     return height ? height : section.sourceHeight
   }
+
+  export function findDialogByName(dialogs: Dialog[], name: string) {
+    for (let i = 0; i < dialogs.length; i++) {
+      if (dialogs[i].name && dialogs[i].name == name) {
+        return i
+      }
+    }
+    return 0
+  }
+  

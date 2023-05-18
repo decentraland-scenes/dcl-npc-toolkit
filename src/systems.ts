@@ -28,13 +28,13 @@ export function handleDialogTyping(dt:number) {
         if (dialogData.timer >= 2 / dialogData.speed) {
             let charsToAdd = Math.floor(dialogData.timer / (1 / dialogData.speed))
             dialogData.timer = 0
+
             dialogData.visibleChars += charsToAdd
-        
+
             if (dialogData.visibleChars >= dialogData.fullText.length) {
                 dialogData.typing = false
                 dialogData.visibleChars = dialogData.fullText.length
                 IsTypingDialog.deleteFrom(entity)
-                //engine.removeSystem(npcDialogTypingSystems.get(entity))
             }
 
             dialogData.visibleText = dialogData.fullText.substr(0, dialogData.visibleChars)
@@ -53,7 +53,7 @@ export function handleDialogTyping(dt:number) {
 
         if (!dialogData.typing) {
             if (dialogData.timer > dialogData.timeOn) {
-                dialogData.isBubbleOpen = false
+                //dialogData.isBubbleOpen = false
                 dialogData.done = true
                 dialogData.typing = false
                 dialogData.timer = 0
@@ -64,13 +64,11 @@ export function handleDialogTyping(dt:number) {
             let charsToAdd = Math.floor(dialogData.timer / (1 / dialogData.speed))
             dialogData.timer = 0
             dialogData.visibleChars += charsToAdd
-            console.log("bubble chars ", dialogData.visibleChars)
         
             if (dialogData.visibleChars >= dialogData.fullText.length || dialogData.done) {
                 dialogData.typing = false
                 dialogData.visibleChars = dialogData.fullText.length
                 IsTypingDialog.deleteFrom(entity)
-                //engine.removeSystem(npcDialogTypingSystems.get(entity))
             }
             TextShape.getMutable(dialogData.text).text = dialogData.fullText.substr(0, dialogData.visibleChars)
         }

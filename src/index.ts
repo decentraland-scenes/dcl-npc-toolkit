@@ -8,7 +8,10 @@ import {
     showDebug,
     getData,
     changeIdleAnim,
-    talkBubble
+    talkBubble,
+    createDialogWindow,
+    openDialogWindow,
+    closeDialogWindow
  } from "./npc";
 import { talk } from "./dialog";
 import { Dialog, NPCPathType, NPCType } from "./types";
@@ -31,5 +34,8 @@ export {
     changeIdleAnim,
     talkBubble,
     closeBubble,
-    closeBubbleEndAll
+    closeBubbleEndAll,
+    createDialogWindow,
+    openDialogWindow,
+    closeDialogWindow
 }

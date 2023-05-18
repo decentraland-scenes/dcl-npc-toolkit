@@ -27,107 +27,9 @@ Capabilities of the NPCs in this library:
 
 The dialog messages can also require that the player chooses options, and any action can be triggered when the player picks an option or advances past a message.
 
-## Using the UI utils library
-
   
 
-To use any of the helpers provided by the utils library you must install it in your Decentrland project.
-
-  
-
-### Via the Decentraland Editor
-
-  
-
-Make sure you've [installed the Decentraland editor](https://docs.decentraland.org/creator/development-guide/sdk7/installation-guide/#the-decentraland-editor).
-
-  
-
-1) Open your scene's folder using Visual Studio Code.
-
-  
-
->  **📔 Note**: The Visual Studio window must be at the root folder of the scene project.
-
-2) Open the Decentraland Editor tab on Visual Studio. Note that the bottom section lists all of your project's currently installed dependencies.
-
-  
-
-3) Click the `+` icon on the header of the **Dependencies** view.
-
-  
-
-4) Visual Studio opens an input box at the top of the screen. Write `@dcl-sdk/npc-utils` and hit enter. The dependency is then installed to your scene.
-
-  
-  
-
-5. Import the library into the scene's script. Add this line at the start of your `index.ts` file, or any other TypeScript files that require it:
-
-  
-
-```ts
-
-import  *  as  npc  from  '@dcl-sdk/npc-utils'
-
-```
-
-  
-
-6. In your TypeScript file, call the `create` function passing it a `TransformType` and a `NPCData` object. The `NPCData` object requires a minimum of a `NPCType` and a function to trigger when the NPC is activated:
-
-  
-
-```ts
-
-export  let  myNPC = npc.create({position:  Vector3.create(8,0,8),rotation:Quaternion.Zero(), scale:  Vector3.create(1,1,1)},
-
-//NPC Data Object
-
-{
-
-type:  npc.NPCType.CUSTOM,
-
-model:  'models/npc.glb',
-
-onActivate:()=>{console.log('npc activated');}
-
-}
-
-)
-
-```
-
-  
-
-7. Write a dialog script for your character, preferably on a separate file, making it of type `Dialog[]`.
-
-  
-
-```ts
-
-import { Dialog } from  '@dcl-sdk/npc-utils'
-
-  
-
-export  let  ILoveCats: Dialog[] = [
-
-{
-
-text:  `I really lo-ove cats`,
-
-isEndOfDialog:  true
-
-}
-
-]
-
-```
-
-  
-  
-
-### Via the CLI
+To use NPCs in your scene:
 
   
 
@@ -137,23 +39,23 @@ isEndOfDialog:  true
 
 ```
 
-npm i @dcl-sdk/npc-utils
+npm i dcl-npc-toolkit -B
 
 ```
 
   
 
-2. Run `npm run start` or `npm run build` so the dependencies are correctly installed.
+2. Run `dcl start` or `dcl build` so the dependencies are correctly installed.
 
   
 
-3. Import the library into the scene's script. Add this line at the start of your `index.ts` file, or any other TypeScript files that require it:
+3. Import the library into the scene's script. Add this line at the start of your `game.ts` file, or any other TypeScript files that require it:
 
   
 
 ```ts
 
-import  *  as  npc  from  '@dcl-sdk/npc-utils'
+import  *  as  npc  from  'dcl-npc-toolkit'
 
 ```
 
@@ -191,7 +93,7 @@ onActivate:()=>{console.log('npc activated');}
 
 ```ts
 
-import { Dialog } from  '@dcl-sdk/npc-utils'
+import { Dialog } from  'dcl-npc-toolkit'
 
   
 
@@ -316,8 +218,6 @@ To configure other properties of an NPC, add a fourth argument as an `NPCData` o
 -  `walkingSpeed`: _(number)_ Speed of the NPC when walking. By default _2_.
 
 -  `path`: _(Vector3)_ Default path to walk. If a value is provided for this field on NPC initialization, the NPC will walk over this path in loop from the start.
--  `bubbleHeight`: _(number)_ The height at which to display the speech bubble above the head of the NPC.
-- `textBubble`: _(boolean)_ If true, NPC starts with a speech bubble object ready to be accessed from the start. Otherwise, they text bubble is only built on the first call to `talkBubble()` on the NPC.
 
 -  `noUI`: _(boolean)_ If true, no UI object is built for UI dialogs for this NPC. This may help optimize the scene if this feature is not used.
 
@@ -432,33 +332,6 @@ npc.talk(myNPC,myScript, 0)
   
 
 Learn how to build a script object for NPCs in a section below.
-
-### Speech Bubbles
-
-Besides the UI dialog window, NPCs can show speech bubbles over their heads. This alternative is less invasive to the player, but also non-interactive. Players can't alter the pace of the conversation or provide answers to questions.
-
-For an NPC to talk with bubbles:
-
-```ts
-npc.talkBubble(myNPC, myScript, 0)
-```
-
-The function takes the following **required** parameter:
-- `npc`: _(Entity)_ The NPC you would like to talk.
-
-- `script`: _(Dialog[])_ This array contains the information to manage the conversation, including events that may be triggered, options to choose, etc.
-
-It can also take the following optional parameters:
-
-- `startIndex`: _(number | string)_ The _Dialog_ object from the `script` array to open first. By default this is _0_, the first element of the array. Pass a number to open the entry on a given array position, or pass a string to open the entry with a `name` property matching that string.
-
-To interrupt the flow of an NPC's dialog windows, you can either:
-
-- Run `npc.endInteraction(myNPC)` on the NPC
-- Run `npc.closeBubble(myNPC)` on the NPC's `bubble` object
-- Run `npc.closeBubbleEndAll(myNPC)` on the NPC's `bubble` object
-
-The first two options keep running any `triggeredByNext()` functions associated to the dialogs being shown on the bubble, the third option prevents running these.
 
   
 
@@ -1208,7 +1081,90 @@ isEndOfDialog:  true
 ```
 
   
+  ## No-NPC Dialogs
+
   
+
+You can open a Dialog window that isn't associated with any `NPC` object in the scene. The `openDialogWindow()` function has all the same functionality as calling the `talk()` function on an NPC, but may be more practical in scenarios where a character isn't physically there, or where the conversation isn't with a particular character.
+
+  
+
+### The Dialog window
+
+  
+
+To create a new dialog window, call `createDialogWindow()` and store as a variable. This will instantiate the window but keep it hidden until you open it.
+
+```ts
+
+let  dialogWindow = npc.createDialogWindow()
+
+```
+
+ 
+<img  src="screenshots/NPC1.png"  width="500">
+
+ 
+When instantiating a new blank dialog, you can pass the following optional parameters:
+
+
+-  `defaultPortrait`: Sets a default portrait image to use on the left of all dialogs that don't specify an image. If a dialog has no portrait and no default is provided, no image is shown on the left. This field expects a `Portrait` object, that may include the following fields: - `path`: Path to the image file - `xOffset`: Offset on X, relative to the normal position of the portrait. - `yOffset`: Offset on Y, relative to the normal position of the portrait. - `section`: Use only a section of the image file, useful when arranging multiple icons into an image atlas. This field takes an `ImageSection` object, specifying `sourceWidth` and `sourceHeight`, and optionally also `sourceLeft` and `sourceTop`.
+
+-  `useDarkTheme`: Switch the style of the window to the dark theme.
+
+-  `sound`: Path to a sound file that will be played once for every dialog entry shown, as long as the dialog entry doesn't have its own `audio` property.
+
+  
+
+Once you have created a dialog window, you can open a dialog window with the `openDialogWindow()` function.
+
+  
+
+```ts
+
+npc.openDialogWindow(dialogWindow, NPCTalk, 0)
+
+```
+
+  
+
+When calling this function, you must specify:
+
+  
+
+-  `NPCScript`: A JSON object composed of an array of `Dialog` objects, that includes all the dialog tree.
+
+  
+
+A second optional parameter is also available:
+
+  
+
+-  `textId`: The index or `name` property of the entry to show first from the script. The first entry is 0.
+
+  
+
+> TIP: It's always better to refer to an entry by name, since the array index might shift if you add more entries and it can get hard to keep track of these references.
+
+  
+
+Close a dialog window at any time by calling the `closeDialogWindow()` function.
+
+  
+
+```ts
+
+npc.closeDialogWindow(dialogWindow)
+
+```
+
+  
+
+For details on how to construct the dialog tree, see the sections above. The required `NPCScript` by the `DialogWindow` has exactly the same characteristics as the one used on the `NPC` object when calling the `talk()` function.
+
+  
+
+---
 
 ## Contribute
 
@@ -1224,7 +1180,7 @@ In order to test changes made to this repository in active scenes, do the follow
 
 3. On a new Decentraland scene, import this library as you normally would and include the tests you need
 
-4. On the scene directory, run `npm link @dcl-sdk/npc-utils`
+4. On the scene directory, run `npm link dcl-npc-toolkit`
 
   
 

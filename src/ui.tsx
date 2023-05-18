@@ -4,7 +4,7 @@
 import { Color4 } from '@dcl/sdk/math'
 import ReactEcs, { Button, Label, ReactEcsRenderer, UiEntity } from '@dcl/sdk/react-ecs'
 import { Entity } from '@dcl/sdk/ecs'
-import { buttonClick, confirmText, displayButton, displayDialog, displayFirstButtonContainer, displaySecondButtonContainer, getButtonText, getFontSize, getImageAtlasMapping, getText, getTextPosition, handleDialogClick, realHeight, realWidth } from './dialog'
+import { buttonClick, confirmText, displayButton, displayDialog, displayFirstButtonContainer, displayPortrait, displaySecondButtonContainer, getButtonText, getFontSize, getImageAtlasMapping, getPortrait, getText, getTextPosition, handleDialogClick, portraitHeight, portraitWidth, positionPortaitX, positionPortaitY, realHeight, realWidth } from './dialog'
 import { sourcesComponentsCoordinates } from './uiResources'
 
 export let lightTheme = ('https://decentraland.org/images/ui/light-atlas-v3.png')
@@ -70,6 +70,7 @@ return (
 			height: '225px',
 			alignItems: 'center',
 			justifyContent:'center',
+			flexDirection:'column'
 		  }}
 		  uiBackground={{ 
 			color: Color4.White(),
@@ -83,10 +84,29 @@ return (
 		  >
 
 	<UiEntity
+		  uiTransform={{
+			display: displayPortrait() ? 'flex' :'none',
+			width: portraitWidth(),
+			height: portraitHeight(),
+			positionType:'absolute',
+			position:{top:positionPortaitY(), left:positionPortaitX()}
+		  }}
+		  uiBackground={{ 
+			textureMode:'stretch',
+			texture: {
+				src: getPortrait()
+			}
+	 	  }}
+		  onMouseDown={() => { handleDialogClick() } }
+		  />
+
+	<UiEntity
 			uiTransform={{
 				width: '100px',
 				height: '50px',
 				alignItems: 'center',
+				flexDirection:'row',
+				position:{left:displayPortrait() ? 55 : 0}
 			}}
 			uiText={{value: getText(),color:Color4.Black(), fontSize: getFontSize()}}
 			>
@@ -136,7 +156,7 @@ return (
 
 	 </UiEntity>
 
-
+	  {/* Second row of buttons */}
 	 <UiEntity
 	  uiTransform={{
 		width: '125px',

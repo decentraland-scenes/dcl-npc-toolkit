@@ -1,16 +1,17 @@
 import ReactEcs from '@dcl/sdk/react-ecs'
 import { Animator, AvatarShape, Billboard, BillboardMode, engine, Entity, GltfContainer, InputAction,MeshCollider,MeshRenderer,pointerEventsSystem,Transform, TransformType } from '@dcl/sdk/ecs'
 import { Color3, Quaternion, Vector3 } from '@dcl/sdk/math'
-import { Dialog, FollowPathData, NPCData, NPCPathType, NPCState, NPCType, TriggerData } from './types';
+import { Dialog, FollowPathData, ImageData, NPCData, NPCPathType, NPCState, NPCType, TriggerData } from './types';
 import * as utils from '@dcl-sdk/utils'
 import { IsFollowingPath } from './components';
 import { handleBubbletyping, handleDialogTyping, handlePathTimes } from './systems';
-import { addDialog, closeDialog, npcDialogComponent } from './dialog';
+import { addDialog, closeDialog, findDialogByName, npcDialogComponent, openDialog } from './dialog';
 import { bubbles, closeBubble, createDialogBubble, openBubble } from './bubble';
 
 export const walkingTimers: Map<Entity,number> = new Map()
 export const npcDataComponent: Map<Entity, any> = new Map()
 export let activeNPC:number = 0
+export let blankDialog:number = 0
 
 engine.addSystem(handlePathTimes)
 engine.addSystem(handleDialogTyping)
@@ -61,7 +62,8 @@ export function create(
     if(data && data.noUI){}
     else if(data && data.portrait){}
     else{
-        addDialog(npc, data && data.dialogSound ? data.dialogSound : undefined)
+        addDialog(npc, data && data.dialogSound ? data.dialogSound : undefined, typeof data.portrait === `string` ? { path: data.portrait } : data.portrait,
+        )
     }
 
     if (data && data.textBubble) {
@@ -361,7 +363,7 @@ export function stopWalking(npc:Entity, duration?: number, finished?:boolean) {
 
         },duration * 1000)
     }
-}//
+}
 
 function stopPath(npc:Entity){
     utils.paths.stopPath(npc)
@@ -421,12 +423,11 @@ function endInteraction(npc:Entity) {
             closeDialog(npc)
         }
 
-        playAnimation(npc, npcDataComponent.get(npc).idleAnim)
-
         if(npcData.faceUser){
             Billboard.deleteFrom(npc)
         }
 
+        console.log('ending interaction', npcData, bubbles.get(npc))
         if(npcData.hasBubble && bubbles.get(npc).isBubbleOpen){
             closeBubble(npc)
         }
@@ -464,12 +465,18 @@ export function playAnimation(npc:Entity, anim:string, noLoop?:boolean, duration
         animTimers.delete(npc)
     }
 
-    Animator.stopAllAnimations(npc)
+    Animator.stopAllAnimations(npc, true)
     Animator.playSingleAnimation(npc, anim, true)
     if(duration){
+        console.log('have a duration to play animation')
         animTimers.set(npc, utils.timers.setTimeout(()=>{
             animTimers.delete(npc)
-        }, 1000 * duration))
+            Animator.stopAllAnimations(npc, true)
+            if(npcData.idleAnim){
+                Animator.playSingleAnimation(npc, npcData.idleAnim)
+                npcData.lastPlayedAnim = npcData.idleAnim
+            }
+        }, 1000 * duration))//
     } 
 
     npcData.lastPlayedAnim = anim
@@ -478,6 +485,12 @@ export function playAnimation(npc:Entity, anim:string, noLoop?:boolean, duration
 export function changeIdleAnim(npc:Entity, animation:string, play?:boolean){
     let npcData = npcDataComponent.get(npc)
     npcData.idleAnim = animation
+
+    let animations = Animator.getMutable(npc)
+    if(animations.states.filter((anim)=> anim.name === animation).length == 0){
+        animations.states.push({name:animation, clip:animation, loop: true})
+    }
+
     if(play){
         playAnimation(npc, animation, true)
         npcDataComponent.get(npc).lastPlayedAnim = animation
@@ -486,4 +499,30 @@ export function changeIdleAnim(npc:Entity, animation:string, play?:boolean){
 
 export function talkBubble(npc:Entity, script:Dialog[], startIndex?:number){
     openBubble(npc, script,startIndex)
+}
+
+export function createDialogWindow(defaultPortrait?:ImageData, sound?:string){
+    let dialog = engine.addEntity()
+    addDialog(dialog,sound, defaultPortrait)
+    return dialog
+}
+
+export function openDialogWindow(npc:Entity, dialog:Dialog[], startIndex?:number | string){
+    activeNPC = npc
+
+    if(npcDialogComponent.has(npc)){
+        let index:any
+        if (!startIndex) {
+          index = 0
+        } else if (typeof startIndex === 'number') {
+          index = startIndex
+        } else {
+          index = findDialogByName(dialog, startIndex)
+        }
+        openDialog(npc,dialog, index)
+    }
+}
+
+export function closeDialogWindow(){
+
 }

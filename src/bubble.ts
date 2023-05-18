@@ -3,7 +3,7 @@ import { Animator, AudioSource, AvatarShape, Billboard, BillboardMode, engine, E
 import * as utils from '@dcl-sdk/utils'
 import { Dialog, ImageSection } from './types'
 import { Color3,Color4, Quaternion, Vector3 } from '@dcl/sdk/math'
-import { addLineBreaks } from './dialog'
+import { addLineBreak, addLineBreaks } from './dialog'
 import { IsTypingBubble } from './components'
 
 export let bubblesTexture = 'https://decentraland.org/images/ui/dialog-bubbles.png'
@@ -124,7 +124,7 @@ export function createDialogBubble(npc:Entity, height?:number, sound?:string){
 export function openBubble(npc:Entity, dialog:Dialog[], start?:number){
     let bubble = bubbles.get(npc)
 
-    bubble.script = addLineBreaks(dialog, true)
+    bubble.script = dialog.slice()
     bubble.index = start ? start : 0
     
     let currentText: Dialog = dialog[bubble.index] ? dialog[bubble.index] : { text: '' }
@@ -176,7 +176,6 @@ export function openBubble(npc:Entity, dialog:Dialog[], start?:number){
 
 export function closeBubble(npc:Entity){
     let bubble = bubbles.get(npc)
-    if(bubble.isBubbleOpen){
         bubble.isBubbleOpen = false
         bubble.typing = false
         bubble.visibleText = ""
@@ -191,7 +190,6 @@ export function closeBubble(npc:Entity){
         TextShape.getMutable(bubble.text).text = ""
         VisibilityComponent.getMutable(bubble.text).visible = false
         VisibilityComponent.getMutable(bubble.panel).visible = false
-    }
 }
 
 export function closeBubbleEndAll(npc:Entity): void {
@@ -208,7 +206,7 @@ const DEFAULT_TIME_ON = 3
 
 function beginTyping(npc:Entity, text:string, textId:number, timeOn?:number, speed?:number){
     let dialogData = bubbles.get(npc)
-    dialogData.fullText = dialogData.script[dialogData.index].text
+    dialogData.fullText = addLineBreak(dialogData.script[dialogData.index].text, true)
     dialogData.typing = true
     dialogData.done = false
     dialogData.visibleText = ""
@@ -342,45 +340,49 @@ function layoutDialogWindow(npc:Entity, textId: number): void {
 
 // Progresses text
 export function next(npc:Entity): void {
-    console.log('next text')
     let bubble = bubbles.get(npc)
-    let currentText = bubble.script[bubble.index]
 
-	if(!currentText){
-		currentText = bubble.script[bubble.index-1]
-	}
+    if(bubble.isBubbleOpen){
+      let currentText = bubble.script[bubble.index]
 
-    if (currentText.triggeredByNext) {
-      currentText.triggeredByNext()
+      if(!currentText){
+        currentText = bubble.script[bubble.index-1]
+      }
+    
+        if (currentText.triggeredByNext) {
+          currentText.triggeredByNext()
+        }
+    
+        if (currentText.isEndOfDialog) {
+          closeBubble(npc)
+          return
+        }
+       
+       // Update active text
+         bubble.index++
+    
+        // Update active text with new active text
+        currentText = bubble.script[bubble.index]
+    
+        if (currentText.text.length < maxLengthHugeBubble) {
+          currentText.text.slice(0, maxLengthHugeBubble)
+        }
+    
+        TextShape.getMutable(bubble.text).text = ""
+    
+        adjustBubble(npc, currentText.text.length)
+    
+        beginTyping(
+            npc,
+            currentText.text,
+            bubble.index,
+            currentText.timeOn ? currentText.timeOn : undefined,
+            currentText.typeSpeed ? currentText.typeSpeed : undefined 
+        )
+      layoutDialogWindow(npc, bubble.index)
     }
 
-	if (currentText.isEndOfDialog) {
-		closeBubble(npc)
-		return
-	  }
-   
-	 // Update active text
-     bubble.index++
-
-    // Update active text with new active text
-    currentText = bubble.script[bubble.index]
-
-    if (currentText.text.length < maxLengthHugeBubble) {
-      currentText.text.slice(0, maxLengthHugeBubble)
-    }
-
-    TextShape.getMutable(bubble.text).text = ""
-
-    adjustBubble(npc, currentText.text.length)
-
-    beginTyping(
-        npc,
-        currentText.text,
-        bubble.index,
-        currentText.timeOn ? currentText.timeOn : undefined,
-        currentText.typeSpeed ? currentText.typeSpeed : undefined 
-    )
-	layoutDialogWindow(npc, bubble.index)
+    
   }
 
 function setUVSection(
@@ -471,34 +473,4 @@ export function getBubbleTextLength(text:string){
     else if(text.length >= maxLengthShortBubble){
         return 40
     }
-  }
-
-  function setUVs2(rows: number, cols: number) {
-    return [
-      // North side of unrortated plane
-      0, //lower-left corner
-      0,
-  
-      cols, //lower-right corner
-      0,
-  
-      cols, //upper-right corner
-      rows,
-  
-      0, //upper left-corner
-      rows,
-  
-      // South side of unrortated plane
-      cols, // lower-right corner
-      0,
-  
-      0, // lower-left corner
-      0,
-  
-      0, // upper-left corner
-      rows,
-  
-      cols, // upper-right corner
-      rows,
-    ]
   }
