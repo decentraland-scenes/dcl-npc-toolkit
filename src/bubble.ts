@@ -3,7 +3,7 @@ import { Animator, AudioSource, AvatarShape, Billboard, BillboardMode, engine, E
 import * as utils from '@dcl-sdk/utils'
 import { Dialog, ImageSection } from './types'
 import { Color3,Color4, Quaternion, Vector3 } from '@dcl/sdk/math'
-import { addLineBreak, addLineBreaks } from './dialog'
+import { addLineBreak, addLineBreaks, findDialogByName } from './dialog'
 import { IsTypingBubble } from './components'
 
 export let bubblesTexture = 'https://decentraland.org/images/ui/dialog-bubbles.png'
@@ -121,11 +121,20 @@ export function createDialogBubble(npc:Entity, height?:number, sound?:string){
     })
 }
 
-export function openBubble(npc:Entity, dialog:Dialog[], start?:number){
+export function openBubble(npc:Entity, dialog:Dialog[], startIndex?:number | string){
     let bubble = bubbles.get(npc)
 
     bubble.script = dialog.slice()
-    bubble.index = start ? start : 0
+    let index:any
+    if (!startIndex) {
+      index = 0
+    } else if (typeof startIndex === 'number') {
+      index = startIndex
+    } else {
+      index = findDialogByName(dialog, startIndex)
+    }
+
+    bubble.index = index
     
     let currentText: Dialog = dialog[bubble.index] ? dialog[bubble.index] : { text: '' }
     bubble.currentText = currentText

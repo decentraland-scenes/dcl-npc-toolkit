@@ -223,11 +223,8 @@ export function openDialog(npc:Entity, dialog:Dialog[], startIndex:number){
     }
 
     //TODO
-    //set portrait
     //set image on the right
     //set text
-    //global button actions
-
     beginTyping(npc)
 } 
 

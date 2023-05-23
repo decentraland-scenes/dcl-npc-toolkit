@@ -43,13 +43,22 @@ npm i dcl-npc-toolkit -B
 
 ```
 
-  
-
-2. Run `dcl start` or `dcl build` so the dependencies are correctly installed.
+2. Install the dependent sdk utils library as an npm bundle. Run this command in your scene's project folder:
 
   
 
-3. Import the library into the scene's script. Add this line at the start of your `game.ts` file, or any other TypeScript files that require it:
+```
+
+npm i @dcl-sdk/utils -B
+
+```
+  
+
+3. Run `dcl start` or `dcl build` so the dependencies are correctly installed.
+
+  
+
+4. Import the library into the scene's script. Add this line at the start of your `game.ts` file, or any other TypeScript files that require it:
 
   
 
@@ -61,7 +70,7 @@ import  *  as  npc  from  'dcl-npc-toolkit'
 
   
 
-4. In your TypeScript file, call the `create` function passing it a `TransformType` and a `NPCData` object. The `NPCData` object requires a minimum of a `NPCType` and a function to trigger when the NPC is activated:
+5. In your TypeScript file, call the `create` function passing it a `TransformType` and a `NPCData` object. The `NPCData` object requires a minimum of a `NPCType` and a function to trigger when the NPC is activated:
 
   
 
@@ -218,6 +227,8 @@ To configure other properties of an NPC, add a fourth argument as an `NPCData` o
 -  `walkingSpeed`: _(number)_ Speed of the NPC when walking. By default _2_.
 
 -  `path`: _(Vector3)_ Default path to walk. If a value is provided for this field on NPC initialization, the NPC will walk over this path in loop from the start.
+- `bubbleHeight`:  _(number)_  The height at which to display the speech bubble above the head of the NPC.
+-  `textBubble`:  _(boolean)_  If true, NPC starts with a speech bubble object ready to be accessed from the start. Otherwise, they text bubble is only built on the first call to  `talkBubble()`  on the NPC.
 
 -  `noUI`: _(boolean)_ If true, no UI object is built for UI dialogs for this NPC. This may help optimize the scene if this feature is not used.
 

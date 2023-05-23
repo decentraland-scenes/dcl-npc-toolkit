@@ -1,8 +1,9 @@
-import { TextShape, engine } from "@dcl/sdk/ecs";
-import { IsFollowingPath, IsTypingBubble, IsTypingDialog } from "./components";
+import { TextShape, Transform, engine } from "@dcl/sdk/ecs";
+import { IsFollowingPath, IsTypingBubble, IsTypingDialog, TrackUserFlag } from "./components";
 import { walkingTimers } from "./npc";
 import { npcDialogComponent } from "./dialog";
 import { bubbles, next } from "./bubble";
+import { Quaternion, Vector3 } from "@dcl/sdk/math";
 
 export function handlePathTimes(dt:number) {
     for (const [entity] of engine.getEntitiesWith(IsFollowingPath)) {
@@ -74,3 +75,21 @@ export function handleDialogTyping(dt:number) {
         }
     }
   }
+
+export function faceUserSystem(dt: number) {
+  for (const [entity, track] of engine.getEntitiesWith(TrackUserFlag)) {
+    if (track.active) {
+      const player = Transform.get(engine.PlayerEntity)
+      let lookAtTarget = Vector3.create(player.position.x, player.position.y, player.position.z)
+      let direction = Vector3.subtract(lookAtTarget, Transform.get(entity).position)
+
+      let transform = Transform.getMutable(entity)
+      transform.rotation = Quaternion.slerp(transform.rotation, Quaternion.lookRotation(direction), dt * track.rotSpeed)
+
+      if (track.lockXZRotation) {
+        transform.rotation.x = 0
+        transform.rotation.z = 0
+      }
+    }
+  }
+}

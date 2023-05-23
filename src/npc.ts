@@ -1,10 +1,10 @@
 import ReactEcs from '@dcl/sdk/react-ecs'
-import { Animator, AvatarShape, Billboard, BillboardMode, engine, Entity, GltfContainer, InputAction,MeshCollider,MeshRenderer,pointerEventsSystem,Transform, TransformType } from '@dcl/sdk/ecs'
+import { Animator, AvatarShape, engine, Entity, GltfContainer, InputAction,MeshCollider,MeshRenderer,pointerEventsSystem,Transform, TransformType } from '@dcl/sdk/ecs'
 import { Color3, Quaternion, Vector3 } from '@dcl/sdk/math'
 import { Dialog, FollowPathData, ImageData, NPCData, NPCPathType, NPCState, NPCType, TriggerData } from './types';
 import * as utils from '@dcl-sdk/utils'
-import { IsFollowingPath } from './components';
-import { handleBubbletyping, handleDialogTyping, handlePathTimes } from './systems';
+import { IsFollowingPath, TrackUserFlag } from './components';
+import { faceUserSystem, handleBubbletyping, handleDialogTyping, handlePathTimes } from './systems';
 import { addDialog, closeDialog, findDialogByName, npcDialogComponent, openDialog } from './dialog';
 import { bubbles, closeBubble, createDialogBubble, openBubble } from './bubble';
 
@@ -16,6 +16,7 @@ export let blankDialog:number = 0
 engine.addSystem(handlePathTimes)
 engine.addSystem(handleDialogTyping)
 engine.addSystem(handleBubbletyping)
+engine.addSystem(faceUserSystem)
 
 const isCooldown: Map<Entity, any> = new Map()
 const onActivateCbs: Map<Entity, any> = new Map()
@@ -45,7 +46,7 @@ export function create(
         introduced: false,
         inCooldown: false,
         coolDownDuration: data && data.coolDownDuration ? data.coolDownDuration : 5,
-        faceUser:data.faceUser,
+        faceUser: data && data.faceUser ? data.faceUser : undefined,
         walkingSpeed:2,
         walkingAnim: data && data.walkingAnim ? data.walkingAnim : undefined,
         pathData: data.pathData ? data.pathData : undefined,
@@ -56,14 +57,16 @@ export function create(
         idleAnim: data && data.idleAnim ? data.idleAnim : "Idle",
         bubbleHeight: data && data.textBubble && data.bubbleHeight ? data.bubbleHeight : undefined,
         bubbleSound: data.dialogSound ? data.dialogSound : undefined,
-        hasBubble: data && data.textBubble ? true : false
+        hasBubble: data && data.textBubble ? true : false,
+        turnSpeed: data && data.turningSpeed ? data.turningSpeed : 2
     })
 
     if(data && data.noUI){}
-    else if(data && data.portrait){}
+    else if(data && data.portrait){
+            addDialog(npc, data && data.dialogSound ? data.dialogSound : undefined, typeof data.portrait === `string` ? { path: data.portrait } : data.portrait)
+        }
     else{
-        addDialog(npc, data && data.dialogSound ? data.dialogSound : undefined, typeof data.portrait === `string` ? { path: data.portrait } : data.portrait,
-        )
+        addDialog(npc, data && data.dialogSound ? data.dialogSound : undefined)
     }
 
     if (data && data.textBubble) {
@@ -253,7 +256,9 @@ export function followPath(npc:Entity, data?:FollowPathData){
         npcData.pathData = data
 
         if(npcData.faceUser){
-            Billboard.deleteFrom(npc)
+            if(TrackUserFlag.has(npc)){
+                TrackUserFlag.deleteFrom(npc)
+            }
         }
 
         if(data.startingPoint){
@@ -290,9 +295,9 @@ export function followPath(npc:Entity, data?:FollowPathData){
         }
     }
     }
-//
+
 function walkNPC(npc:Entity, npcData:any, type:NPCPathType, duration:number, path:Vector3[], pointReachedCallback?:any, finishedCallback?:any){
-    //
+    
     if(IsFollowingPath.has(npc)){
         IsFollowingPath.deleteFrom(npc)
         walkingTimers.delete(npc)
@@ -315,9 +320,6 @@ function walkNPC(npc:Entity, npcData:any, type:NPCPathType, duration:number, pat
     }   
 
     if (npcData.walkingAnim) {
-        // if (this.endAnimTimer.hasComponent(NPCDelay)) {
-        //   this.endAnimTimer.removeComponent(NPCDelay)
-        // }
         Animator.playSingleAnimation(npc, npcDataComponent.get(npc).walkingAnim, true)
         npcData.lastPlayedAnim = npcDataComponent.get(npc).walkingAnim
       }
@@ -395,8 +397,10 @@ export function activate(npc:Entity) {
 
     let npcData = npcDataComponent.get(npc)
     if (npcData.faceUser) {
-        Billboard.create(npc, {
-            billboardMode:BillboardMode.BM_Y
+        TrackUserFlag.create(npc,{
+            lockXZRotation:true,
+            active:true,
+            rotSpeed:npcData.turnSpeed
         })
     }
     isCooldown.set(npc, true)
@@ -406,9 +410,10 @@ export function activate(npc:Entity) {
         function() {
             isCooldown.delete(npc)
             npcDataComponent.get(npc).inCooldown = false
-            if(Billboard.has(npc)){
-                Billboard.deleteFrom(npc)
+            if(TrackUserFlag.has(npc)){
+                TrackUserFlag.deleteFrom(npc)
             }
+
         },
         1000 * npcData.coolDownDuration
     )
@@ -424,7 +429,9 @@ function endInteraction(npc:Entity) {
         }
 
         if(npcData.faceUser){
-            Billboard.deleteFrom(npc)
+            if(TrackUserFlag.has(npc)){
+                TrackUserFlag.deleteFrom(npc)
+            }
         }
 
         console.log('ending interaction', npcData, bubbles.get(npc))
@@ -497,7 +504,7 @@ export function changeIdleAnim(npc:Entity, animation:string, play?:boolean){
     }
 }
 
-export function talkBubble(npc:Entity, script:Dialog[], startIndex?:number){
+export function talkBubble(npc:Entity, script:Dialog[], startIndex?:number | string){
     openBubble(npc, script,startIndex)
 }
 
@@ -523,6 +530,9 @@ export function openDialogWindow(npc:Entity, dialog:Dialog[], startIndex?:number
     }
 }
 
-export function closeDialogWindow(){
-
+export function closeDialogWindow(window:Entity){
+    let dialog = npcDialogComponent.get(window)
+    if(window){
+        closeDialog(dialog)
+    }
 }
