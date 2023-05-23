@@ -15,6 +15,7 @@ import {
  } from "./npc";
 import { talk } from "./dialog";
 import { Dialog, NPCPathType, NPCType } from "./types";
+import {NpcUtilsUi} from './ui'
 
 import { closeBubble, closeBubbleEndAll } from "./bubble";
 
@@ -37,5 +38,6 @@ export {
     closeBubbleEndAll,
     createDialogWindow,
     openDialogWindow,
-    closeDialogWindow
+    closeDialogWindow,
+    NpcUtilsUi
 }
