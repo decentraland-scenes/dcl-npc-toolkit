@@ -27,8 +27,10 @@ import {
   positionPortaitY,
   realHeight,
   realWidth,
+  skipDialogs,
 } from "./dialog";
 import { sourcesComponentsCoordinates } from "./uiResources";
+import { activeNPC } from "./npc";
 
 export let lightTheme = "https://decentraland.org/images/ui/light-atlas-v3.png";
 export let darkTheme = "https://decentraland.org/images/ui/dark-atlas-v3.png";
@@ -37,10 +39,16 @@ export let bubblesTexture =
   "https://decentraland.org/images/ui/dialog-bubbles.png";
 
 export let section = {
-  ...sourcesComponentsCoordinates.backgrounds.promptBackground,
+  ...sourcesComponentsCoordinates.backgrounds.NPCDialog,
   atlasHeight: sourcesComponentsCoordinates.atlasHeight,
   atlasWidth: sourcesComponentsCoordinates.atlasWidth,
 };
+
+export let skipButtonSection = {
+	...sourcesComponentsCoordinates.icons.ClickWhite,
+	atlasHeight: sourcesComponentsCoordinates.atlasHeight,
+	atlasWidth: sourcesComponentsCoordinates.atlasWidth,
+  };
 
 const cardWidth = "700px";
 
@@ -49,34 +57,6 @@ export const NpcUtilsUi = () => {
   const height = realHeight(225);
 
   return (
-    // 	<UiEntity
-    // 	uiTransform={{
-    // 	  display: displayDialog() ? 'flex' : 'none',
-    // 	  flexDirection: 'column',
-    // 	  alignItems: 'center',
-    // 	  justifyContent: 'center',
-    // 	  positionType: 'absolute',
-    // 	  position: { top: '50%' },
-    // 	  width:'100%',
-    // 	  height:"225px",
-    // 	}}
-    //   >
-    // 	<UiEntity
-    // 	  uiTransform={{
-    // 		positionType: 'absolute',
-    // 		position: { top: 0, left: 0 },
-    // 		width: '100%',
-    // 		height: '100%',
-    // 	  }}
-    // 	  uiBackground={{
-    // 		textureMode: 'stretch',
-    // 		texture: {
-    // 		  src: lightTheme,
-    // 		},
-    // 		uvs: getImageAtlasMapping(section),
-    // 	  }}
-    // 	>
-
     <UiEntity
       uiTransform={{
         width: cardWidth,
@@ -100,7 +80,7 @@ export const NpcUtilsUi = () => {
           flexDirection: "column",
         }}
         uiBackground={{
-          color: Color4.White(),
+        //   color: Color4.White(),
           textureMode: "stretch",
           texture: {
             src: lightTheme,
@@ -127,6 +107,26 @@ export const NpcUtilsUi = () => {
           }}
           onMouseDown={() => {
             handleDialogClick();
+          }}
+        />
+
+		<UiEntity
+          uiTransform={{
+            display: displayPortrait() ? "flex" : "none",
+            width: 24,
+            height: 36,
+            positionType: "absolute",
+            position: { bottom: '5%', right:'2%' },
+          }}
+          uiBackground={{
+            textureMode: "stretch",
+			texture: {
+				src: lightTheme,
+			  },
+			  uvs: getImageAtlasMapping(skipButtonSection),
+          }}
+		  onMouseDown={() => {
+            skipDialogs(activeNPC as Entity);
           }}
         />
 

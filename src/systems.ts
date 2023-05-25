@@ -1,7 +1,7 @@
-import { TextShape, Transform, engine } from "@dcl/sdk/ecs";
+import { Entity, InputAction, PointerEventType, TextShape, Transform, engine, inputSystem } from "@dcl/sdk/ecs";
 import { IsFollowingPath, IsTypingBubble, IsTypingDialog, TrackUserFlag } from "./components";
-import { walkingTimers } from "./npc";
-import { npcDialogComponent } from "./dialog";
+import { activeNPC, walkingTimers } from "./npc";
+import { ConfirmMode, confirmText, npcDialogComponent, rushText, skipDialogs } from "./dialog";
 import { bubbles, next } from "./bubble";
 import { Quaternion, Vector3 } from "@dcl/sdk/math";
 
@@ -92,4 +92,55 @@ export function faceUserSystem(dt: number) {
       }
     }
   }
+}
+
+export function inputListenerSystem(){
+  const PET = inputSystem.isTriggered(InputAction.IA_PRIMARY,PointerEventType.PET_DOWN)
+  const PEP = inputSystem.isPressed(InputAction.IA_PRIMARY)
+
+  const PPET = inputSystem.isTriggered(InputAction.IA_POINTER,PointerEventType.PET_DOWN)
+  const PPEP = inputSystem.isPressed(InputAction.IA_POINTER)
+
+  const SET = inputSystem.isTriggered(InputAction.IA_SECONDARY,PointerEventType.PET_DOWN)
+  const SEP = inputSystem.isPressed(InputAction.IA_SECONDARY)
+
+  if(PPET && PPEP){
+    if(activeNPC != 0){
+      let dialogData = npcDialogComponent.get(activeNPC as Entity)
+      if(!dialogData.visible || Date.now() - dialogData.openTime < 100)return
+      if(dialogData.typing){
+        rushText(activeNPC as Entity)
+      }else if(!dialogData.isQuestion){
+        confirmText(activeNPC as Entity, ConfirmMode.Next)
+      }
+    }
+  }
+
+  if(PET && PEP){
+    if(activeNPC != 0){
+      let dialogData = npcDialogComponent.get(activeNPC as Entity)
+      if(!dialogData.visible || Date.now() - dialogData.openTime < 100)return
+      if(dialogData.isQuestion){
+        confirmText(activeNPC as Entity, ConfirmMode.Confirm)
+      }else if(!dialogData.isQuestion){
+        confirmText(activeNPC as Entity, ConfirmMode.Next)
+      }
+    }
+  }
+
+  if(SET && SEP){
+    if(activeNPC != 0){
+      let dialogData = npcDialogComponent.get(activeNPC as Entity)
+      if(!dialogData.visible || Date.now() - dialogData.openTime < 100)return
+      if(dialogData.isQuestion){
+        confirmText(activeNPC as Entity, ConfirmMode.Cancel)
+      }else if(dialogData.script[dialogData.index].skipable && dialogData.isFixedScreen){
+        skipDialogs(activeNPC as Entity)
+      }
+    }
+  }
+
+
+
+
 }

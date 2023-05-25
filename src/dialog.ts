@@ -1,7 +1,7 @@
 import * as utils from '@dcl-sdk/utils'
 
 import { AudioSource, Entity, engine } from "@dcl/sdk/ecs";
-import { activeNPC, npcDataComponent } from "./npc";
+import { activeNPC, closeDialogWindow, npcDataComponent } from "./npc";
 import { IsTypingDialog } from "./components";
 import { handleDialogTyping } from "./systems";
 import { Dialog, ImageData, NPCState } from "./types";
@@ -11,6 +11,7 @@ import { getBubbleTextLength } from './bubble';
 
 export const npcDialogComponent: Map<Entity, any> = new Map()
 export const npcDialogTypingSystems: Map<Entity, any> = new Map()
+export const npcDialogInputListener: Map<Entity,any> = new Map()
 
 export enum ConfirmMode {
     Confirm = 0,
@@ -351,7 +352,7 @@ export function handleDialogClick(){
     }
 }
 
-function rushText(npc:Entity){
+export function rushText(npc:Entity){
     let dialogData = npcDialogComponent.get(npc)
     dialogData.typing = false
     dialogData.timer = 0
@@ -449,6 +450,31 @@ export function confirmText(npc:Entity, mode: ConfirmMode): void {
 
 
     beginTyping(npc)
+}
+
+export function skipDialogs(npc:Entity) {
+  let dialogData = npcDialogComponent.get(npc)
+  if (!dialogData.visible || +Date.now() - dialogData.openTime < 100) return
+
+  while (
+    dialogData.script[dialogData.index] &&
+      dialogData.script[dialogData.index].skipable &&
+        dialogData.script[dialogData.index].isQuestion
+  ){
+    if(dialogData.script[dialogData.index].triggeredByNext){
+      dialogData.script[dialogData.index].triggeredByNext()
+    }
+
+    if(dialogData.script[dialogData.index].skipable &&
+      dialogData.script[dialogData.index].isEndOfDialog
+      ){
+        closeDialogWindow(npc)
+        return
+      }
+    
+      dialogData.index += 1
+  }
+  confirmText(npc, ConfirmMode.Next)
 }
 
 export type ImageAtlasData = {

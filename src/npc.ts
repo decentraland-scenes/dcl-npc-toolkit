@@ -4,7 +4,7 @@ import { Color3, Quaternion, Vector3 } from '@dcl/sdk/math'
 import { Dialog, FollowPathData, ImageData, NPCData, NPCPathType, NPCState, NPCType, TriggerData } from './types';
 import * as utils from '@dcl-sdk/utils'
 import { IsFollowingPath, TrackUserFlag } from './components';
-import { faceUserSystem, handleBubbletyping, handleDialogTyping, handlePathTimes } from './systems';
+import { faceUserSystem, handleBubbletyping, handleDialogTyping, handlePathTimes, inputListenerSystem } from './systems';
 import { addDialog, closeDialog, findDialogByName, npcDialogComponent, openDialog } from './dialog';
 import { bubbles, closeBubble, createDialogBubble, openBubble } from './bubble';
 
@@ -17,6 +17,7 @@ engine.addSystem(handlePathTimes)
 engine.addSystem(handleDialogTyping)
 engine.addSystem(handleBubbletyping)
 engine.addSystem(faceUserSystem)
+engine.addSystem(inputListenerSystem)
 
 const isCooldown: Map<Entity, any> = new Map()
 const onActivateCbs: Map<Entity, any> = new Map()
@@ -410,10 +411,6 @@ export function activate(npc:Entity) {
         function() {
             isCooldown.delete(npc)
             npcDataComponent.get(npc).inCooldown = false
-            if(TrackUserFlag.has(npc)){
-                TrackUserFlag.deleteFrom(npc)
-            }
-
         },
         1000 * npcData.coolDownDuration
     )
