@@ -87,9 +87,9 @@ export const NpcUtilsUi = () => {
           },
           uvs: getImageAtlasMapping(section),
         }}
-        onMouseDown={() => {
-          handleDialogClick();
-        }}
+        // onMouseDown={() => {
+        //   handleDialogClick();
+        // }}
       >
         <UiEntity
           uiTransform={{
@@ -105,9 +105,9 @@ export const NpcUtilsUi = () => {
               src: getPortrait(),
             },
           }}
-          onMouseDown={() => {
-            handleDialogClick();
-          }}
+          // onMouseDown={() => {
+          //   handleDialogClick();
+          // }}
         />
 
 		<UiEntity
