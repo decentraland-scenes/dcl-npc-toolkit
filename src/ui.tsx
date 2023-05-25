@@ -88,7 +88,7 @@ export const NpcUtilsUi = () => {
         alignContent: "flex-end",
         alignSelf: "auto",
         positionType: "absolute",
-        position: { left: "40%" },
+        position: { top: "50%", left: "40%" },
       }}
     >
       <UiEntity
