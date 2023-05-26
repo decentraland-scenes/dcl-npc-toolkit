@@ -50,67 +50,49 @@ export let skipButtonSection = {
 	atlasWidth: sourcesComponentsCoordinates.atlasWidth,
   };
 
-const cardWidth = "700px";
+  export let buttonSection = {
+    ...sourcesComponentsCoordinates.buttons.red,
+    atlasHeight: sourcesComponentsCoordinates.atlasHeight,
+    atlasWidth: sourcesComponentsCoordinates.atlasWidth,
+    };
 
 export const NpcUtilsUi = () => {
-  const width = realWidth(600);
+  const width = realWidth(700);
   const height = realHeight(225);
 
-  return (
-    <UiEntity
-      uiTransform={{
-        width: cardWidth,
-        height: "300px",
-        display: displayDialog() ? "flex" : "none",
-        justifyContent: "center",
-        flexDirection: "row",
-        alignItems: "flex-end",
-        alignContent: "flex-end",
-        alignSelf: "auto",
-        positionType: "absolute",
-        position: { bottom: "15%", left: "40%" },
-      }}
-    >
-      <UiEntity
-        uiTransform={{
-          width: cardWidth,
-          height: "225px",
-          alignItems: "center",
-          justifyContent: "center",
-          flexDirection: "column",
-        }}
-        uiBackground={{
-        //   color: Color4.White(),
-          textureMode: "stretch",
-          texture: {
-            src: lightTheme,
-          },
-          uvs: getImageAtlasMapping(section),
-        }}
-        // onMouseDown={() => {
-        //   handleDialogClick();
-        // }}
-      >
-        <UiEntity
-          uiTransform={{
-            display: displayPortrait() ? "flex" : "none",
-            width: portraitWidth(),
-            height: portraitHeight(),
-            positionType: "absolute",
-            position: { top: positionPortaitY(), left: positionPortaitX() },
-          }}
-          uiBackground={{
-            textureMode: "stretch",
-            texture: {
-              src: getPortrait(),
-            },
-          }}
-          // onMouseDown={() => {
-          //   handleDialogClick();
-          // }}
-        />
-
-		<UiEntity
+return(
+  <UiEntity
+  uiTransform={{
+    display: displayDialog() ? 'flex' : 'none',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    positionType: 'absolute',
+    position: { bottom: '15%', left: '50%' },
+    margin: { top: -height / 2, left: -width / 2 },
+    width,
+    height,
+  }}
+>
+  <UiEntity
+    uiTransform={{
+      positionType: 'absolute',
+      position: { top: 0, left: 0 },
+      width: '100%',
+      height: '100%',
+    }}
+    uiBackground={{
+      textureMode: 'stretch',
+      texture: {
+        src: lightTheme,
+      },
+      uvs: getImageAtlasMapping(section),
+    }}
+    onMouseDown={() => {
+          handleDialogClick();
+    }}
+  />
+   	<UiEntity
           uiTransform={{
             display: displayPortrait() ? "flex" : "none",
             width: 24,
@@ -132,16 +114,17 @@ export const NpcUtilsUi = () => {
 
         <UiEntity
           uiTransform={{
-            width: "100px",
-            height: "50px",
-            alignItems: "center",
+            alignSelf:"flex-start",
+            alignItems: "flex-start",
+            justifyContent:'flex-start',
             flexDirection: "row",
-            position: { left: displayPortrait() ? 55 : 0 },
+            position: { left: '20%' },
           }}
           uiText={{
             value: getText(),
             color: Color4.Black(),
             fontSize: getFontSize(),
+            textAlign:'middle-left'
           }}
         ></UiEntity>
 
@@ -152,6 +135,7 @@ export const NpcUtilsUi = () => {
             flexDirection: "row",
             justifyContent: "space-between",
             display: displayFirstButtonContainer() ? "flex" : "none",
+            position:{top: '15%'}
           }}
         >
           {/* Button1 */}
@@ -164,7 +148,13 @@ export const NpcUtilsUi = () => {
               alignContent: "flex-start",
               display: displayButton(1) ? "flex" : "none",
             }}
-            uiBackground={{ color: Color4.Red() }}
+            uiBackground={{
+              textureMode: 'stretch',
+              texture: {
+                src: lightTheme,
+              },
+              uvs: getImageAtlasMapping(buttonSection),
+            }}
             uiText={{ value: getButtonText(0), fontSize: 16 }}
             onMouseDown={() => {
               buttonClick(0);
@@ -181,7 +171,13 @@ export const NpcUtilsUi = () => {
               alignContent: "flex-start",
               display: displayButton(2) ? "flex" : "none",
             }}
-            uiBackground={{ color: Color4.Red() }}
+            uiBackground={{
+              textureMode: 'stretch',
+              texture: {
+                src: lightTheme,
+              },
+              uvs: getImageAtlasMapping(buttonSection),
+            }}
             uiText={{ value: getButtonText(1), fontSize: 16 }}
             onMouseDown={() => {
               buttonClick(1);
@@ -198,6 +194,8 @@ export const NpcUtilsUi = () => {
             justifyContent: "space-between",
             margin: { top: 20 },
             display: displaySecondButtonContainer() ? "flex" : "none",
+            position:{top: '15%'}
+
           }}
         >
           {/* Button3 */}
@@ -210,7 +208,13 @@ export const NpcUtilsUi = () => {
               alignContent: "flex-start",
               display: displayButton(3) ? "flex" : "none",
             }}
-            uiBackground={{ color: Color4.Red() }}
+            uiBackground={{
+              textureMode: 'stretch',
+              texture: {
+                src: lightTheme,
+              },
+              uvs: getImageAtlasMapping(buttonSection),
+            }}
             uiText={{ value: getButtonText(2), fontSize: 16 }}
             onMouseDown={() => {
               buttonClick(3);
@@ -227,7 +231,13 @@ export const NpcUtilsUi = () => {
               alignContent: "flex-start",
               display: displayButton(4) ? "flex" : "none",
             }}
-            uiBackground={{ color: Color4.Red() }}
+            uiBackground={{
+              textureMode: 'stretch',
+              texture: {
+                src: lightTheme,
+              },
+              uvs: getImageAtlasMapping(buttonSection),
+            }}
             uiText={{ value: getButtonText(3), fontSize: 16 }}
             onMouseDown={() => {
               buttonClick(4);
@@ -235,6 +245,6 @@ export const NpcUtilsUi = () => {
           ></UiEntity>
         </UiEntity>
       </UiEntity>
-    </UiEntity>
-  );
+  
+)
 };
