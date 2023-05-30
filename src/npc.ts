@@ -7,6 +7,7 @@ import { IsFollowingPath, TrackUserFlag } from './components';
 import { faceUserSystem, handleBubbletyping, handleDialogTyping, handlePathTimes, inputListenerSystem } from './systems';
 import { addDialog, closeDialog, findDialogByName, npcDialogComponent, openDialog } from './dialog';
 import { bubbles, closeBubble, createDialogBubble, openBubble } from './bubble';
+import { darkTheme, lightTheme } from './ui';
 
 export const walkingTimers: Map<Entity,number> = new Map()
 export const npcDataComponent: Map<Entity, any> = new Map()
@@ -59,7 +60,8 @@ export function create(
         bubbleHeight: data && data.textBubble && data.bubbleHeight ? data.bubbleHeight : undefined,
         bubbleSound: data.dialogSound ? data.dialogSound : undefined,
         hasBubble: data && data.textBubble ? true : false,
-        turnSpeed: data && data.turningSpeed ? data.turningSpeed : 2
+        turnSpeed: data && data.turningSpeed ? data.turningSpeed : 2,
+        theme: data.darkUI ? darkTheme : lightTheme
     })
 
     if(data && data.noUI){}
@@ -253,48 +255,71 @@ export function followPath(npc:Entity, data?:FollowPathData){
     let npcData = npcDataComponent.get(npc)
     let path:any[] =[]
 
-    if(data){
-        npcData.pathData = data
-
-        if(npcData.faceUser){
-            if(TrackUserFlag.has(npc)){
-                TrackUserFlag.deleteFrom(npc)
-            }
-        }
-
-        if(data.startingPoint){
-            data.path?.splice(0,data.startingPoint - 1)
-        }
-
-        let pos = Transform.get(npc).position
-        path.push(Vector3.create(pos.x, pos.y, pos.z))
-        data.path?.forEach((p)=>{
-            path.push(p)
-        })
-
-        onFinishCallbacks.set(npc,()=>{
-            console.log('on finished callback')
-            if(data && data.onFinishCallback && !data.loop){
-                data.onFinishCallback
-            }
-            stopPath(npc)
-        })
-
-        pointReachedCallbacks.set(npc, ()=>{
-            console.log('on point reached callback')
-            let data = npcDataComponent.get(npc)
-            data.pathIndex += 1
-            data.onReachedPointCallback ? data.onReachedPointCallback : undefined
-        })
-        walkNPC(npc, npcData, data.pathType!, data.totalDuration, path, pointReachedCallbacks.get(npc), onFinishCallbacks.get(npc))
-    }else{
-        if(npcData.manualStop){
-            console.log('we have manual stop, need to pick back up where we left off')
-        }
-        else{
-            console.log('we are trying to follow a path witout starting one prior')
+    if(npcData.faceUser){
+        if(TrackUserFlag.has(npc)){
+            TrackUserFlag.deleteFrom(npc)
         }
     }
+
+    if(npcData.manualStop){
+        let duration = npcData.pathData.totalDuration
+        let currentTimer:number = walkingTimers.get(npc)!
+        console.log('current time is', currentTimer)
+        if(currentTimer){
+            duration -= currentTimer
+        }
+
+        let path:any[] = []
+        npcData.pathData.path.forEach((p:any)=>{
+            path.push(p)
+        })
+        path.splice(0,npcData.pathIndex)
+
+        let pos = Transform.get(npc).position
+        path.unshift(Vector3.create(pos.x, pos.y, pos.z))
+        walkNPC(npc,npcData, npcData.pathData.pathType, duration, path, pointReachedCallbacks.get(npc), onFinishCallbacks.get(npc))    
+    }
+    else{
+        if(data){
+            npcData.pathData = data
+    
+            if(data.startingPoint){
+                data.path?.splice(0,data.startingPoint - 1)
+            }
+    
+            let pos = Transform.get(npc).position
+            path.push(Vector3.create(pos.x, pos.y, pos.z))
+            data.path?.forEach((p)=>{
+                path.push(p)
+            })
+    
+            onFinishCallbacks.set(npc,()=>{
+                console.log('on finished callback')
+                if(data && data.onFinishCallback && !data.loop){
+                    data.onFinishCallback
+                }
+                stopPath(npc)
+            })
+    
+            pointReachedCallbacks.set(npc, ()=>{
+                console.log('on point reached callback')
+                let data = npcDataComponent.get(npc)
+                data.pathIndex += 1
+                data.onReachedPointCallback ? data.onReachedPointCallback : undefined
+            })
+            walkNPC(npc, npcData, data.pathType!, data.totalDuration, path, pointReachedCallbacks.get(npc), onFinishCallbacks.get(npc))
+        }else{
+            if(npcData.manualStop){
+                console.log('we have manual stop, need to pick back up where we left off')
+            }
+            else{
+                console.log('we are trying to follow a path witout starting one prior')
+            }
+        }
+   
+    }
+
+   
     }
 
 function walkNPC(npc:Entity, npcData:any, type:NPCPathType, duration:number, path:Vector3[], pointReachedCallback?:any, finishedCallback?:any){
@@ -325,7 +350,6 @@ function walkNPC(npc:Entity, npcData:any, type:NPCPathType, duration:number, pat
         npcData.lastPlayedAnim = npcDataComponent.get(npc).walkingAnim
       }
     npcData.state = NPCState.FOLLOWPATH
-    console.log('debug here')
 }
 
 export function stopWalking(npc:Entity, duration?: number, finished?:boolean) {
@@ -368,13 +392,13 @@ export function stopWalking(npc:Entity, duration?: number, finished?:boolean) {
     }
 }
 
-function stopPath(npc:Entity){
+export function stopPath(npc:Entity){
     utils.paths.stopPath(npc)
     IsFollowingPath.deleteFrom(npc)
 
     let npcData = npcDataComponent.get(npc)
     if (npcData.walkingAnim) {
-        Animator.playSingleAnimation(npc, npcDataComponent.get(npc).walkingAnim)
+        Animator.playSingleAnimation(npc, npcDataComponent.get(npc).idleAnim)
         npcData.lastPlayedAnim = npcData.idleAnim
     }
 

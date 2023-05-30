@@ -19,7 +19,9 @@ import {
   getImageAtlasMapping,
   getPortrait,
   getText,
+  getTextColor,
   getTextPosition,
+  getTheme,
   handleDialogClick,
   portraitHeight,
   portraitWidth,
@@ -84,7 +86,7 @@ return(
     uiBackground={{
       textureMode: 'stretch',
       texture: {
-        src: lightTheme,
+        src: getTheme(),
       },
       uvs: getImageAtlasMapping(section),
     }}
@@ -103,7 +105,7 @@ return(
           uiBackground={{
             textureMode: "stretch",
 			texture: {
-				src: lightTheme,
+				src: getTheme(),
 			  },
 			  uvs: getImageAtlasMapping(skipButtonSection),
           }}
@@ -122,7 +124,7 @@ return(
           }}
           uiText={{
             value: getText(),
-            color: Color4.Black(),
+            color: getTextColor(),
             fontSize: getFontSize(),
             textAlign:'middle-left'
           }}
@@ -151,7 +153,7 @@ return(
             uiBackground={{
               textureMode: 'stretch',
               texture: {
-                src: lightTheme,
+                src: getTheme(),
               },
               uvs: getImageAtlasMapping(buttonSection),
             }}
@@ -174,7 +176,7 @@ return(
             uiBackground={{
               textureMode: 'stretch',
               texture: {
-                src: lightTheme,
+                src: getTheme(),
               },
               uvs: getImageAtlasMapping(buttonSection),
             }}
@@ -211,7 +213,7 @@ return(
             uiBackground={{
               textureMode: 'stretch',
               texture: {
-                src: lightTheme,
+                src: getTheme(),
               },
               uvs: getImageAtlasMapping(buttonSection),
             }}
@@ -234,7 +236,7 @@ return(
             uiBackground={{
               textureMode: 'stretch',
               texture: {
-                src: lightTheme,
+                src: getTheme(),
               },
               uvs: getImageAtlasMapping(buttonSection),
             }}

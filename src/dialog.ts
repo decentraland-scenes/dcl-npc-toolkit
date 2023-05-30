@@ -1,12 +1,13 @@
 import * as utils from '@dcl-sdk/utils'
 
 import { AudioSource, Entity, engine } from "@dcl/sdk/ecs";
-import { activeNPC, closeDialogWindow, npcDataComponent } from "./npc";
+import { activeNPC, closeDialogWindow, followPath, npcDataComponent, stopPath, stopWalking } from "./npc";
 import { IsTypingDialog } from "./components";
 import { handleDialogTyping } from "./systems";
 import { Dialog, ImageData, NPCState } from "./types";
 import { lightTheme, section } from './ui';
 import { getBubbleTextLength } from './bubble';
+import { Color4 } from '@dcl/sdk/math';
 
 
 export const npcDialogComponent: Map<Entity, any> = new Map()
@@ -115,6 +116,14 @@ export function getText(){
     return activeNPC == 0 || !npcDialogComponent.has(activeNPC as Entity) ? "" : npcDialogComponent.get(activeNPC as Entity).visibleText
 }
 
+export function getTextColor(){
+  return activeNPC == 0 || !npcDialogComponent.has(activeNPC as Entity) ? Color4.Black() : npcDataComponent.get(activeNPC as Entity).theme == lightTheme ? Color4.Black() : Color4.White()
+}
+
+export function getTheme(){
+  return activeNPC == 0 || !npcDialogComponent.has(activeNPC as Entity) ? lightTheme : npcDataComponent.get(activeNPC as Entity).theme
+}
+
 export function getButtonText(button:number){
     let text = ""
 
@@ -172,12 +181,23 @@ export function closeDialog(npc:Entity){
     dialogData.margin = 0
     dialogData.displayPortrait = false
     console.log('dialog data is now ', dialogData)
+    if(npcDataComponent.get(npc).manualStop){
+      console.log('dialog ended, needto walk again')
+      followPath(npc)
+    }
 }
 
 export function talk(npc:Entity, dialog:Dialog[], startIndex?:number | string, duration?:number){
     npcDataComponent.get(npc).introduced = true
     if(npcDialogComponent.has(npc)){
+
+        if(npcDataComponent.get(npc).state == NPCState.FOLLOWPATH){
+          console.log("speaking dialog, need to stop path")
+          stopWalking(npc)
+        }
+
         npcDataComponent.get(npc).state = NPCState.TALKING
+
 
         let index:any
 
@@ -338,6 +358,7 @@ function lineBreak(text: string, maxLineLength: number): string {
 }
 
 export function handleDialogClick(){
+  console.log('handling click')
     let npc = activeNPC as Entity
     if(npcDialogComponent.has(npc)){
         let dialogData = npcDialogComponent.get(npc)
@@ -362,6 +383,7 @@ export function rushText(npc:Entity){
 }
 
 export function confirmText(npc:Entity, mode: ConfirmMode): void {
+  console.log('confirm text')
     let dialogData = npcDialogComponent.get(npc)
     dialogData.openTime = Math.floor(Date.now())
 
