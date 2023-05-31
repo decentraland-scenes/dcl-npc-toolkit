@@ -78,13 +78,17 @@ export function addDialog(npc:Entity, sound?:string, defaultPortrait?:ImageData)
         fontSize:22,
         isQuestion:false,
         buttons:0,
+        displayPortrait: defaultPortrait ? true : false,
         defaultPortrait: defaultPortrait ? defaultPortrait : null,
         defaultPortraitTexture: defaultPortrait ? defaultPortrait.path : lightTheme,
         portraitWidth: defaultPortrait && defaultPortrait.width ? defaultPortrait.width * UIscaleMultiplier : portraitScale,
         portraitHeight: defaultPortrait && defaultPortrait.height ? defaultPortrait.height * UIscaleMultiplier : portraitScale,
         portraitX: defaultPortrait && defaultPortrait.offsetX ? defaultPortrait.offsetX * UIscaleMultiplier + portraitXPos : portraitXPos,
         portraitY:  defaultPortrait && defaultPortrait.offsetY ? defaultPortrait.offsetY * UIscaleMultiplier + portraitYPos : portraitYPos,
-        displayPortrait:false
+        portaitSHeight: defaultPortrait && defaultPortrait.section && defaultPortrait.section.sourceHeight ? defaultPortrait.section.sourceHeight : 256,
+        portraitSWidth: defaultPortrait && defaultPortrait.section && defaultPortrait.section.sourceWidth ? defaultPortrait.section.sourceWidth : 256,
+        portaitSTop: defaultPortrait && defaultPortrait.section && defaultPortrait.section.sourceTop ? defaultPortrait.section.sourceTop : 0,
+        portraitSLeft: defaultPortrait && defaultPortrait.section && defaultPortrait.section.sourceLeft ? defaultPortrait.section.sourceLeft : 0
     })
 }
 

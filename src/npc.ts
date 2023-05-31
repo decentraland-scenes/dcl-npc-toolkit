@@ -112,7 +112,7 @@ export function create(
 
     if (data && data.pathData){
         let npcData = npcDataComponent.get(npc)
-        //npcData.currentPathData = npcData.pathData
+        npcData.pathData.loop = true
         followPath(npc, npcData.pathData)
     }
 

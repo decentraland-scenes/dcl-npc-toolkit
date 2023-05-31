@@ -94,9 +94,27 @@ return(
           handleDialogClick();
     }}
   />
+
+<UiEntity
+          uiTransform={{
+            display: displayPortrait() ? 'flex' : 'none',
+            width: portraitWidth(),
+            height: portraitHeight(),
+            positionType: "absolute",
+            position: { bottom: positionPortaitY(), left:positionPortaitX() },
+          }}
+          uiBackground={{
+            textureMode: "stretch",
+			texture: {
+				src: getPortrait(),
+			  },
+			  // uvs: getImageAtlasMapping(skipButtonSection),
+          }}
+        />
+
    	<UiEntity
           uiTransform={{
-            display: displayPortrait() ? "flex" : "none",
+            display:'flex',
             width: 24,
             height: 36,
             positionType: "absolute",
@@ -120,7 +138,7 @@ return(
             alignItems: "flex-start",
             justifyContent:'flex-start',
             flexDirection: "row",
-            position: { left: '20%' },
+            position: { left: '22%' },
           }}
           uiText={{
             value: getText(),
