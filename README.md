@@ -1314,6 +1314,7 @@ typeSpeed?: number
 isEndOfDialog?: boolean
 triggeredByNext?: () =>  void
 portrait?: ImageData
+image?: ImageData
 isQuestion?:boolean
 buttons?: ButtonData[]
 audio?: string
