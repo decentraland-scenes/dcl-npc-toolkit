@@ -12,21 +12,32 @@ import {
   displayButton,
   displayDialog,
   displayFirstButtonContainer,
+  displayImage,
   displayPortrait,
   displaySecondButtonContainer,
+  displaySkipable,
   getButtonText,
   getFontSize,
+  getImage,
   getImageAtlasMapping,
+  getLeftClickTheme,
   getPortrait,
+  getSkipableTheme,
   getText,
   getTextColor,
   getTextPosition,
   getTheme,
   handleDialogClick,
+  imageHeight,
+  imageWidth,
   portraitHeight,
   portraitWidth,
+  positionImageX,
+  positionImageY,
   positionPortaitX,
   positionPortaitY,
+  positionTextX,
+  positionTextY,
   realHeight,
   realWidth,
   skipDialogs,
@@ -47,7 +58,25 @@ export let section = {
 };
 
 export let skipButtonSection = {
+	...sourcesComponentsCoordinates.buttons.F,
+	atlasHeight: sourcesComponentsCoordinates.atlasHeight,
+	atlasWidth: sourcesComponentsCoordinates.atlasWidth,
+  };
+
+export let skipButtonSectionBlack = {
+	...sourcesComponentsCoordinates.buttons.FBlack,
+	atlasHeight: sourcesComponentsCoordinates.atlasHeight,
+	atlasWidth: sourcesComponentsCoordinates.atlasWidth,
+  };
+
+export let leftClickSection = {
 	...sourcesComponentsCoordinates.icons.ClickWhite,
+	atlasHeight: sourcesComponentsCoordinates.atlasHeight,
+	atlasWidth: sourcesComponentsCoordinates.atlasWidth,
+  };
+
+export let leftClickSectionbBlack = {
+	...sourcesComponentsCoordinates.icons.ClickDark,
 	atlasHeight: sourcesComponentsCoordinates.atlasHeight,
 	atlasWidth: sourcesComponentsCoordinates.atlasWidth,
   };
@@ -95,7 +124,7 @@ return(
     }}
   />
 
-<UiEntity
+      <UiEntity
           uiTransform={{
             display: displayPortrait() ? 'flex' : 'none',
             width: portraitWidth(),
@@ -112,6 +141,57 @@ return(
           }}
         />
 
+      <UiEntity
+          uiTransform={{
+            display: displayImage() ? 'flex' : 'none',
+            width: imageWidth(),
+            height: imageHeight(),
+            positionType: "absolute",
+            position: { bottom: positionImageY(), right:positionImageX() },
+          }}
+          uiBackground={{
+            textureMode: "stretch",
+			texture: {
+				src: getImage(),
+			  },
+			  // uvs: getImageAtlasMapping(skipButtonSection),
+          }}
+        />
+
+      <UiEntity
+          uiTransform={{
+            display: displaySkipable() ? 'flex' : 'none',
+            width: 15,
+            height: 15,
+            positionType: "absolute",
+            position: { bottom: '7%', left:'25%' },
+          }}
+          uiBackground={{
+            textureMode: "stretch",
+			  texture: {
+          src: getTheme(),
+          },
+          uvs: getImageAtlasMapping(getSkipableTheme()),
+          }}
+          onMouseDown={() => {
+              skipDialogs(activeNPC as Entity);
+          }}
+          >
+
+          <UiEntity
+          uiTransform={{
+            display: 'flex',
+            positionType: "absolute",
+            position: { left: '215%'},
+          }}
+          uiText={{
+            value: 'Skip',
+            color: getTextColor(),
+            fontSize: 12,
+          }}
+        />
+        </UiEntity>
+
    	<UiEntity
           uiTransform={{
             display:'flex',
@@ -125,10 +205,7 @@ return(
 			texture: {
 				src: getTheme(),
 			  },
-			  uvs: getImageAtlasMapping(skipButtonSection),
-          }}
-		  onMouseDown={() => {
-            skipDialogs(activeNPC as Entity);
+			  uvs: getImageAtlasMapping(getLeftClickTheme()),
           }}
         />
 
@@ -138,7 +215,7 @@ return(
             alignItems: "flex-start",
             justifyContent:'flex-start',
             flexDirection: "row",
-            position: { left: '22%' },
+            position: { left: positionTextX(), top: positionTextY() },
           }}
           uiText={{
             value: getText(),

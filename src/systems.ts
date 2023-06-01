@@ -134,7 +134,7 @@ export function inputListenerSystem(){
       if(!dialogData.visible || Date.now() - dialogData.openTime < 100)return
       if(dialogData.isQuestion){
         confirmText(activeNPC as Entity, ConfirmMode.Cancel)
-      }else if(dialogData.script[dialogData.index].skipable && dialogData.isFixedScreen){
+      }else if(dialogData.script[dialogData.index].skipable && !dialogData.isFixedScreen){
         skipDialogs(activeNPC as Entity)
       }
     }
@@ -142,5 +142,5 @@ export function inputListenerSystem(){
 
 
 
-
+//
 }

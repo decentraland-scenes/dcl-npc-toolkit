@@ -5,7 +5,7 @@ import { activeNPC, closeDialogWindow, followPath, npcDataComponent, stopPath, s
 import { IsTypingDialog } from "./components";
 import { handleDialogTyping } from "./systems";
 import { Dialog, ImageData, NPCState } from "./types";
-import { lightTheme, section } from './ui';
+import { leftClickSection, leftClickSectionbBlack, lightTheme, section, skipButtonSection, skipButtonSectionBlack } from './ui';
 import { getBubbleTextLength } from './bubble';
 import { Color4 } from '@dcl/sdk/math';
 
@@ -92,8 +92,32 @@ export function addDialog(npc:Entity, sound?:string, defaultPortrait?:ImageData)
     })
 }
 
+export function displayImage(){
+  return activeNPC == 0 || !npcDialogComponent.has(activeNPC as Entity) ? false : npcDialogComponent.get(activeNPC as Entity).displayImage
+}
+
 export function displayPortrait(){
-  return activeNPC == 0 || !npcDialogComponent.has(activeNPC as Entity) ? "" : npcDialogComponent.get(activeNPC as Entity).displayPortrait
+  return activeNPC == 0 || !npcDialogComponent.has(activeNPC as Entity) ? false : npcDialogComponent.get(activeNPC as Entity).displayPortrait
+}
+
+export function displaySkipable(){
+  return activeNPC == 0 || !npcDialogComponent.has(activeNPC as Entity) ? false : npcDialogComponent.get(activeNPC as Entity).skipable
+}
+
+export function getSkipableTheme(){
+  return activeNPC == 0 || !npcDialogComponent.has(activeNPC as Entity) ? skipButtonSectionBlack : npcDataComponent.get(activeNPC as Entity).theme == lightTheme ? skipButtonSectionBlack : skipButtonSection
+}
+
+export function getLeftClickTheme(){
+  return activeNPC == 0 || !npcDialogComponent.has(activeNPC as Entity) ? leftClickSection : npcDataComponent.get(activeNPC as Entity).theme == lightTheme ? leftClickSection : leftClickSectionbBlack
+}
+
+export function positionTextX(){
+  return activeNPC == 0 || !npcDialogComponent.has(activeNPC as Entity) ? "" : npcDialogComponent.get(activeNPC as Entity).positionX
+}
+
+export function positionTextY(){
+  return activeNPC == 0 || !npcDialogComponent.has(activeNPC as Entity) ? "" : npcDialogComponent.get(activeNPC as Entity).positionY
 }
 
 export function positionPortaitX(){
@@ -112,8 +136,28 @@ export function portraitHeight(){
   return activeNPC == 0 || !npcDialogComponent.has(activeNPC as Entity) ? "" : npcDialogComponent.get(activeNPC as Entity).portraitHeight
 }
 
+export function positionImageX(){
+  return activeNPC == 0 || !npcDialogComponent.has(activeNPC as Entity) ? "" : npcDialogComponent.get(activeNPC as Entity).imageX
+}
+
+export function positionImageY(){
+  return activeNPC == 0 || !npcDialogComponent.has(activeNPC as Entity) ? "" : npcDialogComponent.get(activeNPC as Entity).imageY
+}
+
+export function imageWidth(){
+  return activeNPC == 0 || !npcDialogComponent.has(activeNPC as Entity) ? "" : npcDialogComponent.get(activeNPC as Entity).imageWidth
+}
+
+export function imageHeight(){
+  return activeNPC == 0 || !npcDialogComponent.has(activeNPC as Entity) ? "" : npcDialogComponent.get(activeNPC as Entity).imageHeight
+}
+
 export function getPortrait(){
   return activeNPC == 0 || !npcDialogComponent.has(activeNPC as Entity) ? "" : npcDialogComponent.get(activeNPC as Entity).defaultPortraitTexture
+}
+
+export function getImage(){
+  return activeNPC == 0 || !npcDialogComponent.has(activeNPC as Entity) ? "" : npcDialogComponent.get(activeNPC as Entity).dialogImageTexture
 }
 
 export function getText(){
@@ -184,6 +228,8 @@ export function closeDialog(npc:Entity){
     dialogData.buttons = 0
     dialogData.margin = 0
     dialogData.displayPortrait = false
+    dialogData.skipable = false
+    dialogData.displayImage = false
     console.log('dialog data is now ', dialogData)
     if(npcDataComponent.get(npc).manualStop){
       console.log('dialog ended, needto walk again')
@@ -267,6 +313,9 @@ function beginTyping(npc:Entity){
     dialogData.timer = 0
     dialogData.isQuestion = false
     dialogData.buttons = 0
+    dialogData.displayPortrait = false
+    dialogData.displayImage = false
+    dialogData.skipable = false
 
     let currentText: Dialog = dialogData.script[dialogData.index] ? dialogData.script[dialogData.index] : { text: '' }
     if(currentText.portrait){
@@ -314,6 +363,25 @@ function beginTyping(npc:Entity){
     if(dialogData.script[dialogData.index].fontSize){
         dialogData.fontSize = dialogData.script[dialogData.index].fontSize
     }
+
+    if(dialogData.script[dialogData.index].skipable){
+      dialogData.skipable = true
+    }
+    else{
+      dialogData.skipable = false
+    }
+
+    if(dialogData.script[dialogData.index].image){
+      dialogData.dialogImageTexture = dialogData.script[dialogData.index].image.path
+      dialogData.imageX = dialogData.script[dialogData.index].image.offsetX ? dialogData.script[dialogData.index].image.offsetX * UIscaleMultiplier + imageXPos : -40
+      dialogData.imageY = dialogData.script[dialogData.index].image.offsetY ? dialogData.script[dialogData.index].image.offsetY * UIscaleMultiplier + imageYPos : 40
+      dialogData.imageHeight = dialogData.script[dialogData.index].image.height ? dialogData.script[dialogData.index].height * UIscaleMultiplier : imageScale
+      dialogData.imageWidth = dialogData.script[dialogData.index].image.width ? dialogData.script[dialogData.index].width * UIscaleMultiplier : imageScale
+      dialogData.displayImage = true
+    }
+
+    dialogData.positionX = dialogData.script[dialogData.index].offsetX ? dialogData.script[dialogData.index].offsetX * UIscaleMultiplier : '22%'
+    dialogData.positionY = dialogData.script[dialogData.index].offsetY ? dialogData.script[dialogData.index].offsetY * UIscaleMultiplier + textYPos : textYPos
     
     if(dialogData.script[dialogData.index].hasOwnProperty("typeSpeed")){
         dialogData.speed = dialogData.script[dialogData.index].typeSpeed

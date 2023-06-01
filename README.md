@@ -1306,13 +1306,18 @@ The script must adhere to the following schema:
 ```ts
 class  Dialog {
 text: string
+name?: string
 fontSize?: number
+offsetX?: number
+offsetY?: number
 typeSpeed?: number
 isEndOfDialog?: boolean
+triggeredByNext?: () =>  void
+portrait?: ImageData
 isQuestion?:boolean
 buttons?: ButtonData[]
 audio?: string
-triggeredByNext?: () =>  void
+skipable?: boolean
 }
 ```
 
