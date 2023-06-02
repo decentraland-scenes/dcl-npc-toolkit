@@ -112,7 +112,8 @@ export function create(
 
     if (data && data.pathData) {
         let npcData = npcDataComponent.get(npc)
-        npcData.pathData.loop = data.pathData.loop
+        // npcData.pathData.loop = data.pathData.loop
+        npcData.pathData.loop = true
         followPath(npc, npcData.pathData)
     }
 
@@ -298,6 +299,8 @@ export function followPath(npc: Entity, data?: FollowPathData) {
                 if (data && data.onFinishCallback && !data.loop) {
                     data.onFinishCallback
                 }
+                let npcData = npcDataComponent.get(npc)
+                npcData.manualStop = false
                 stopPath(npc)
             })
 
@@ -469,8 +472,9 @@ export function handleWalkAway(npc: Entity) {
     let npcData = npcDataComponent.get(npc)
     if (npcData.manualStop) {
         console.log('interaction ended, need to walk again')
-        followPath(npc, npcData)
-        npcData.manualStop = false
+        // followPath(npc, npcData)
+        followPath(npc)
+        // npcData.manualStop = false
         return
     }
 
