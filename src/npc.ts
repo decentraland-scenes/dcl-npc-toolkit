@@ -470,6 +470,7 @@ export function handleWalkAway(npc: Entity) {
     if (npcData.manualStop) {
         console.log('interaction ended, need to walk again')
         followPath(npc, npcData)
+        npcData.manualStop = false
         return
     }
 
