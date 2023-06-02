@@ -112,7 +112,6 @@ export function create(
 
     if (data && data.pathData) {
         let npcData = npcDataComponent.get(npc)
-        // npcData.pathData.loop = data.pathData.loop
         npcData.pathData.loop = true
         followPath(npc, npcData.pathData)
     }
@@ -155,6 +154,7 @@ function addNPCBones(npc: Entity, data: NPCData) {
             npcData.idleAnim = data && data.idleAnim ? data.idleAnim : 'Idle'
             npcData.lastPlayedAnim = npcDataComponent.get(npc).idleAnim
 
+            console.log("npc-toolkit", "npc", "addNPCBones", "idleAnim")
             Animator.playSingleAnimation(npc, npcDataComponent.get(npc).idleAnim)
 
 
@@ -349,6 +349,7 @@ function walkNPC(npc: Entity, npcData: any, type: NPCPathType, duration: number,
     }
 
     if (npcData.walkingAnim) {
+        console.log("npc-toolkit", "npc", "walkNPC", "walkingAnim")
         Animator.playSingleAnimation(npc, npcDataComponent.get(npc).walkingAnim, true)
         npcData.lastPlayedAnim = npcDataComponent.get(npc).walkingAnim
     }
@@ -368,6 +369,7 @@ export function stopWalking(npc: Entity, duration?: number, finished?: boolean) 
             if (npcData.path) {
                 Animator.stopAllAnimations(npc, true)
                 if (npcDataComponent.get(npc).walkingAnim) {
+                    console.log("npc-toolkit", "npc", "stopWalking-callback", "walkingAnim")
                     Animator.playSingleAnimation(npc, npcDataComponent.get(npc).walkingAnim, true)
                     npcData.lastPlayedAnim = npcDataComponent.get(npc).walkingAnim
                 }
@@ -401,6 +403,7 @@ export function stopPath(npc: Entity) {
 
     let npcData = npcDataComponent.get(npc)
     if (npcData.walkingAnim) {
+        console.log("npc-toolkit", "npc", "stopPath", "idleAnim")
         Animator.playSingleAnimation(npc, npcDataComponent.get(npc).idleAnim)
         npcData.lastPlayedAnim = npcData.idleAnim
     }
@@ -472,9 +475,7 @@ export function handleWalkAway(npc: Entity) {
     let npcData = npcDataComponent.get(npc)
     if (npcData.manualStop) {
         console.log('interaction ended, need to walk again')
-        // followPath(npc, npcData)
         followPath(npc)
-        // npcData.manualStop = false
         return
     }
 
@@ -506,13 +507,15 @@ export function playAnimation(npc: Entity, anim: string, noLoop?: boolean, durat
     }
 
     Animator.stopAllAnimations(npc, true)
+    console.log("npc-toolkit", "npc", "playAnimation", anim)
     Animator.playSingleAnimation(npc, anim, true)
     if (duration) {
-        console.log('have a duration to play animation')
+        console.log("npc-toolkit",'have a duration to play animation')
         animTimers.set(npc, utils.timers.setTimeout(() => {
             animTimers.delete(npc)
             Animator.stopAllAnimations(npc, true)
             if (npcData.idleAnim) {
+                console.log("npc-toolkit", "npc", "playAnimation-Callback", "idleAnim")
                 Animator.playSingleAnimation(npc, npcData.idleAnim)
                 npcData.lastPlayedAnim = npcData.idleAnim
             }
