@@ -466,11 +466,13 @@ function endInteraction(npc: Entity) {
  */
 export function handleWalkAway(npc: Entity) {
     let npcData = npcDataComponent.get(npc)
+    if (npcData.manualStop) {
+        console.log('interaction ended, need to walk again')
+        followPath(npc)
+        return
+    }
+
     if (npcData.state == NPCState.FOLLOWPATH) {
-        if (npcDataComponent.get(npc).manualStop) {
-            console.log('interaction ended, need to walk again')
-            followPath(npc)
-        }
         return
     }
 
