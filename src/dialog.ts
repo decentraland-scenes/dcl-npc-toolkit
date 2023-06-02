@@ -1,7 +1,7 @@
 import * as utils from '@dcl-sdk/utils'
 
 import { AudioSource, Entity, engine } from "@dcl/sdk/ecs";
-import { activeNPC, closeDialogWindow, followPath, npcDataComponent, stopPath, stopWalking } from "./npc";
+import { activeNPC, clearNPC, closeDialogWindow, followPath, npcDataComponent, stopPath, stopWalking } from "./npc";
 import { IsTypingDialog } from "./components";
 import { handleDialogTyping } from "./systems";
 import { Dialog, ImageData, NPCState } from "./types";
@@ -231,10 +231,15 @@ export function closeDialog(npc:Entity){
     dialogData.skipable = false
     dialogData.displayImage = false
     console.log('dialog data is now ', dialogData)
+
+    if(IsTypingDialog.has(npc)){
+      IsTypingDialog.deleteFrom(npc)
+    }
     if(npcDataComponent.get(npc).manualStop){
       console.log('dialog ended, needto walk again')
       followPath(npc)
     }
+    clearNPC()
 }
 
 export function talk(npc:Entity, dialog:Dialog[], startIndex?:number | string, duration?:number){

@@ -413,10 +413,21 @@ export function stopPath(npc:Entity){
     }
 }
 
+export function clearNPC(){
+    activeNPC = 0
+}
+
 /**
  * Calls the NPC's activation function (set on NPC definition). If NPC has `faceUser` = true, it will rotate to face the player. It starts a cooldown counter to avoid reactivating.
  */
 export function activate(npc:Entity) {
+
+    if(activeNPC != 0){
+        console.log('we have a current npc, needto remove')
+        endInteraction(activeNPC as Entity)
+        // closeDialog(activeNPC as Entity)
+    }
+
     activeNPC = npc
     onActivateCbs.get(npc)()
 
@@ -425,7 +436,7 @@ export function activate(npc:Entity) {
         if(TrackUserFlag.has(npc)){
             TrackUserFlag.deleteFrom(npc)
         }
-        
+
         TrackUserFlag.create(npc,{
             lockXZRotation:true,
             active:true,
@@ -449,7 +460,7 @@ function endInteraction(npc:Entity) {
      let npcData = npcDataComponent.get(npc)
      npcData.state = NPCState.STANDING
 
-        if (npcDialogComponent.has(npc) && npcDialogComponent.get(npc).visible) {
+        if (npcDialogComponent.has(npc)){//} && npcDialogComponent.get(npc).visible) {
             closeDialog(npc)
         }
 
