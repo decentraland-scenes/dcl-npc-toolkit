@@ -206,7 +206,7 @@ export function displaySecondButtonContainer(){
 
 export function getTextPosition(){
     //console.log(npcDialogComponent.get(activeNPC as Entity).buttons)
-    return activeNPC == 0 || !npcDialogComponent.has(activeNPC as Entity) ? {top:0} : {top:npcDataComponent.get(activeNPC as Entity).margin}
+    return activeNPC == 0 || !npcDialogComponent.has(activeNPC as Entity) ? {top:0, left:0} : {top:npcDialogComponent.get(activeNPC as Entity).margin + npcDialogComponent.get(activeNPC as Entity).positionY, left: npcDialogComponent.get(activeNPC as Entity).positionX}
 }
 
 export function buttonClick(button:number){
@@ -343,10 +343,10 @@ function beginTyping(npc:Entity){
     if(dialogData.script[dialogData.index].isQuestion){
         dialogData.buttons = dialogData.script[dialogData.index].buttons.length
         if(dialogData.buttons >= 3){
-            dialogData.margin = -300
+            dialogData.margin = -25
         }
         else if(dialogData.buttons >=1){
-            dialogData.margin = -300
+            dialogData.margin = -25
         }
 
         console.log(dialogData)

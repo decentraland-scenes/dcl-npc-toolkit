@@ -497,6 +497,11 @@ export function playAnimation(npc:Entity, anim:string, noLoop?:boolean, duration
     Animator.playSingleAnimation(npc, anim, true)
     if(duration){
         console.log('have a duration to play animation')
+        if(animTimers.has(npc)){
+            utils.timers.clearTimeout(animTimers.get(npc))
+            animTimers.delete(npc)
+        }
+        
         animTimers.set(npc, utils.timers.setTimeout(()=>{
             animTimers.delete(npc)
             Animator.stopAllAnimations(npc, true)

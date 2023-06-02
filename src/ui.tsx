@@ -81,11 +81,29 @@ export let leftClickSectionbBlack = {
 	atlasWidth: sourcesComponentsCoordinates.atlasWidth,
   };
 
-  export let buttonSection = {
-    ...sourcesComponentsCoordinates.buttons.red,
-    atlasHeight: sourcesComponentsCoordinates.atlasHeight,
-    atlasWidth: sourcesComponentsCoordinates.atlasWidth,
-    };
+export let primaryButtonSection = {
+  ...sourcesComponentsCoordinates.buttons.E,
+  atlasHeight: sourcesComponentsCoordinates.atlasHeight,
+  atlasWidth: sourcesComponentsCoordinates.atlasWidth,
+  };
+
+export let secondaryButtonSection = {
+  ...sourcesComponentsCoordinates.buttons.F,
+  atlasHeight: sourcesComponentsCoordinates.atlasHeight,
+  atlasWidth: sourcesComponentsCoordinates.atlasWidth,
+  };
+
+export let darkButtonSection = {
+  ...sourcesComponentsCoordinates.buttons.dark,
+  atlasHeight: sourcesComponentsCoordinates.atlasHeight,
+  atlasWidth: sourcesComponentsCoordinates.atlasWidth,
+  };
+
+export let redButtonSection = {
+  ...sourcesComponentsCoordinates.buttons.red,
+  atlasHeight: sourcesComponentsCoordinates.atlasHeight,
+  atlasWidth: sourcesComponentsCoordinates.atlasWidth,
+  };
 
 export const NpcUtilsUi = () => {
   const width = realWidth(700);
@@ -215,7 +233,7 @@ return(
             alignItems: "flex-start",
             justifyContent:'flex-start',
             flexDirection: "row",
-            position: { left: positionTextX(), top: positionTextY() },
+            position: getTextPosition(),
           }}
           uiText={{
             value: getText(),
@@ -232,14 +250,15 @@ return(
             flexDirection: "row",
             justifyContent: "space-between",
             display: displayFirstButtonContainer() ? "flex" : "none",
-            position:{top: '15%'}
+            position:{top: '20%'}
           }}
         >
           {/* Button1 */}
           <UiEntity
             uiTransform={{
-              width: "125px",
-              height: "50px",
+              width: "150px",
+              height: "45px",
+              margin:{right:'5%'},
               alignItems: "center",
               justifyContent: "center",
               alignContent: "flex-start",
@@ -250,7 +269,7 @@ return(
               texture: {
                 src: getTheme(),
               },
-              uvs: getImageAtlasMapping(buttonSection),
+              uvs: getImageAtlasMapping(darkButtonSection),
             }}
             uiText={{ value: getButtonText(0), fontSize: 16 }}
             onMouseDown={() => {
@@ -261,8 +280,8 @@ return(
           {/* Button2 */}
           <UiEntity
             uiTransform={{
-              width: "125px",
-              height: "50px",
+              width: "150px",
+              height: "45px",
               alignItems: "center",
               justifyContent: "center",
               alignContent: "flex-start",
@@ -273,7 +292,7 @@ return(
               texture: {
                 src: getTheme(),
               },
-              uvs: getImageAtlasMapping(buttonSection),
+              uvs: getImageAtlasMapping(redButtonSection),
             }}
             uiText={{ value: getButtonText(1), fontSize: 16 }}
             onMouseDown={() => {
@@ -285,7 +304,7 @@ return(
         {/* Second row of buttons */}
         <UiEntity
           uiTransform={{
-            width: "125px",
+            width: "300px",
             alignItems: "center",
             flexDirection: "row",
             justifyContent: "space-between",
@@ -298,8 +317,9 @@ return(
           {/* Button3 */}
           <UiEntity
             uiTransform={{
-              width: "125px",
-              height: "50px",
+              width: "150px",
+              height: "45px",
+              margin:{right:'5%'},
               alignItems: "center",
               justifyContent: "center",
               alignContent: "flex-start",
@@ -310,7 +330,7 @@ return(
               texture: {
                 src: getTheme(),
               },
-              uvs: getImageAtlasMapping(buttonSection),
+              uvs: getImageAtlasMapping(darkButtonSection),
             }}
             uiText={{ value: getButtonText(2), fontSize: 16 }}
             onMouseDown={() => {
@@ -321,8 +341,8 @@ return(
           {/* Button4 */}
           <UiEntity
             uiTransform={{
-              width: "125px",
-              height: "50px",
+              width: "150px",
+              height: "45px",
               alignItems: "center",
               justifyContent: "center",
               alignContent: "flex-start",
@@ -333,7 +353,7 @@ return(
               texture: {
                 src: getTheme(),
               },
-              uvs: getImageAtlasMapping(buttonSection),
+              uvs: getImageAtlasMapping(darkButtonSection),
             }}
             uiText={{ value: getButtonText(3), fontSize: 16 }}
             onMouseDown={() => {
