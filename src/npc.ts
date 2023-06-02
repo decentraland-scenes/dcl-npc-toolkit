@@ -112,7 +112,7 @@ export function create(
 
     if (data && data.pathData) {
         let npcData = npcDataComponent.get(npc)
-        npcData.pathData.loop = true
+        npcData.pathData.loop = data.pathData.loop
         followPath(npc, npcData.pathData)
     }
 
@@ -403,6 +403,7 @@ export function stopPath(npc: Entity) {
     }
 
     if (!npcData.manualStop) {
+        console.log("npc-tookit", "StopPath", "Loop?", npcData.pathData.loop)
         if (npcData.pathData.loop) {
             npcData.pathIndex = 0
             walkingTimers.delete(npc)
@@ -468,7 +469,7 @@ export function handleWalkAway(npc: Entity) {
     let npcData = npcDataComponent.get(npc)
     if (npcData.manualStop) {
         console.log('interaction ended, need to walk again')
-        followPath(npc)
+        followPath(npc, npcData)
         return
     }
 
