@@ -231,10 +231,10 @@ export function closeDialog(npc:Entity){
     dialogData.skipable = false
     dialogData.displayImage = false
     console.log('dialog data is now ', dialogData)
-    // if(npcDataComponent.get(npc).manualStop){
-    //   console.log('dialog ended, needto walk again')
-    //   followPath(npc)
-    // }
+    if(npcDataComponent.get(npc).manualStop){
+      console.log('dialog ended, needto walk again')
+      followPath(npc)
+    }
 }
 
 export function talk(npc:Entity, dialog:Dialog[], startIndex?:number | string, duration?:number){
