@@ -235,10 +235,10 @@ export function closeDialog(npc:Entity){
     if(IsTypingDialog.has(npc)){
       IsTypingDialog.deleteFrom(npc)
     }
-    if(npcDataComponent.get(npc).manualStop){
-      console.log('dialog ended, needto walk again')
-      followPath(npc)
-    }
+    // if(npcDataComponent.get(npc).manualStop){
+    //   console.log('dialog ended, needto walk again')
+    //   followPath(npc)
+    // }
     clearNPC()
 }
 

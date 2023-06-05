@@ -296,7 +296,7 @@ export function followPath(npc:Entity, data?:FollowPathData){
             onFinishCallbacks.set(npc,()=>{
                 console.log('on finished callback')
                 if(data && data.onFinishCallback && !data.loop){
-                    data.onFinishCallback
+                    data.onFinishCallback()
                 }
                 stopPath(npc)
             })
@@ -350,6 +350,7 @@ function walkNPC(npc:Entity, npcData:any, type:NPCPathType, duration:number, pat
         npcData.lastPlayedAnim = npcDataComponent.get(npc).walkingAnim
       }
     npcData.state = NPCState.FOLLOWPATH
+    npcData.manualStop = false
 }
 
 export function stopWalking(npc:Entity, duration?: number, finished?:boolean) {
@@ -384,7 +385,7 @@ export function stopWalking(npc:Entity, duration?: number, finished?:boolean) {
                 let pos = Transform.get(npc).position
                 path.unshift(Vector3.create(pos.x, pos.y, pos.z))
     
-                npcData.manualStop = false
+                //npcData.manualStop = false
                 walkNPC(npc,npcData, npcData.pathData.pathType, duration, path, pointReachedCallbacks.get(npc), onFinishCallbacks.get(npc))    
             }
 
@@ -516,7 +517,6 @@ export function playAnimation(npc:Entity, anim:string, noLoop?:boolean, duration
             utils.timers.clearTimeout(animTimers.get(npc))
             animTimers.delete(npc)
         }
-
         animTimers.set(npc, utils.timers.setTimeout(()=>{
             animTimers.delete(npc)
             Animator.stopAllAnimations(npc, true)
