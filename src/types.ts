@@ -1,3 +1,4 @@
+import { PBAvatarShape, PBGltfContainer } from "@dcl/sdk/ecs"
 import { Vector3 } from "@dcl/sdk/math"
 
 /**
@@ -122,11 +123,12 @@ export type Dialog = {
    * @property {boolean} noUI If true, no UI dialog elements are constructed. The NPC can use speech bubbles.
   *
    */
+
   export type NPCData = {
 
     type:NPCType
     body?:NPCBodyType
-    model?:string
+    model?:string | PBGltfContainer | PBAvatarShape
 
 
     walkingAnim?:string
