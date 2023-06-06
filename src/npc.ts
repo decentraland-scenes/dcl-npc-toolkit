@@ -1,5 +1,5 @@
 import ReactEcs from '@dcl/sdk/react-ecs'
-import { Animator, AvatarShape, engine, Entity, GltfContainer, InputAction,MeshCollider,MeshRenderer,pointerEventsSystem,Transform, TransformType } from '@dcl/sdk/ecs'
+import { Animator, AvatarShape, engine, Entity, GltfContainer, InputAction,MeshCollider,MeshRenderer,PBAvatarShape,PBGltfContainer,pointerEventsSystem,Transform, TransformType } from '@dcl/sdk/ecs'
 import { Color3, Quaternion, Vector3 } from '@dcl/sdk/math'
 import { Dialog, FollowPathData, ImageData, NPCData, NPCPathType, NPCState, NPCType, TriggerData } from './types';
 import * as utils from '@dcl-sdk/utils'
@@ -120,9 +120,15 @@ export function create(
 }
 
 function addNPCBones(npc:Entity, data:NPCData){
+    const modelIsString = data && data.model && typeof data.model === `string`
+    const modelAvatarData:PBAvatarShape|undefined = modelIsString ? undefined : data.model && (data.model as any).bodyShape ? data.model as PBAvatarShape : undefined
+    const modelGLTFData:PBGltfContainer|undefined = modelIsString ? undefined : data.model && (data.model as any).src ? data.model as PBGltfContainer : undefined
+
     switch(data.type){
         case NPCType.AVATAR:
-            AvatarShape.create(npc, {
+            AvatarShape.create(npc, 
+                !data || !data.model || !modelAvatarData ? 
+                {
                 id: "npc",
                 name: "NPC",
                 bodyShape:"urn:decentraland:off-chain:base-avatars:BaseMale",
@@ -135,13 +141,16 @@ function addNPCBones(npc:Entity, data:NPCData){
                     "urn:decentraland:off-chain:base-avatars:soccer_pants",
                     "urn:decentraland:off-chain:base-avatars:elegant_sweater",
                     ],
-            })
+                } : modelAvatarData
+            )
             break;
 
         case NPCType.CUSTOM:
-            GltfContainer.create(npc, { 
-                src: data && data.model ? data.model : "" 
-            })
+            GltfContainer.create(npc, 
+                modelIsString && typeof data.model === `string` ? 
+                    {   src: data && data.model ? data.model : ""  }
+                    : modelGLTFData
+                )
             Animator.create(npc, {
                 states:[{
                     name:data && data.idleAnim ? data.idleAnim : 'Idle',
