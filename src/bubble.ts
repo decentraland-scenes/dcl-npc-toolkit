@@ -137,7 +137,9 @@ export function openBubble(npc:Entity, dialog:Dialog[], startIndex?:number | str
     bubble.index = index
     
     let currentText: Dialog = dialog[bubble.index] ? dialog[bubble.index] : { text: '' }
-    bubble.currentText = currentText
+    console.log("NPC-Toolkit","Assign CurrentText.text to bubble text");
+    
+    bubble.currentText = currentText.text
 
     if (currentText.audio) {
         AudioSource.createOrReplace(bubble.soundPlayer, {
