@@ -81,6 +81,7 @@ export function addDialog(npc:Entity, sound?:string, defaultPortrait?:ImageData)
         displayPortrait: defaultPortrait ? true : false,
         defaultPortrait: defaultPortrait ? defaultPortrait : null,
         defaultPortraitTexture: defaultPortrait ? defaultPortrait.path : lightTheme,
+        currentPortrait: defaultPortrait ? defaultPortrait.path : lightTheme,
         portraitWidth: defaultPortrait && defaultPortrait.width ? defaultPortrait.width * UIscaleMultiplier : portraitScale,
         portraitHeight: defaultPortrait && defaultPortrait.height ? defaultPortrait.height * UIscaleMultiplier : portraitScale,
         portraitX: defaultPortrait && defaultPortrait.offsetX ? defaultPortrait.offsetX * UIscaleMultiplier + portraitXPos : portraitXPos,
@@ -153,7 +154,7 @@ export function imageHeight(){
 }
 
 export function getPortrait(){
-  return activeNPC == 0 || !npcDialogComponent.has(activeNPC as Entity) ? "" : npcDialogComponent.get(activeNPC as Entity).defaultPortraitTexture
+  return activeNPC == 0 || !npcDialogComponent.has(activeNPC as Entity) ? "" : npcDialogComponent.get(activeNPC as Entity).currentPortrait
 }
 
 export function getImage(){
@@ -324,7 +325,7 @@ function beginTyping(npc:Entity){
 
     let currentText: Dialog = dialogData.script[dialogData.index] ? dialogData.script[dialogData.index] : { text: '' }
     if(currentText.portrait){
-      dialogData.defaultPortraitTexture = currentText.portrait.path
+      dialogData.currentPortrait = currentText.portrait.path
 
       dialogData.portraitX = currentText.portrait.offsetX
       ? currentText.portrait.offsetX * UIscaleMultiplier + portraitXPos
@@ -339,6 +340,7 @@ function beginTyping(npc:Entity){
       dialogData.portraitHeight = currentText.portrait.height ? currentText.portrait.height * UIscaleMultiplier : portraitScale
       dialogData.displayPortrait = true
     }else if(dialogData.defaultPortrait){
+      dialogData.currentPortrait = dialogData.defaultPortraitTexture
       dialogData.displayPortrait = true
     }
     else{
