@@ -1,5 +1,5 @@
 import ReactEcs from '@dcl/sdk/react-ecs'
-import { Animator, AvatarShape, engine, Entity, GltfContainer, InputAction,MeshCollider,MeshRenderer,pointerEventsSystem,Transform, TransformType } from '@dcl/sdk/ecs'
+import { Animator, AvatarShape, engine, Entity, GltfContainer, InputAction,MeshCollider,MeshRenderer,PBAvatarShape,PBGltfContainer,pointerEventsSystem,Transform, TransformType } from '@dcl/sdk/ecs'
 import { Color3, Quaternion, Vector3 } from '@dcl/sdk/math'
 import { Dialog, FollowPathData, ImageData, NPCData, NPCPathType, NPCState, NPCType, TriggerData } from './types';
 import * as utils from '@dcl-sdk/utils'
@@ -11,7 +11,8 @@ import { darkTheme, lightTheme } from './ui';
 
 export const walkingTimers: Map<Entity,number> = new Map()
 export const npcDataComponent: Map<Entity, any> = new Map()
-export let activeNPC:number = 0
+export let NULL_NPC:Entity = 0 as Entity
+export let activeNPC:Entity = NULL_NPC
 export let blankDialog:number = 0
 
 engine.addSystem(handlePathTimes)
@@ -20,10 +21,11 @@ engine.addSystem(handleBubbletyping)
 engine.addSystem(faceUserSystem)
 engine.addSystem(inputListenerSystem)
 
+//TODO MAKE isCooldown and no longer have to track with map to remove memory leak issues
 const isCooldown: Map<Entity, any> = new Map()
 const onActivateCbs: Map<Entity, any> = new Map()
 const onWalkAwayCbs: Map<Entity, any> = new Map()
-const animTimers: Map<Entity,any> = new Map()
+const animTimers: Map<Entity,number> = new Map()
 const pointReachedCallbacks: Map<Entity, any> = new Map()
 const onFinishCallbacks: Map<Entity, any> = new Map()
 
@@ -120,9 +122,15 @@ export function create(
 }
 
 function addNPCBones(npc:Entity, data:NPCData){
+    const modelIsString = data && data.model && typeof data.model === `string`
+    const modelAvatarData:PBAvatarShape|undefined = modelIsString ? undefined : data.model && (data.model as any).bodyShape ? data.model as PBAvatarShape : undefined
+    const modelGLTFData:PBGltfContainer|undefined = modelIsString ? undefined : data.model && (data.model as any).src ? data.model as PBGltfContainer : undefined
+
     switch(data.type){
         case NPCType.AVATAR:
-            AvatarShape.create(npc, {
+            AvatarShape.create(npc, 
+                !data || !data.model || !modelAvatarData ? 
+                {
                 id: "npc",
                 name: "NPC",
                 bodyShape:"urn:decentraland:off-chain:base-avatars:BaseMale",
@@ -135,13 +143,16 @@ function addNPCBones(npc:Entity, data:NPCData){
                     "urn:decentraland:off-chain:base-avatars:soccer_pants",
                     "urn:decentraland:off-chain:base-avatars:elegant_sweater",
                     ],
-            })
+                } : modelAvatarData
+            )
             break;
 
         case NPCType.CUSTOM:
-            GltfContainer.create(npc, { 
-                src: data && data.model ? data.model : "" 
-            })
+            GltfContainer.create(npc, 
+                modelIsString && typeof data.model === `string` ? 
+                    {   src: data && data.model ? data.model : ""  }
+                    : modelGLTFData
+                )
             Animator.create(npc, {
                 states:[{
                     name:data && data.idleAnim ? data.idleAnim : 'Idle',
@@ -415,22 +426,28 @@ export function stopPath(npc:Entity){
 }
 
 export function clearNPC(){
-    activeNPC = 0
+    activeNPC = NULL_NPC
 }
 
-export function setActiveNPC(npc:number){
+export function setActiveNPC(npc:Entity){
     activeNPC = npc
 }
+
+
+export function isActiveNpcSet(){
+    return activeNPC && npcDialogComponent.has(activeNPC)
+}
+  
 
 /**
  * Calls the NPC's activation function (set on NPC definition). If NPC has `faceUser` = true, it will rotate to face the player. It starts a cooldown counter to avoid reactivating.
  */
 export function activate(npc:Entity) {
 
-    if(activeNPC != 0){
+    if(activeNPC){
         console.log('we have a current npc, needto remove')
-        endInteraction(activeNPC as Entity)
-        // closeDialog(activeNPC as Entity)
+        endInteraction(activeNPC)
+        // closeDialog(activeNPC)
     }
 
     activeNPC = npc
@@ -509,7 +526,7 @@ export function playAnimation(npc:Entity, anim:string, noLoop?:boolean, duration
     }
 
     if(animTimers.has(npc)){
-        utils.timers.clearTimeout(animTimers.get(npc))
+        utils.timers.clearTimeout(animTimers.get(npc) as number)
         animTimers.delete(npc)
     }
 
@@ -518,7 +535,7 @@ export function playAnimation(npc:Entity, anim:string, noLoop?:boolean, duration
     if(duration){
         console.log('have a duration to play animation')
         if(animTimers.has(npc)){
-            utils.timers.clearTimeout(animTimers.get(npc))
+            utils.timers.clearTimeout(animTimers.get(npc) as number)
             animTimers.delete(npc)
         }
         animTimers.set(npc, utils.timers.setTimeout(()=>{

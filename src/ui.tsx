@@ -192,7 +192,7 @@ return(
           uvs: getImageAtlasMapping(getSkipableTheme()),
           }}
           onMouseDown={() => {
-              skipDialogs(activeNPC as Entity);
+              skipDialogs(activeNPC);
           }}
           >
 
