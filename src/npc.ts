@@ -23,7 +23,7 @@ engine.addSystem(inputListenerSystem)
 const isCooldown: Map<Entity, any> = new Map()
 const onActivateCbs: Map<Entity, any> = new Map()
 const onWalkAwayCbs: Map<Entity, any> = new Map()
-const animTimers: Map<Entity,any> = new Map()
+const animTimers: Map<Entity,number> = new Map()
 const pointReachedCallbacks: Map<Entity, any> = new Map()
 const onFinishCallbacks: Map<Entity, any> = new Map()
 
@@ -514,7 +514,7 @@ export function playAnimation(npc:Entity, anim:string, noLoop?:boolean, duration
     }
 
     if(animTimers.has(npc)){
-        utils.timers.clearTimeout(animTimers.get(npc))
+        utils.timers.clearTimeout(animTimers.get(npc) as number)
         animTimers.delete(npc)
     }
 
@@ -523,7 +523,7 @@ export function playAnimation(npc:Entity, anim:string, noLoop?:boolean, duration
     if(duration){
         console.log('have a duration to play animation')
         if(animTimers.has(npc)){
-            utils.timers.clearTimeout(animTimers.get(npc))
+            utils.timers.clearTimeout(animTimers.get(npc) as number)
             animTimers.delete(npc)
         }
         animTimers.set(npc, utils.timers.setTimeout(()=>{
