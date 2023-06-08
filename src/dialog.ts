@@ -1,7 +1,7 @@
 import * as utils from '@dcl-sdk/utils'
 
 import { AudioSource, Entity, engine } from "@dcl/sdk/ecs";
-import { activeNPC, clearNPC, closeDialogWindow, followPath, npcDataComponent, stopPath, stopWalking } from "./npc";
+import { activeNPC, clearNPC, closeDialogWindow, followPath, npcDataComponent, setActiveNPC, stopPath, stopWalking } from "./npc";
 import { IsTypingDialog } from "./components";
 import { handleDialogTyping } from "./systems";
 import { Dialog, ImageData, NPCState } from "./types";
@@ -60,6 +60,8 @@ let skipButtonYPos = -100 * UIscaleMultiplier
 let buttonIconWidth = 26 * UIscaleMultiplier
 let buttonIconHeight = 26 * UIscaleMultiplier
 
+//
+
 export function addDialog(npc:Entity, sound?:string, defaultPortrait?:ImageData){
     console.log('adding dialog for npc', npc)
     npcDialogComponent.set(npc, {
@@ -81,6 +83,7 @@ export function addDialog(npc:Entity, sound?:string, defaultPortrait?:ImageData)
         displayPortrait: defaultPortrait ? true : false,
         defaultPortrait: defaultPortrait ? defaultPortrait : null,
         defaultPortraitTexture: defaultPortrait ? defaultPortrait.path : lightTheme,
+        currentPortrait: defaultPortrait ? defaultPortrait.path : lightTheme,
         portraitWidth: defaultPortrait && defaultPortrait.width ? defaultPortrait.width * UIscaleMultiplier : portraitScale,
         portraitHeight: defaultPortrait && defaultPortrait.height ? defaultPortrait.height * UIscaleMultiplier : portraitScale,
         portraitX: defaultPortrait && defaultPortrait.offsetX ? defaultPortrait.offsetX * UIscaleMultiplier + portraitXPos : portraitXPos,
@@ -157,7 +160,7 @@ export function imageHeight(){
 }
 
 export function getPortrait(){
-  return !isActiveNpcSet() ? "" : npcDialogComponent.get(activeNPC as Entity).defaultPortraitTexture
+  return !isActiveNpcSet() ? "" : npcDialogComponent.get(activeNPC as Entity).currentPortrait
 }
 
 export function getImage(){
@@ -250,6 +253,7 @@ export function talk(npc:Entity, dialog:Dialog[], startIndex?:number | string, d
     npcDataComponent.get(npc).introduced = true
     if(npcDialogComponent.has(npc)){
 
+        setActiveNPC(npc)
         if(npcDataComponent.get(npc).state == NPCState.FOLLOWPATH){
           console.log("speaking dialog, need to stop path")
           stopWalking(npc)
@@ -328,7 +332,7 @@ function beginTyping(npc:Entity){
 
     let currentText: Dialog = dialogData.script[dialogData.index] ? dialogData.script[dialogData.index] : { text: '' }
     if(currentText.portrait){
-      dialogData.defaultPortraitTexture = currentText.portrait.path
+      dialogData.currentPortrait = currentText.portrait.path
 
       dialogData.portraitX = currentText.portrait.offsetX
       ? currentText.portrait.offsetX * UIscaleMultiplier + portraitXPos
@@ -343,6 +347,7 @@ function beginTyping(npc:Entity){
       dialogData.portraitHeight = currentText.portrait.height ? currentText.portrait.height * UIscaleMultiplier : portraitScale
       dialogData.displayPortrait = true
     }else if(dialogData.defaultPortrait){
+      dialogData.currentPortrait = dialogData.defaultPortraitTexture
       dialogData.displayPortrait = true
     }
     else{
