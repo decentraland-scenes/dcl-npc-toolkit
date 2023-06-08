@@ -105,37 +105,37 @@ export function inputListenerSystem(){
   const SEP = inputSystem.isPressed(InputAction.IA_SECONDARY)
 
   if(PPET && PPEP){
-    if(activeNPC != 0){
-      let dialogData = npcDialogComponent.get(activeNPC as Entity)
+    if(activeNPC){
+      let dialogData = npcDialogComponent.get(activeNPC)
       if(!dialogData.visible || Date.now() - dialogData.openTime < 100)return
       if(dialogData.typing){
-        rushText(activeNPC as Entity)
+        rushText(activeNPC)
       }else if(!dialogData.isQuestion){
-        confirmText(activeNPC as Entity, ConfirmMode.Next)
+        confirmText(activeNPC, ConfirmMode.Next)
       }
     }
   }
 
   if(PET && PEP){
-    if(activeNPC != 0){
-      let dialogData = npcDialogComponent.get(activeNPC as Entity)
+    if(activeNPC){
+      let dialogData = npcDialogComponent.get(activeNPC)
       if(!dialogData.visible || Date.now() - dialogData.openTime < 100)return
       if(dialogData.isQuestion){
-        confirmText(activeNPC as Entity, ConfirmMode.Confirm)
+        confirmText(activeNPC, ConfirmMode.Confirm)
       }else if(!dialogData.isQuestion){
-        confirmText(activeNPC as Entity, ConfirmMode.Next)
+        confirmText(activeNPC, ConfirmMode.Next)
       }
     }
   }
 
   if(SET && SEP){
-    if(activeNPC != 0){
-      let dialogData = npcDialogComponent.get(activeNPC as Entity)
+    if(activeNPC){
+      let dialogData = npcDialogComponent.get(activeNPC)
       if(!dialogData.visible || Date.now() - dialogData.openTime < 100)return
       if(dialogData.isQuestion){
-        confirmText(activeNPC as Entity, ConfirmMode.Cancel)
+        confirmText(activeNPC, ConfirmMode.Cancel)
       }else if(dialogData.script[dialogData.index].skipable && !dialogData.isFixedScreen){
-        skipDialogs(activeNPC as Entity)
+        skipDialogs(activeNPC)
       }
     }
   }

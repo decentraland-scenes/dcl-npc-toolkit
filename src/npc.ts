@@ -1,5 +1,5 @@
 import ReactEcs from '@dcl/sdk/react-ecs'
-import { Animator, AvatarShape, engine, Entity, GltfContainer, InputAction,MeshCollider,MeshRenderer,pointerEventsSystem,Transform, TransformType } from '@dcl/sdk/ecs'
+import { Animator, AvatarShape, engine, Entity, GltfContainer, InputAction,MeshCollider,MeshRenderer,PBAvatarShape,PBGltfContainer,pointerEventsSystem,Transform, TransformType } from '@dcl/sdk/ecs'
 import { Color3, Quaternion, Vector3 } from '@dcl/sdk/math'
 import { Dialog, FollowPathData, ImageData, NPCData, NPCPathType, NPCState, NPCType, TriggerData } from './types';
 import * as utils from '@dcl-sdk/utils'
@@ -11,7 +11,8 @@ import { darkTheme, lightTheme } from './ui';
 
 export const walkingTimers: Map<Entity,number> = new Map()
 export const npcDataComponent: Map<Entity, any> = new Map()
-export let activeNPC:number = 0
+export let NULL_NPC:Entity = 0 as Entity
+export let activeNPC:Entity = NULL_NPC
 export let blankDialog:number = 0
 
 engine.addSystem(handlePathTimes)
@@ -20,6 +21,7 @@ engine.addSystem(handleBubbletyping)
 engine.addSystem(faceUserSystem)
 engine.addSystem(inputListenerSystem)
 
+//TODO MAKE isCooldown and no longer have to track with map to remove memory leak issues
 const isCooldown: Map<Entity, any> = new Map()
 const onActivateCbs: Map<Entity, any> = new Map()
 const onWalkAwayCbs: Map<Entity, any> = new Map()
@@ -415,22 +417,28 @@ export function stopPath(npc:Entity){
 }
 
 export function clearNPC(){
-    activeNPC = 0
+    activeNPC = NULL_NPC
 }
 
-export function setActiveNPC(npc:number){
+export function setActiveNPC(npc:Entity){
     activeNPC = npc
 }
+
+
+export function isActiveNpcSet(){
+    return activeNPC && npcDialogComponent.has(activeNPC)
+}
+  
 
 /**
  * Calls the NPC's activation function (set on NPC definition). If NPC has `faceUser` = true, it will rotate to face the player. It starts a cooldown counter to avoid reactivating.
  */
 export function activate(npc:Entity) {
 
-    if(activeNPC != 0){
+    if(activeNPC){
         console.log('we have a current npc, needto remove')
-        endInteraction(activeNPC as Entity)
-        // closeDialog(activeNPC as Entity)
+        endInteraction(activeNPC)
+        // closeDialog(activeNPC)
     }
 
     activeNPC = npc
