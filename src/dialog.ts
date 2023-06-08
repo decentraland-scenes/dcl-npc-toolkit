@@ -1,7 +1,7 @@
 import * as utils from '@dcl-sdk/utils'
 
 import { AudioSource, Entity, engine } from "@dcl/sdk/ecs";
-import { activeNPC, clearNPC, closeDialogWindow, followPath, npcDataComponent, setActiveNPC, stopPath, stopWalking } from "./npc";
+import { activeNPC, clearNPC, closeDialogWindow, followPath, isActiveNpcSet, npcDataComponent, setActiveNPC, stopPath, stopWalking } from "./npc";
 import { IsTypingDialog } from "./components";
 import { handleDialogTyping } from "./systems";
 import { Dialog, ImageData, NPCState } from "./types";
