@@ -92,84 +92,88 @@ export function addDialog(npc:Entity, sound?:string, defaultPortrait?:ImageData)
     })
 }
 
+function isActiveNpcSet(){
+  return activeNPC != 0 && npcDialogComponent.has(activeNPC as Entity)
+}
+
 export function displayImage(){
-  return activeNPC == 0 || !npcDialogComponent.has(activeNPC as Entity) ? false : npcDialogComponent.get(activeNPC as Entity).displayImage
+  return !isActiveNpcSet() ? false : npcDialogComponent.get(activeNPC as Entity).displayImage
 }
 
 export function displayPortrait(){
-  return activeNPC == 0 || !npcDialogComponent.has(activeNPC as Entity) ? false : npcDialogComponent.get(activeNPC as Entity).displayPortrait
+  return !isActiveNpcSet() ? false : npcDialogComponent.get(activeNPC as Entity).displayPortrait
 }
 
 export function displaySkipable(){
-  return activeNPC == 0 || !npcDialogComponent.has(activeNPC as Entity) ? false : npcDialogComponent.get(activeNPC as Entity).skipable
+  return !isActiveNpcSet() ? false : npcDialogComponent.get(activeNPC as Entity).skipable
 }
 
 export function getSkipableTheme(){
-  return activeNPC == 0 || !npcDialogComponent.has(activeNPC as Entity) ? skipButtonSectionBlack : npcDataComponent.get(activeNPC as Entity).theme == lightTheme ? skipButtonSectionBlack : skipButtonSection
+  return !isActiveNpcSet() ? skipButtonSectionBlack : npcDataComponent.get(activeNPC as Entity).theme == lightTheme ? skipButtonSectionBlack : skipButtonSection
 }
 
 export function getLeftClickTheme(){
-  return activeNPC == 0 || !npcDialogComponent.has(activeNPC as Entity) ? leftClickSection : npcDataComponent.get(activeNPC as Entity).theme == lightTheme ? leftClickSection : leftClickSectionbBlack
+  return !isActiveNpcSet() ? leftClickSection : npcDataComponent.get(activeNPC as Entity).theme == lightTheme ? leftClickSection : leftClickSectionbBlack
 }
 
 export function positionTextX(){
-  return activeNPC == 0 || !npcDialogComponent.has(activeNPC as Entity) ? "" : npcDialogComponent.get(activeNPC as Entity).positionX
+  return !isActiveNpcSet() ? "" : npcDialogComponent.get(activeNPC as Entity).positionX
 }
 
 export function positionTextY(){
-  return activeNPC == 0 || !npcDialogComponent.has(activeNPC as Entity) ? "" : npcDialogComponent.get(activeNPC as Entity).positionY
+  return !isActiveNpcSet() ? "" : npcDialogComponent.get(activeNPC as Entity).positionY
 }
 
 export function positionPortaitX(){
-  return activeNPC == 0 || !npcDialogComponent.has(activeNPC as Entity) ? "" : npcDialogComponent.get(activeNPC as Entity).portraitX
+  return !isActiveNpcSet() ? "" : npcDialogComponent.get(activeNPC as Entity).portraitX
 }
 
 export function positionPortaitY(){
-  return activeNPC == 0 || !npcDialogComponent.has(activeNPC as Entity) ? "" : npcDialogComponent.get(activeNPC as Entity).portraitY
+  return !isActiveNpcSet() ? "" : npcDialogComponent.get(activeNPC as Entity).portraitY
 }
 
 export function portraitWidth(){
-  return activeNPC == 0 || !npcDialogComponent.has(activeNPC as Entity) ? "" : npcDialogComponent.get(activeNPC as Entity).portraitWidth
+  return !isActiveNpcSet() ? "" : npcDialogComponent.get(activeNPC as Entity).portraitWidth
 }
 
 export function portraitHeight(){
-  return activeNPC == 0 || !npcDialogComponent.has(activeNPC as Entity) ? "" : npcDialogComponent.get(activeNPC as Entity).portraitHeight
+  return !isActiveNpcSet() ? "" : npcDialogComponent.get(activeNPC as Entity).portraitHeight
 }
 
 export function positionImageX(){
-  return activeNPC == 0 || !npcDialogComponent.has(activeNPC as Entity) ? "" : npcDialogComponent.get(activeNPC as Entity).imageX
+  return !isActiveNpcSet() ? "" : npcDialogComponent.get(activeNPC as Entity).imageX
 }
 
 export function positionImageY(){
-  return activeNPC == 0 || !npcDialogComponent.has(activeNPC as Entity) ? "" : npcDialogComponent.get(activeNPC as Entity).imageY
+  return !isActiveNpcSet() ? "" : npcDialogComponent.get(activeNPC as Entity).imageY
 }
 
 export function imageWidth(){
-  return activeNPC == 0 || !npcDialogComponent.has(activeNPC as Entity) ? "" : npcDialogComponent.get(activeNPC as Entity).imageWidth
+  return !isActiveNpcSet() ? "" : npcDialogComponent.get(activeNPC as Entity).imageWidth
 }
 
 export function imageHeight(){
-  return activeNPC == 0 || !npcDialogComponent.has(activeNPC as Entity) ? "" : npcDialogComponent.get(activeNPC as Entity).imageHeight
+  return !isActiveNpcSet() ? "" : npcDialogComponent.get(activeNPC as Entity).imageHeight
 }
 
 export function getPortrait(){
-  return activeNPC == 0 || !npcDialogComponent.has(activeNPC as Entity) ? "" : npcDialogComponent.get(activeNPC as Entity).defaultPortraitTexture
+  return !isActiveNpcSet() ? "" : npcDialogComponent.get(activeNPC as Entity).defaultPortraitTexture
 }
 
 export function getImage(){
-  return activeNPC == 0 || !npcDialogComponent.has(activeNPC as Entity) ? "" : npcDialogComponent.get(activeNPC as Entity).dialogImageTexture
+  return !isActiveNpcSet() ? "" : npcDialogComponent.get(activeNPC as Entity).dialogImageTexture
 }
 
 export function getText(){
-    return activeNPC == 0 || !npcDialogComponent.has(activeNPC as Entity) ? "" : npcDialogComponent.get(activeNPC as Entity).visibleText
+    return !isActiveNpcSet() ? "" : npcDialogComponent.get(activeNPC as Entity).visibleText
 }
 
 export function getTextColor(){
-  return activeNPC == 0 || !npcDialogComponent.has(activeNPC as Entity) ? Color4.Black() : npcDataComponent.get(activeNPC as Entity).theme == lightTheme ? Color4.Black() : Color4.White()
+  return !isActiveNpcSet() ? Color4.Black() : npcDataComponent.get(activeNPC as Entity).theme == lightTheme ? Color4.Black() : Color4.White()
 }
 
 export function getTheme(){
-  return activeNPC == 0 || !npcDialogComponent.has(activeNPC as Entity) ? lightTheme : npcDataComponent.get(activeNPC as Entity).theme
+  return !isActiveNpcSet() ? lightTheme : npcDataComponent.get(activeNPC as Entity).theme
 }
 
 export function getButtonText(button:number){
@@ -185,32 +189,32 @@ export function getButtonText(button:number){
 }
 
 export function getFontSize(){
-    return activeNPC == 0 || !npcDialogComponent.has(activeNPC as Entity) ? 22 : npcDialogComponent.get(activeNPC as Entity).fontSize
+    return !isActiveNpcSet() ? 22 : npcDialogComponent.get(activeNPC as Entity).fontSize
 }
 
 export function displayDialog(){
-    return activeNPC == 0 || !npcDialogComponent.has(activeNPC as Entity) ? false :  npcDialogComponent.get(activeNPC as Entity).visible
+    return !isActiveNpcSet() ? false :  npcDialogComponent.get(activeNPC as Entity).visible
 }
 
 export function displayButton(button:number){
-    return activeNPC == 0 || !npcDialogComponent.has(activeNPC as Entity) ? false :  npcDialogComponent.get(activeNPC as Entity).isQuestion && npcDialogComponent.get(activeNPC as Entity).buttons >= button
+    return !isActiveNpcSet() ? false :  npcDialogComponent.get(activeNPC as Entity).isQuestion && npcDialogComponent.get(activeNPC as Entity).buttons >= button
 }
 
 export function displayFirstButtonContainer(){
-    return activeNPC == 0 || !npcDialogComponent.has(activeNPC as Entity) ? false :  npcDialogComponent.get(activeNPC as Entity).isQuestion && npcDialogComponent.get(activeNPC as Entity).buttons >= 1
+    return !isActiveNpcSet() ? false :  npcDialogComponent.get(activeNPC as Entity).isQuestion && npcDialogComponent.get(activeNPC as Entity).buttons >= 1
 }
 
 export function displaySecondButtonContainer(){
-    return activeNPC == 0 || !npcDialogComponent.has(activeNPC as Entity) ? false :  npcDialogComponent.get(activeNPC as Entity).isQuestion && npcDialogComponent.get(activeNPC as Entity).buttons >= 3
+    return !isActiveNpcSet() ? false :  npcDialogComponent.get(activeNPC as Entity).isQuestion && npcDialogComponent.get(activeNPC as Entity).buttons >= 3
 }
 
 export function getTextPosition(){
     //console.log(npcDialogComponent.get(activeNPC as Entity).buttons)
-    return activeNPC == 0 || !npcDialogComponent.has(activeNPC as Entity) ? {top:0, left:0} : {top:npcDialogComponent.get(activeNPC as Entity).margin + npcDialogComponent.get(activeNPC as Entity).positionY, left: npcDialogComponent.get(activeNPC as Entity).positionX}
+    return !isActiveNpcSet() ? {top:0, left:0} : {top:npcDialogComponent.get(activeNPC as Entity).margin + npcDialogComponent.get(activeNPC as Entity).positionY, left: npcDialogComponent.get(activeNPC as Entity).positionX}
 }
 
 export function buttonClick(button:number){
-    if(activeNPC != 0 && npcDataComponent.has(activeNPC as Entity)){
+    if(isActiveNpcSet()){
         confirmText(activeNPC as Entity, button)
     }
 }
