@@ -1,7 +1,7 @@
 import * as utils from '@dcl-sdk/utils'
 
 import { AudioSource, Entity, engine } from "@dcl/sdk/ecs";
-import { activeNPC, clearNPC, closeDialogWindow, followPath, npcDataComponent, stopPath, stopWalking } from "./npc";
+import { activeNPC, clearNPC, closeDialogWindow, followPath, npcDataComponent, setActiveNPC, stopPath, stopWalking } from "./npc";
 import { IsTypingDialog } from "./components";
 import { handleDialogTyping } from "./systems";
 import { Dialog, ImageData, NPCState } from "./types";
@@ -59,6 +59,8 @@ let skipButtonYPos = -100 * UIscaleMultiplier
 
 let buttonIconWidth = 26 * UIscaleMultiplier
 let buttonIconHeight = 26 * UIscaleMultiplier
+
+//
 
 export function addDialog(npc:Entity, sound?:string, defaultPortrait?:ImageData){
     console.log('adding dialog for npc', npc)
@@ -247,6 +249,7 @@ export function talk(npc:Entity, dialog:Dialog[], startIndex?:number | string, d
     npcDataComponent.get(npc).introduced = true
     if(npcDialogComponent.has(npc)){
 
+        setActiveNPC(npc)
         if(npcDataComponent.get(npc).state == NPCState.FOLLOWPATH){
           console.log("speaking dialog, need to stop path")
           stopWalking(npc)
