@@ -444,7 +444,7 @@ export function isActiveNpcSet(){
  */
 export function activate(npc:Entity) {
 
-    if(activeNPC){
+    if(activeNPC != 0){
         console.log('we have a current npc, needto remove')
         endInteraction(activeNPC)
         // closeDialog(activeNPC)
