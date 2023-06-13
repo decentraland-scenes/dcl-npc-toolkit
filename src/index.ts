@@ -1,10 +1,10 @@
-import { 
-    activate, 
-    stopWalking, 
-    followPath, 
-    create, 
-    handleWalkAway, 
-    playAnimation, 
+import {
+    activate,
+    stopWalking,
+    followPath,
+    create,
+    handleWalkAway,
+    playAnimation,
     showDebug,
     getData,
     changeIdleAnim,
@@ -12,21 +12,21 @@ import {
     createDialogWindow,
     openDialogWindow,
     closeDialogWindow
- } from "./npc";
+} from "./npc";
 import { talk } from "./dialog";
 import { Dialog, NPCPathType, NPCType } from "./types";
-import {NpcUtilsUi} from './ui'
+import { NpcUtilsUi } from './ui'
 
 import { closeBubble, closeBubbleEndAll } from "./bubble";
 
 export {
-    activate, 
-    stopWalking, 
-    followPath, 
-    create, 
-    handleWalkAway, 
-    playAnimation, 
-    showDebug, 
+    activate,
+    stopWalking,
+    followPath,
+    create,
+    handleWalkAway,
+    playAnimation,
+    showDebug,
     talk,
     Dialog,
     getData,
@@ -41,3 +41,5 @@ export {
     closeDialogWindow,
     NpcUtilsUi
 }
+
+export const debugLabel: string = 'NPC-Toolkit'
