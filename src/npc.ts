@@ -1,12 +1,11 @@
-import ReactEcs from '@dcl/sdk/react-ecs'
-import { Animator, AvatarShape, engine, Entity, GltfContainer, InputAction,MeshCollider,MeshRenderer,PBAvatarShape,PBGltfContainer,pointerEventsSystem,Transform, TransformType } from '@dcl/sdk/ecs'
-import { Color3, Quaternion, Vector3 } from '@dcl/sdk/math'
-import { Dialog, FollowPathData, ImageData, NPCData, NPCPathType, NPCState, NPCType, TriggerData } from './types';
-import * as utils from '@dcl-sdk/utils'
-import { IsFollowingPath, TrackUserFlag } from './components';
-import { faceUserSystem, handleBubbletyping, handleDialogTyping, handlePathTimes, inputListenerSystem } from './systems';
-import { addDialog, closeDialog, findDialogByName, npcDialogComponent, openDialog } from './dialog';
+import * as utils from '@dcl-sdk/utils';
+import { Animator, AvatarShape, engine, Entity, GltfContainer, InputAction, MeshCollider, MeshRenderer, PBAvatarShape, PBGltfContainer, pointerEventsSystem, Transform, TransformType } from '@dcl/sdk/ecs';
+import { Color3, Quaternion, Vector3 } from '@dcl/sdk/math';
 import { bubbles, closeBubble, createDialogBubble, openBubble } from './bubble';
+import { IsFollowingPath, TrackUserFlag } from './components';
+import { addDialog, closeDialog, findDialogByName, npcDialogComponent, openDialog } from './dialog';
+import { faceUserSystem, handleBubbletyping, handleDialogTyping, handlePathTimes, inputListenerSystem } from './systems';
+import { Dialog, FollowPathData, ImageData, NPCData, NPCPathType, NPCState, NPCType, TriggerData } from './types';
 import { darkTheme, lightTheme } from './ui';
 
 export const walkingTimers: Map<Entity,number> = new Map()
@@ -357,6 +356,7 @@ function walkNPC(npc:Entity, npcData:any, type:NPCPathType, duration:number, pat
     }   
 
     if (npcData.walkingAnim) {
+        clearAnimationTimer(npc)
         Animator.playSingleAnimation(npc, npcDataComponent.get(npc).walkingAnim, true)
         npcData.lastPlayedAnim = npcDataComponent.get(npc).walkingAnim
       }
@@ -377,6 +377,7 @@ export function stopWalking(npc:Entity, duration?: number, finished?:boolean) {
             if(npcData.path){
                 Animator.stopAllAnimations(npc, true)
                 if(npcDataComponent.get(npc).walkingAnim){
+                    clearAnimationTimer(npc)
                     Animator.playSingleAnimation(npc, npcDataComponent.get(npc).walkingAnim,true)
                     npcData.lastPlayedAnim = npcDataComponent.get(npc).walkingAnim
                 }
@@ -410,6 +411,7 @@ export function stopPath(npc:Entity){
 
     let npcData = npcDataComponent.get(npc)
     if (npcData.walkingAnim) {
+        clearAnimationTimer(npc)
         Animator.playSingleAnimation(npc, npcDataComponent.get(npc).idleAnim)
         npcData.lastPlayedAnim = npcData.idleAnim
     }
@@ -525,21 +527,15 @@ export function playAnimation(npc:Entity, anim:string, noLoop?:boolean, duration
         utils.paths.stopPath(npc)
     }
 
-    if(animTimers.has(npc)){
-        utils.timers.clearTimeout(animTimers.get(npc) as number)
-        animTimers.delete(npc)
-    }
+    clearAnimationTimer(npc)
 
     Animator.stopAllAnimations(npc, true)
     Animator.playSingleAnimation(npc, anim, true)
     if(duration){
         console.log('have a duration to play animation')
-        if(animTimers.has(npc)){
-            utils.timers.clearTimeout(animTimers.get(npc) as number)
-            animTimers.delete(npc)
-        }
+        clearAnimationTimer(npc)
         animTimers.set(npc, utils.timers.setTimeout(()=>{
-            animTimers.delete(npc)
+            clearAnimationTimer(npc)
             Animator.stopAllAnimations(npc, true)
             if(npcData.idleAnim){
                 Animator.playSingleAnimation(npc, npcData.idleAnim)
@@ -597,4 +593,13 @@ export function closeDialogWindow(window:Entity){
     if(window){
         closeDialog(dialog)
     }
+}
+
+function clearAnimationTimer(npc: Entity): boolean {
+    if (animTimers.has(npc)) {
+        utils.timers.clearTimeout(animTimers.get(npc) as number)
+        animTimers.delete(npc)
+        return true
+    }
+    return false
 }
