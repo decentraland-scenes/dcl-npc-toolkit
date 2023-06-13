@@ -527,21 +527,15 @@ export function playAnimation(npc:Entity, anim:string, noLoop?:boolean, duration
         utils.paths.stopPath(npc)
     }
 
-    if(animTimers.has(npc)){
-        utils.timers.clearTimeout(animTimers.get(npc) as number)
-        animTimers.delete(npc)
-    }
+    clearAnimationTimer(npc)
 
     Animator.stopAllAnimations(npc, true)
     Animator.playSingleAnimation(npc, anim, true)
     if(duration){
         console.log('have a duration to play animation')
-        if(animTimers.has(npc)){
-            utils.timers.clearTimeout(animTimers.get(npc) as number)
-            animTimers.delete(npc)
-        }
+        clearAnimationTimer(npc)
         animTimers.set(npc, utils.timers.setTimeout(()=>{
-            animTimers.delete(npc)
+            clearAnimationTimer(npc)
             Animator.stopAllAnimations(npc, true)
             if(npcData.idleAnim){
                 Animator.playSingleAnimation(npc, npcData.idleAnim)
@@ -601,9 +595,11 @@ export function closeDialogWindow(window:Entity){
     }
 }
 
-function clearAnimationTimer(npc: Entity){
-    if(animTimers.has(npc)){
+function clearAnimationTimer(npc: Entity): boolean {
+    if (animTimers.has(npc)) {
         utils.timers.clearTimeout(animTimers.get(npc) as number)
         animTimers.delete(npc)
+        return true
     }
+    return false
 }
