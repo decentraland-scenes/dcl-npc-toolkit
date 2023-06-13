@@ -356,10 +356,7 @@ function walkNPC(npc:Entity, npcData:any, type:NPCPathType, duration:number, pat
     }   
 
     if (npcData.walkingAnim) {
-        if(animTimers.has(npc)){
-            utils.timers.clearTimeout(animTimers.get(npc) as number)
-            animTimers.delete(npc)
-        }
+        clearAnimationTimer(npc)
         Animator.playSingleAnimation(npc, npcDataComponent.get(npc).walkingAnim, true)
         npcData.lastPlayedAnim = npcDataComponent.get(npc).walkingAnim
       }
@@ -380,10 +377,7 @@ export function stopWalking(npc:Entity, duration?: number, finished?:boolean) {
             if(npcData.path){
                 Animator.stopAllAnimations(npc, true)
                 if(npcDataComponent.get(npc).walkingAnim){
-                    if(animTimers.has(npc)){
-                        utils.timers.clearTimeout(animTimers.get(npc) as number)
-                        animTimers.delete(npc)
-                    }
+                    clearAnimationTimer(npc)
                     Animator.playSingleAnimation(npc, npcDataComponent.get(npc).walkingAnim,true)
                     npcData.lastPlayedAnim = npcDataComponent.get(npc).walkingAnim
                 }
@@ -417,10 +411,7 @@ export function stopPath(npc:Entity){
 
     let npcData = npcDataComponent.get(npc)
     if (npcData.walkingAnim) {
-        if(animTimers.has(npc)){
-            utils.timers.clearTimeout(animTimers.get(npc) as number)
-            animTimers.delete(npc)
-        }
+        clearAnimationTimer(npc)
         Animator.playSingleAnimation(npc, npcDataComponent.get(npc).idleAnim)
         npcData.lastPlayedAnim = npcData.idleAnim
     }
@@ -607,5 +598,12 @@ export function closeDialogWindow(window:Entity){
     let dialog = npcDialogComponent.get(window)
     if(window){
         closeDialog(dialog)
+    }
+}
+
+function clearAnimationTimer(npc: Entity){
+    if(animTimers.has(npc)){
+        utils.timers.clearTimeout(animTimers.get(npc) as number)
+        animTimers.delete(npc)
     }
 }
