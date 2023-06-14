@@ -47,7 +47,7 @@ export function handleDialogTyping(dt:number) {
     for (const [entity] of engine.getEntitiesWith(IsTypingBubble)) {
         let dialogData = bubbles.get(entity)
         if(dialogData.done){
-            return
+            continue
         }
 
         dialogData.timer += dt
