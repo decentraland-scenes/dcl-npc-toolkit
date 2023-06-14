@@ -129,7 +129,7 @@ export  let  ILoveCats: Dialog[] = [
   
 
 ```ts
-npm i dcl-npc-toolkit -B
+npm i dcl-npc-toolkit
 ```
 
   
