@@ -153,6 +153,9 @@ export type Dialog = {
     noUI?: boolean
 
     pathData?:FollowPathData
+
+    bubbleXOffset?: number
+    bubbleYOffset?: number
   }
   
   /**
