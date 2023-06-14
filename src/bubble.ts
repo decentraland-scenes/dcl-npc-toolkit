@@ -5,6 +5,7 @@ import { Dialog, ImageSection } from './types'
 import { Color3,Color4, Quaternion, Vector3 } from '@dcl/sdk/math'
 import { addLineBreak, addLineBreaks, findDialogByName } from './dialog'
 import { IsTypingBubble } from './components'
+import { npcDataComponent } from './npc'
 
 export let bubblesTexture = 'https://decentraland.org/images/ui/dialog-bubbles.png'
 
@@ -248,6 +249,7 @@ function rushText(npc:Entity){
 
 function adjustBubble(npc:Entity, textLength:number){
     let bubble = bubbles.get(npc)
+    let npcData = npcDataComponent.get(npc)
 
     if (textLength < maxLengthShortBubble) {
         MeshRenderer.setPlane(bubble.panel,
@@ -272,8 +274,8 @@ function adjustBubble(npc:Entity, textLength:number){
 
         Transform.getMutable(bubble.panel).scale.x = normalBubbleX
         Transform.getMutable(bubble.panel).scale.y = normalBubbleY
-        Transform.getMutable(bubble.container).position.x = normalBubbleXOffset
-        Transform.getMutable(bubble.container).position.y = bubble.baseYOffset + normalBubbleYOffset
+        Transform.getMutable(bubble.container).position.x = normalBubbleXOffset + npcData.bubbleXOffset
+        Transform.getMutable(bubble.container).position.y = bubble.baseYOffset + normalBubbleYOffset + npcData.bubbleYOffset
         TextShape.getMutable(bubble.text).width = normalBubbleTextWidth
       } else if (textLength < maxLengthLongBubble) {
         MeshRenderer.setPlane(bubble.panel,

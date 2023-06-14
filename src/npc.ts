@@ -62,7 +62,9 @@ export function create(
         bubbleSound: data.dialogSound ? data.dialogSound : undefined,
         hasBubble: data && data.textBubble ? true : false,
         turnSpeed: data && data.turningSpeed ? data.turningSpeed : 2,
-        theme: data.darkUI ? darkTheme : lightTheme
+        theme: data.darkUI ? darkTheme : lightTheme,
+        bubbleXOffset: data.bubbleXOffset? data.bubbleXOffset : 0,
+        bubbleYOffset: data.bubbleYOffset? data.bubbleYOffset : 0
     })
 
     if(data && data.noUI){}
