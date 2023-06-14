@@ -261,8 +261,8 @@ function adjustBubble(npc:Entity, textLength:number){
 
         Transform.getMutable(bubble.panel).scale.x = shortBubbleX
         Transform.getMutable(bubble.panel).scale.y = shortBubbleY
-        Transform.getMutable(bubble.container).position.x = shortBubbleXOffset
-        Transform.getMutable(bubble.container).position.y = bubble.baseYOffset + shortBubbleYOffset
+        Transform.getMutable(bubble.container).position.x = shortBubbleXOffset + npcData.bubbleXOffset
+        Transform.getMutable(bubble.container).position.y = bubble.baseYOffset + shortBubbleYOffset + npcData.bubbleYOffset
         TextShape.getMutable(bubble.text).width = shortBubbleTextWidth
       } else if (textLength < maxLengthNormalBubble) {
         MeshRenderer.setPlane(bubble.panel,
@@ -287,8 +287,8 @@ function adjustBubble(npc:Entity, textLength:number){
 
         Transform.getMutable(bubble.panel).scale.x = longBubbleX
         Transform.getMutable(bubble.panel).scale.y = longBubbleY
-        Transform.getMutable(bubble.container).position.x = longBubbleXOffset
-        Transform.getMutable(bubble.container).position.y = bubble.baseYOffset + longBubbleYOffset
+        Transform.getMutable(bubble.container).position.x = longBubbleXOffset + npcData.bubbleXOffset
+        Transform.getMutable(bubble.container).position.y = bubble.baseYOffset + longBubbleYOffset + npcData.bubbleYOffset
         TextShape.getMutable(bubble.text).width = longBubbleTextWidth
       } else {
         MeshRenderer.setPlane(bubble.panel,
@@ -299,8 +299,8 @@ function adjustBubble(npc:Entity, textLength:number){
           ))
         Transform.getMutable(bubble.panel).scale.x = hugeBubbleX
         Transform.getMutable(bubble.panel).scale.y = hugeBubbleY
-        Transform.getMutable(bubble.container).position.x = hugeBubbleXOffset
-        Transform.getMutable(bubble.container).position.y = bubble.baseYOffset + hugeBubbleYOffset
+        Transform.getMutable(bubble.container).position.x = hugeBubbleXOffset + npcData.bubbleXOffset
+        Transform.getMutable(bubble.container).position.y = bubble.baseYOffset + hugeBubbleYOffset + npcData.bubbleYOffset
         TextShape.getMutable(bubble.text).width = hugeBubbleTextWidth
       }
 }
