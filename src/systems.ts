@@ -116,7 +116,7 @@ export function inputListenerSystem(){
     }
   }
 
-  if(PET && PEP){
+  if(SET && SEP){
     if(activeNPC){
       let dialogData = npcDialogComponent.get(activeNPC)
       if(!dialogData.visible || Date.now() - dialogData.openTime < 100)return
@@ -128,7 +128,7 @@ export function inputListenerSystem(){
     }
   }
 
-  if(SET && SEP){
+  if(PET && PEP){
     if(activeNPC){
       let dialogData = npcDialogComponent.get(activeNPC)
       if(!dialogData.visible || Date.now() - dialogData.openTime < 100)return
