@@ -1,7 +1,7 @@
 import { Entity, InputAction, PointerEventType, TextShape, Transform, engine, inputSystem } from "@dcl/sdk/ecs";
 import { IsFollowingPath, IsTypingBubble, IsTypingDialog, TrackUserFlag } from "./components";
 import { activeNPC, walkingTimers } from "./npc";
-import { ConfirmMode, confirmText, npcDialogComponent, rushText, skipDialogs } from "./dialog";
+import { ConfirmMode, closeTag, confirmText, npcDialogComponent, rushText, skipDialogs } from "./dialog";
 import { bubbles, next } from "./bubble";
 import { Quaternion, Vector3 } from "@dcl/sdk/math";
 
@@ -31,6 +31,8 @@ export function handleDialogTyping(dt:number) {
             dialogData.timer = 0
 
             dialogData.visibleChars += charsToAdd
+            closeTag(dialogData, charsToAdd)
+
 
             if (dialogData.visibleChars >= dialogData.fullText.length) {
                 dialogData.typing = false
