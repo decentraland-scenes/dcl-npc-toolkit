@@ -627,4 +627,35 @@ export function getImageAtlasMapping(data?: ImageAtlasData): number[] {
     }
     return 0
   }
+
+
+
+export function closeTag(dialogData:any, newChars: number){
+  if(dialogData.visibleChars == 0 || newChars ==0 ) return
+
+let openTag: boolean = false
+let closeTag : boolean = false
+for(let i = dialogData.visibleChars-newChars; i < dialogData.visibleChars ; i++){
   
+  if(!openTag){
+    if(dialogData.fullText.substr(i, 1) == '<'){
+      openTag= true
+      
+    }
+  } else {
+    if(dialogData.fullText.substr(i, 1) == '>'){
+      closeTag= true
+      
+    }
+  }
+}
+
+if(!openTag || closeTag){	
+  return
+}
+
+while(dialogData.visibleChars < dialogData.fullText.length && dialogData.fullText.substr(dialogData.visibleChars-1, 1) != '>'){
+  dialogData.visibleChars+=1
+}
+return
+}
