@@ -69,12 +69,55 @@ The dialog messages can also require that the player chooses options, and any ac
 
   
 
-To use NPCs in your scene:
+## Install the library
 
-  
+## Via the Decentraland Editor
 
-  
+Follow the steps in [Manage Dependencies](https://docs.decentraland.org/creator/development-guide/sdk7/libraries/manage-dependencies/#via-the-editor) with Visual Studio Code open on your project folder.
 
+1. Open the Decentraland Editor tab. Note that the bottom section lists all of your project’s currently installed dependencies.
+
+2. Click the + icon on the header of the Dependencies view.
+
+3. Visual Studio opens an input box at the top of the screen. Write ´dcl-npc-toolkit´ and press Enter.
+
+4. Import the library into the scene's script. Add this line at the start of your `index.ts` file, or any other TypeScript files that require it:
+
+```ts
+import  *  as  npc  from  'dcl-npc-toolkit'
+```
+5. In your TypeScript file, call the `create` function passing it a `TransformType` and a `NPCData` object. The `NPCData` object requires a minimum of a `NPCType` and a function to trigger when the NPC is activated:
+
+
+```ts
+export function main(){
+	export  let  myNPC = npc.create(
+		{position:  Vector3.create(8,0,8),rotation:Quaternion.Zero(), scale:  Vector3.create(1,1,1)},
+		//NPC Data Object
+		{
+			type:  npc.NPCType.CUSTOM,
+			model:  'models/npc.glb',
+			onActivate:()=>{console.log('npc activated');}
+		}
+	)
+}
+```
+
+6. Write a dialog script for your character, preferably on a separate file, making it of type `Dialog[]`.
+
+
+```ts
+import { Dialog } from  'dcl-npc-toolkit'
+
+export  let  ILoveCats: Dialog[] = [
+	{
+		text:  `I really lo-ove cats`,
+		isEndOfDialog:  true
+	}
+]
+```
+ 
+## Via the CLI
   
 
 1. Install the library as an npm bundle. Run this command in your scene's project folder:
@@ -86,7 +129,7 @@ To use NPCs in your scene:
   
 
 ```ts
-npm i dcl-npc-toolkit -B
+npm i dcl-npc-toolkit
 ```
 
   
@@ -117,7 +160,7 @@ npm i @dcl-sdk/utils -B
 
   
 
-4. Import the library into the scene's script. Add this line at the start of your `game.ts` file, or any other TypeScript files that require it:
+4. Import the library into the scene's script. Add this line at the start of your `index.ts` file, or any other TypeScript files that require it:
 
   
 
@@ -144,14 +187,14 @@ import  *  as  npc  from  'dcl-npc-toolkit'
   
 
 ```ts
-export  let  myNPC = npc.create({position:  Vector3.create(8,0,8),rotation:Quaternion.Zero(), scale:  Vector3.create(1,1,1)},
-
-//NPC Data Object
-{
-type:  npc.NPCType.CUSTOM,
-model:  'models/npc.glb',
-onActivate:()=>{console.log('npc activated');}
-}
+export  let  myNPC = npc.create(
+	{position:  Vector3.create(8,0,8),rotation:Quaternion.Zero(), scale:  Vector3.create(1,1,1)},
+	//NPC Data Object
+	{
+		type:  npc.NPCType.CUSTOM,
+		model:  'models/npc.glb',
+		onActivate:()=>{console.log('npc activated');}
+	}
 )
 ```
 
@@ -161,7 +204,7 @@ onActivate:()=>{console.log('npc activated');}
 
   
 
-5. Write a dialog script for your character, preferably on a separate file, making it of type `Dialog[]`.
+6. Write a dialog script for your character, preferably on a separate file, making it of type `Dialog[]`.
 
   
 
@@ -171,10 +214,11 @@ onActivate:()=>{console.log('npc activated');}
 
 ```ts
 import { Dialog } from  'dcl-npc-toolkit'
+
 export  let  ILoveCats: Dialog[] = [
 	{
-	text:  `I really lo-ove cats`,
-	isEndOfDialog:  true
+		text:  `I really lo-ove cats`,
+		isEndOfDialog:  true
 	}
 ]
 ```
