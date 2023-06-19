@@ -391,7 +391,17 @@ export  function  setupUi() {
 
 ```
 
-  
+
+Note: The UI drawn by this library library requires fetching images from an external URL. For the scene to allow you to do this, you must include the `ALLOW_MEDIA_HOSTNAMES` scene permission and add `decentraland.org` to the list of allowed domains in your `scene.json` file. Learn more about [image permissions](https://docs.decentraland.org/creator/development-guide/sdk7/materials/#textures-from-an-external-url).
+
+```json
+	"requiredPermissions": [
+		"ALLOW_MEDIA_HOSTNAMES"
+	],
+	"allowedMediaHostnames": [
+		"decentraland.org"
+	],
+```
 
   
 
