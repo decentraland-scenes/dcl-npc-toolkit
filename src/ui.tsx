@@ -99,9 +99,38 @@ export let redButtonSection = {
   atlasWidth: sourcesComponentsCoordinates.atlasWidth
 }
 
+let modalScale = 1
+let modelFontSizeScale = 1
+let modalTextWrapScale = 1
+
+export function setupNPCUiScaling(inModalScale: number, inFontSize: number, inModalTextWrapScale: number) {
+  modalScale = inModalScale
+  modelFontSizeScale = inFontSize
+  modalTextWrapScale = inModalTextWrapScale
+  console.log(
+    'NPC-TOOLKIT',
+    'Scale UI:',
+    modalScale,
+    'TextFontSize:',
+    modelFontSizeScale,
+    'TextWrapScaling:',
+    modalTextWrapScale
+  )
+}
+
+function getScaledSize(size: number): number {
+  return size * modalScale
+}
+function getScaledFontSize(size: number): number {
+  return size * modelFontSizeScale
+}
+function getScaledTextWrap(size: number): number {
+  return size * modalTextWrapScale
+}
+
 export const NpcUtilsUi = () => {
-  const width = realWidth(700)
-  const height = realHeight(225)
+  const width = getScaledSize(realWidth(700))
+  const height = getScaledSize(realHeight(225))
 
   return (
     <UiEntity
@@ -139,10 +168,13 @@ export const NpcUtilsUi = () => {
       <UiEntity
         uiTransform={{
           display: displayPortrait() ? 'flex' : 'none',
-          width: portraitWidth(),
-          height: portraitHeight(),
+          width: getScaledSize(portraitWidth()),
+          height: getScaledSize(portraitHeight()),
           positionType: 'absolute',
-          position: { bottom: positionPortaitY(), left: positionPortaitX() }
+          position: {
+            bottom: getScaledSize(positionPortaitY()),
+            left: getScaledSize(positionPortaitX())
+          }
         }}
         uiBackground={{
           textureMode: 'stretch',
@@ -156,8 +188,8 @@ export const NpcUtilsUi = () => {
       <UiEntity
         uiTransform={{
           display: displayImage() ? 'flex' : 'none',
-          width: imageWidth(),
-          height: imageHeight(),
+          width: getScaledSize(imageWidth()),
+          height: getScaledSize(imageHeight()),
           positionType: 'absolute',
           position: { bottom: positionImageY(), right: positionImageX() }
         }}
@@ -173,8 +205,8 @@ export const NpcUtilsUi = () => {
       <UiEntity
         uiTransform={{
           display: displaySkipable() ? 'flex' : 'none',
-          width: 15,
-          height: 15,
+          width: getScaledSize(15),
+          height: getScaledSize(15),
           positionType: 'absolute',
           position: { bottom: '7%', left: '25%' }
         }}
@@ -198,7 +230,7 @@ export const NpcUtilsUi = () => {
           uiText={{
             value: 'Skip',
             color: getTextColor(),
-            fontSize: 12
+            fontSize: getScaledFontSize(12)
           }}
         />
       </UiEntity>
@@ -206,8 +238,8 @@ export const NpcUtilsUi = () => {
       <UiEntity
         uiTransform={{
           display: 'flex',
-          width: 24,
-          height: 36,
+          width: getScaledSize(24),
+          height: getScaledSize(36),
           positionType: 'absolute',
           position: { bottom: '5%', right: '2%' }
         }}
@@ -231,14 +263,14 @@ export const NpcUtilsUi = () => {
         uiText={{
           value: getText(),
           color: getTextColor(),
-          fontSize: getFontSize(),
+          fontSize: getScaledFontSize(getFontSize()),
           textAlign: 'middle-left'
         }}
       ></UiEntity>
 
       <UiEntity
         uiTransform={{
-          width: '300px',
+          width: getScaledSize(300),
           alignItems: 'center',
           flexDirection: 'row',
           justifyContent: 'space-between',
@@ -249,8 +281,8 @@ export const NpcUtilsUi = () => {
         {/* Button1 (Top-Left) */}
         <UiEntity
           uiTransform={{
-            width: '150px',
-            height: '45px',
+            width: getScaledSize(150),
+            height: getScaledSize(45),
             margin: { right: '5%' },
             flexDirection: 'row',
             alignItems: 'center',
@@ -265,16 +297,16 @@ export const NpcUtilsUi = () => {
             },
             uvs: getImageAtlasMapping(darkButtonSection)
           }}
-          uiText={{ value: getButtonText(0), fontSize: 16 }}
+          uiText={{ value: getButtonText(0), fontSize: getScaledFontSize(16) }}
           onMouseDown={() => {
             buttonClick(0)
           }}
         >
           <UiEntity
             uiTransform={{
-              width: '25px',
-              height: '25px',
-              position: { left: 5 }
+              width: getScaledSize(25),
+              height: getScaledSize(25),
+              position: { left: getScaledSize(5) }
             }}
             uiBackground={{
               textureMode: 'stretch',
@@ -289,8 +321,8 @@ export const NpcUtilsUi = () => {
         {/* Button2 (Top-Right) */}
         <UiEntity
           uiTransform={{
-            width: '150px',
-            height: '45px',
+            width: getScaledSize(150),
+            height: getScaledSize(45),
             flexDirection: 'row',
             alignItems: 'center',
             justifyContent: 'flex-start',
@@ -304,16 +336,16 @@ export const NpcUtilsUi = () => {
             },
             uvs: getImageAtlasMapping(redButtonSection)
           }}
-          uiText={{ value: getButtonText(1), fontSize: 16 }}
+          uiText={{ value: getButtonText(1), fontSize: getScaledFontSize(16) }}
           onMouseDown={() => {
             buttonClick(1)
           }}
         >
           <UiEntity
             uiTransform={{
-              width: '25px',
-              height: '25px',
-              position: { left: 5 }
+              width: getScaledSize(25),
+              height: getScaledSize(25),
+              position: { left: getScaledSize(5) }
             }}
             uiBackground={{
               textureMode: 'stretch',
@@ -329,11 +361,11 @@ export const NpcUtilsUi = () => {
       {/* Second row of buttons */}
       <UiEntity
         uiTransform={{
-          width: '300px',
+          width: getScaledSize(300),
           alignItems: 'center',
           flexDirection: 'row',
           justifyContent: 'space-between',
-          margin: { top: 20 },
+          margin: { top: getScaledSize(20) },
           display: displaySecondButtonContainer() ? 'flex' : 'none',
           position: { top: '15%' }
         }}
@@ -341,8 +373,8 @@ export const NpcUtilsUi = () => {
         {/* Button3 */}
         <UiEntity
           uiTransform={{
-            width: '150px',
-            height: '45px',
+            width: getScaledSize(150),
+            height: getScaledSize(45),
             margin: { right: '5%' },
             alignItems: 'center',
             justifyContent: 'center',
@@ -356,7 +388,7 @@ export const NpcUtilsUi = () => {
             },
             uvs: getImageAtlasMapping(darkButtonSection)
           }}
-          uiText={{ value: getButtonText(2), fontSize: 16 }}
+          uiText={{ value: getButtonText(2), fontSize: getScaledFontSize(16) }}
           onMouseDown={() => {
             buttonClick(3)
           }}
@@ -365,8 +397,8 @@ export const NpcUtilsUi = () => {
         {/* Button4 */}
         <UiEntity
           uiTransform={{
-            width: '150px',
-            height: '45px',
+            width: getScaledSize(150),
+            height: getScaledSize(45),
             alignItems: 'center',
             justifyContent: 'center',
             alignContent: 'flex-start',
@@ -379,7 +411,7 @@ export const NpcUtilsUi = () => {
             },
             uvs: getImageAtlasMapping(darkButtonSection)
           }}
-          uiText={{ value: getButtonText(3), fontSize: 16 }}
+          uiText={{ value: getButtonText(3), fontSize: getScaledFontSize(16) }}
           onMouseDown={() => {
             buttonClick(4)
           }}
