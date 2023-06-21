@@ -1,4 +1,4 @@
-import { PBAvatarShape, PBGltfContainer } from "@dcl/sdk/ecs"
+import { Entity, PBAvatarShape, PBGltfContainer } from "@dcl/sdk/ecs"
 import { Vector3 } from "@dcl/sdk/math"
 
 /**
@@ -54,10 +54,10 @@ export type Dialog = {
   export type TriggerData = {
     layer?: number
     triggeredByLayer?: number
-    onTriggerEnter?: () => void
-    onTriggerExit?: () => void
-    onCameraEnter?: () => void
-    onCameraExit?: () => void
+    onTriggerEnter?: (other: Entity) => void
+    onTriggerExit?: (other: Entity) => void
+    onCameraEnter?: (other: Entity) => void
+    onCameraExit?: (other: Entity) => void
     enableDebug?: boolean
   }
   
@@ -140,8 +140,8 @@ export type Dialog = {
     onlyExternalTrigger?: boolean
     onlyClickTrigger?: boolean
     onlyETrigger?: boolean
-    onActivate: () => void
-    onWalkAway?: () => void
+    onActivate: (other: Entity) => void
+    onWalkAway?: (other: Entity) => void
     continueOnWalkAway?: boolean
     darkUI?: boolean
     coolDownDuration?: number

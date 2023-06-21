@@ -79,12 +79,12 @@ export function create(
         createDialogBubble(npc, npcDataComponent.get(npc).bubbleHeight)
       }
 
-    onActivateCbs.set(npc, ()=>{
-        data.onActivate()
+    onActivateCbs.set(npc, (other: Entity)=>{
+        data.onActivate(other)
     })
 
     if (data && data.hasOwnProperty("onWalkAway")) {
-        onWalkAwayCbs.set(npc, ()=>{
+        onWalkAwayCbs.set(npc, (other: Entity)=>{
             if(!data || !data.continueOnWalkAway){
                 if(npcDialogComponent.has(npc)){
                     npcDialogComponent.get(npc).visible = false
@@ -95,7 +95,7 @@ export function create(
                     npcDialogComponent.get(npc).visible = false
                 }
             }
-            data.onWalkAway!()
+            data.onWalkAway!(other)
         })
     }
 
@@ -192,7 +192,7 @@ function addClickReactions(npc:Entity, data:NPCData){
         npc,
         function () {
             if (isCooldown.has(npc) || (npcDialogComponent.get(npc).visible)) return
-            activate(npc)
+            activate(npc, engine.PlayerEntity)
         },
         {
             button: activateButton,
@@ -211,7 +211,7 @@ function addTriggerArea(npc:Entity, data:NPCData){
         let triggerData: TriggerData = {}
 
         if (!data || (data && !data.onlyExternalTrigger && !data.onlyClickTrigger && !data.onlyETrigger)){
-        onActivateCbs.set(npc, ()=>{
+        onActivateCbs.set(npc, (other:Entity)=>{
             if (isCooldown.has(npc)) {
                 console.log(npc, ' in cooldown')
                 return
@@ -223,15 +223,15 @@ function addTriggerArea(npc:Entity, data:NPCData){
             ) {
                 return
             }
-            data.onActivate()
+            data.onActivate(other)
         })
         triggerData.onCameraEnter = onActivateCbs.get(npc)
         }
 
     // when exiting trigger
     if (!data || (data && !data.continueOnWalkAway)) {
-        triggerData.onCameraExit = () => {
-            handleWalkAway(npc)
+        triggerData.onCameraExit = (other) => {
+            handleWalkAway(npc, other)
         }
     }
 
@@ -240,7 +240,7 @@ function addTriggerArea(npc:Entity, data:NPCData){
         !data ||
         (data && !data.onlyExternalTrigger && !data.onlyClickTrigger && !data.onlyETrigger)
     ) {
-        triggerData.onCameraEnter = () => {
+        triggerData.onCameraEnter = (other) => {
             if (isCooldown.has(npc)) {
                 console.log(npc, ' in cooldown')
                 return
@@ -252,13 +252,20 @@ function addTriggerArea(npc:Entity, data:NPCData){
             // ) {
             //     return
             // }
-            activate(npc)
+            activate(npc, other)
         }
     }
 
     // add trigger
     if (triggerData.onCameraEnter || triggerData.onCameraExit) {
-        utils.triggers.addTrigger(npc,254,1,[{type:'sphere', position: Vector3.Zero(), radius: data.reactDistance != undefined ? data.reactDistance : 6}], triggerData.onCameraEnter ? triggerData.onCameraEnter : undefined, triggerData.onCameraExit ? triggerData.onCameraExit : undefined, Color3.Red())
+      utils.triggers.addTrigger(npc,
+        utils.NO_LAYERS,
+        utils.LAYER_1,
+        [{type:'sphere', position: Vector3.Zero(), radius: data.reactDistance != undefined ? data.reactDistance : 6}],
+        (other)=> {if(triggerData.onCameraEnter) triggerData.onCameraEnter(other)},
+        (other)=> {if(triggerData.onCameraExit) triggerData.onCameraExit(other)},
+        Color3.Red()
+      )
     }
 }
 
@@ -446,7 +453,7 @@ export function isActiveNpcSet(){
 /**
  * Calls the NPC's activation function (set on NPC definition). If NPC has `faceUser` = true, it will rotate to face the player. It starts a cooldown counter to avoid reactivating.
  */
-export function activate(npc:Entity) {
+export function activate(npc: Entity, other: Entity) {
 
     if(activeNPC != 0){
         console.log('we have a current npc, needto remove')
@@ -455,7 +462,7 @@ export function activate(npc:Entity) {
     }
 
     activeNPC = npc
-    onActivateCbs.get(npc)()
+    onActivateCbs.get(npc)(other)
 
     let npcData = npcDataComponent.get(npc)
     if (npcData.faceUser) {
@@ -505,7 +512,7 @@ function endInteraction(npc:Entity) {
 /**
  * Ends interaction and calls the onWalkAway function
  */
-export function handleWalkAway(npc:Entity) {
+export function handleWalkAway(npc:Entity, other: Entity) {
     let npcData = npcDataComponent.get(npc)
     if (npcData.state == NPCState.FOLLOWPATH) {
         return
@@ -514,7 +521,7 @@ export function handleWalkAway(npc:Entity) {
     endInteraction(npc)
 
     if (onWalkAwayCbs.get(npc)) {
-        onWalkAwayCbs.get(npc)()
+        onWalkAwayCbs.get(npc)(other)
     }
 }
 
