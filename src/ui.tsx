@@ -140,7 +140,7 @@ export const NpcUtilsUi = () => {
         alignItems: 'center',
         justifyContent: 'center',
         positionType: 'absolute',
-        position: { bottom: '15%', left: '50%' },
+        position: { bottom: '10%', left: '50%' },
         margin: { top: -height / 2, left: -width / 2 },
         width,
         height
