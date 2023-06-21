@@ -144,13 +144,13 @@ function addNPCBones(npc: Entity, data: NPCData) {
   const modelAvatarData: PBAvatarShape | undefined = modelIsString
     ? undefined
     : data.model && (data.model as any).bodyShape
-    ? (data.model as PBAvatarShape)
-    : undefined
+      ? (data.model as PBAvatarShape)
+      : undefined
   const modelGLTFData: PBGltfContainer | undefined = modelIsString
     ? undefined
     : data.model && (data.model as any).src
-    ? (data.model as PBGltfContainer)
-    : undefined
+      ? (data.model as PBGltfContainer)
+      : undefined
 
   switch (data.type) {
     case NPCType.AVATAR:
@@ -158,19 +158,19 @@ function addNPCBones(npc: Entity, data: NPCData) {
         npc,
         !data || !data.model || !modelAvatarData
           ? {
-              id: 'npc',
-              name: 'NPC',
-              bodyShape: 'urn:decentraland:off-chain:base-avatars:BaseMale',
-              emotes: [],
-              wearables: [
-                'urn:decentraland:off-chain:base-avatars:f_eyes_00',
-                'urn:decentraland:off-chain:base-avatars:f_eyebrows_00',
-                'urn:decentraland:off-chain:base-avatars:f_mouth_00',
-                'urn:decentraland:off-chain:base-avatars:comfy_sport_sandals',
-                'urn:decentraland:off-chain:base-avatars:soccer_pants',
-                'urn:decentraland:off-chain:base-avatars:elegant_sweater'
-              ]
-            }
+            id: 'npc',
+            name: 'NPC',
+            bodyShape: 'urn:decentraland:off-chain:base-avatars:BaseMale',
+            emotes: [],
+            wearables: [
+              'urn:decentraland:off-chain:base-avatars:f_eyes_00',
+              'urn:decentraland:off-chain:base-avatars:f_eyebrows_00',
+              'urn:decentraland:off-chain:base-avatars:f_mouth_00',
+              'urn:decentraland:off-chain:base-avatars:comfy_sport_sandals',
+              'urn:decentraland:off-chain:base-avatars:soccer_pants',
+              'urn:decentraland:off-chain:base-avatars:elegant_sweater'
+            ]
+          }
           : modelAvatarData
       )
       break
@@ -215,16 +215,17 @@ function addClickReactions(npc: Entity, data: NPCData) {
   let activateButton = data && data.onlyClickTrigger ? InputAction.IA_POINTER : InputAction.IA_PRIMARY
 
   pointerEventsSystem.onPointerDown(
-    npc,
-    function () {
+    {
+      entity: npc, opts: {
+        button: activateButton,
+        hoverText: data && data.hoverText ? data.hoverText : 'Talk',
+        showFeedback: data && data.onlyExternalTrigger ? false : true
+      }
+    },
+    () => {
       if (isCooldown.has(npc) || npcDialogComponent.get(npc).visible) return
       activate(npc, engine.PlayerEntity)
     },
-    {
-      button: activateButton,
-      hoverText: data && data.hoverText ? data.hoverText : 'Talk',
-      showFeedback: data && data.onlyExternalTrigger ? false : true
-    }
   )
 
   if (data && data.onlyExternalTrigger) {
