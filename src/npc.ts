@@ -214,9 +214,11 @@ function addNPCBones(npc: Entity, data: NPCData) {
 function addClickReactions(npc: Entity, data: NPCData) {
   let activateButton = data && data.onlyClickTrigger ? InputAction.IA_POINTER : InputAction.IA_PRIMARY
 
+  /*
   pointerEventsSystem.onPointerDown(
     {
-      entity: npc, opts: {
+      entity: npc,
+      opts: {
         button: activateButton,
         hoverText: data && data.hoverText ? data.hoverText : 'Talk',
         showFeedback: data && data.onlyExternalTrigger ? false : true
@@ -226,6 +228,20 @@ function addClickReactions(npc: Entity, data: NPCData) {
       if (isCooldown.has(npc) || npcDialogComponent.get(npc).visible) return
       activate(npc, engine.PlayerEntity)
     },
+  )
+  */
+
+  pointerEventsSystem.onPointerDown(
+    npc,
+    function () {
+      if (isCooldown.has(npc) || npcDialogComponent.get(npc).visible) return
+      activate(npc, engine.PlayerEntity)
+    },
+    {
+      button: activateButton,
+      hoverText: data && data.hoverText ? data.hoverText : 'Talk',
+      showFeedback: data && data.onlyExternalTrigger ? false : true
+    }
   )
 
   if (data && data.onlyExternalTrigger) {
