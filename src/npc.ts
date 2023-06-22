@@ -298,8 +298,8 @@ function addTriggerArea(npc: Entity, data: NPCData) {
   if (triggerData.onCameraEnter || triggerData.onCameraExit) {
     utils.triggers.addTrigger(
       npc,
-      utils.NO_LAYERS,
-      utils.LAYER_1,
+      triggerData.layer != undefined ? triggerData.layer : utils.NO_LAYERS,
+      triggerData.triggeredByLayer != undefined ? triggerData.triggeredByLayer : utils.LAYER_1,
       [{ type: 'sphere', position: Vector3.Zero(), radius: data.reactDistance != undefined ? data.reactDistance : 6 }],
       (other) => {
         if (triggerData.onCameraEnter) triggerData.onCameraEnter(other)

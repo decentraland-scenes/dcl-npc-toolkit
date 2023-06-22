@@ -43,8 +43,8 @@ export type Dialog = {
 /**
  *
  * @typedef {Object} TriggerData - Object with data for a NPCTriggerComponent
- * @property {number} layer  layer of the Trigger, useful to discriminate between trigger events. You can set multiple layers by using a | symbol.
- * @property {number} triggeredByLayer against which layers to check collisions
+ * @property {number} layer  layer of the Trigger, useful to discriminate between trigger events. You can set multiple layers by using a | symbol. defaults to NO_LAYERS
+ * @property {number} triggeredByLayer against which layers to check collisions. defaults to LAYER_1
  * @property {(entity: Entity) => void } onTriggerEnter callback when an entity of a valid layer enters the trigger area
  * @property {(entity: Entity) => void} onTriggerExit callback when an entity of a valid layer leaves the trigger area
  * @property {() => void} onCameraEnter callback when the player enters the trigger area
