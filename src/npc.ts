@@ -183,7 +183,6 @@ function addNPCBones(npc: Entity, data: NPCData) {
       Animator.create(npc, {
         states: [
           {
-            name: data && data.idleAnim ? data.idleAnim : 'Idle',
             clip: data && data.idleAnim ? data.idleAnim : 'Idle',
             loop: true
           }
@@ -199,7 +198,7 @@ function addNPCBones(npc: Entity, data: NPCData) {
       if (data && data.walkingAnim) {
         npcDataComponent.get(npc).walkingAnim = data.walkingAnim
         let animations = Animator.getMutable(npc)
-        animations.states.push({ name: data.walkingAnim, clip: data.walkingAnim, loop: true })
+        animations.states.push({ clip: data.walkingAnim, loop: true })
       }
 
       break
@@ -619,8 +618,8 @@ export function handleWalkAway(npc: Entity, other: Entity) {
 
 export function playAnimation(npc: Entity, anim: string, noLoop?: boolean, duration?: number) {
   let animations = Animator.getMutable(npc)
-  if (animations.states.filter((animation) => animation.name === anim).length == 0) {
-    animations.states.push({ name: anim, clip: anim, loop: noLoop ? false : true })
+  if (animations.states.filter((animation) => animation.clip === anim).length == 0) {
+    animations.states.push({ clip: anim, loop: noLoop ? false : true })
   }
 
   let npcData = npcDataComponent.get(npc)
@@ -656,8 +655,8 @@ export function changeIdleAnim(npc: Entity, animation: string, play?: boolean) {
   npcData.idleAnim = animation
 
   let animations = Animator.getMutable(npc)
-  if (animations.states.filter((anim) => anim.name === animation).length == 0) {
-    animations.states.push({ name: animation, clip: animation, loop: true })
+  if (animations.states.filter((anim) => anim.clip === animation).length == 0) {
+    animations.states.push({ clip: animation, loop: true })
   }
 
   if (play) {
