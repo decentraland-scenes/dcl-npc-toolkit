@@ -19,9 +19,9 @@
   },
   "homepage": "https://github.com/decentraland-scenes/dcl-npc-toolkit#readme",
   "devDependencies": {
-    "@dcl/sdk": "^7.1.6",
+    "@dcl/sdk": "latest",
     "typescript": "^5.0.2",
-    "@dcl-sdk/utils": "^1.0.3"
+    "@dcl-sdk/utils": "latest"
   },
   "files": [
     "dist"
