@@ -5,8 +5,7 @@
   "main": "./dist/index.js",
   "typings": "./dist/index.d.ts",
   "scripts": {
-    "build": "tsc -p tsconfig.json",
-    "link-sdk": "cd node_modules/@dcl/sdk && npm link && cd ../js-runtime"
+    "build": "tsc -p tsconfig.json"
   },
   "repository": {
     "type": "git",
