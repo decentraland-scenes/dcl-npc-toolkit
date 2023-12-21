@@ -515,6 +515,9 @@ To configure other properties of an NPC, add a fourth argument as an `NPCData` o
 
 -  `noUI`: _(boolean)_ If true, no UI object is built for UI dialogs for this NPC. This may help optimize the scene if this feature is not used.
 
+
+-  `volume`: _(number)_ Controls dialogue audio volume, ranging from 0 to 1, default is 0.5.".
+
   
 
   

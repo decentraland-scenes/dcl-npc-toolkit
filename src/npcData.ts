@@ -10,5 +10,6 @@ export const NPCDataComponent = engine.defineComponent('npcdatacomponent', {
   walkingAnim: Schemas.String,
   idleAnim: Schemas.String,
   lastPlayedAnim: Schemas.String,
-  path: Schemas.Array(Schemas.Vector3)
+  path: Schemas.Array(Schemas.Vector3),
+  volume: Schemas.Number
 })

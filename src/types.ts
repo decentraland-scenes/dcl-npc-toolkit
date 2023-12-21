@@ -121,6 +121,7 @@ export enum ButtonStyles {
  * @property {boolean} textBubble If true, the NPC can display text bubbles with dialogs
  * @property {number} bubbleHeight The default height to display text bubbles over the NPC's position
  * @property {boolean} noUI If true, no UI dialog elements are constructed. The NPC can use speech bubbles.
+ * @property {number} volume Sets the volume of the NPC's audio
  *
  */
 
@@ -154,6 +155,8 @@ export type NPCData = {
 
   bubbleXOffset?: number
   bubbleYOffset?: number
+
+  volume: any
 }
 
 /**

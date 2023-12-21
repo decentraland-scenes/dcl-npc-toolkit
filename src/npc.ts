@@ -79,7 +79,8 @@ export function create(transform: any, data: NPCData) {
     turnSpeed: data && data.turningSpeed ? data.turningSpeed : 2,
     theme: data.darkUI ? darkTheme : lightTheme,
     bubbleXOffset: data.bubbleXOffset ? data.bubbleXOffset : 0,
-    bubbleYOffset: data.bubbleYOffset ? data.bubbleYOffset : 0
+    bubbleYOffset: data.bubbleYOffset ? data.bubbleYOffset : 0,
+    volume: data && data.volume ? data.volume : 0.5
   })
 
   if (data && data.noUI) {

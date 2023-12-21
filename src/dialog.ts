@@ -289,7 +289,7 @@ export function openDialog(npc:Entity, dialog:Dialog[], startIndex:number){
             playing: false
         })
         let audio = AudioSource.getMutable(dialogData.soundPlayer)
-        audio.volume = 0.5
+        audio.volume = npcDataComponent.get(npc).volume
         audio.playing = true
     } else if (dialogData.sound) {
         AudioSource.createOrReplace(dialogData.soundPlayer, {
@@ -298,7 +298,7 @@ export function openDialog(npc:Entity, dialog:Dialog[], startIndex:number){
             playing: false
         })
         let audio = AudioSource.getMutable(dialogData.soundPlayer)
-        audio.volume = 0.5
+        audio.volume = npcDataComponent.get(npc).volume
         audio.playing = true
     }
 
