@@ -12,7 +12,8 @@ import {
   PBGltfContainer,
   pointerEventsSystem,
   Transform,
-  TransformType
+  TransformType,
+  PBAnimationState
 } from '@dcl/sdk/ecs'
 import { Color3, Quaternion, Vector3 } from '@dcl/sdk/math'
 import { bubbles, closeBubble, createDialogBubble, openBubble } from './bubble'
@@ -216,18 +217,18 @@ function addClickReactions(npc: Entity, data: NPCData) {
 
   /*
   pointerEventsSystem.onPointerDown(
-    {
-      entity: npc,
-      opts: {
-        button: activateButton,
-        hoverText: data && data.hoverText ? data.hoverText : 'Talk',
-        showFeedback: data && data.onlyExternalTrigger ? false : true
-      }
-    },
-    () => {
-      if (isCooldown.has(npc) || npcDialogComponent.get(npc).visible) return
-      activate(npc, engine.PlayerEntity)
-    },
+      {
+          entity: npc,
+          opts: {
+              button: activateButton,
+              hoverText: data && data.hoverText ? data.hoverText : 'Talk',
+              showFeedback: data && data.onlyExternalTrigger ? false : true
+          }
+      },
+      () => {
+          if (isCooldown.has(npc) || npcDialogComponent.get(npc).visible) return
+          activate(npc, engine.PlayerEntity)
+      },
   )
   */
 
@@ -619,11 +620,14 @@ export function handleWalkAway(npc: Entity, other: Entity) {
 
 export function playAnimation(npc: Entity, anim: string, noLoop?: boolean, duration?: number) {
   let animations = Animator.getMutable(npc)
-  if (animations.states.filter((animation) => animation.clip === anim).length == 0) {
+  let npcData = npcDataComponent.get(npc)
+
+  if (!animations || !npcData) return
+
+  if (animations.states && animations.states.filter((animation: PBAnimationState) => animation.clip === anim).length == 0) {
     animations.states.push({ clip: anim, loop: noLoop ? false : true })
   }
 
-  let npcData = npcDataComponent.get(npc)
   if (npcData.state == NPCState.FOLLOWPATH) {
     utils.paths.stopPath(npc)
   }
