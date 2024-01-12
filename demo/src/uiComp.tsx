@@ -1,0 +1,18 @@
+import ReactEcs, { ReactEcsRenderer, UiEntity } from '@dcl/sdk/react-ecs'
+import { NpcUtilsUi } from './ui';
+
+export function setupUi() {
+  ReactEcsRenderer.setUiRenderer(uiComponent)
+}
+
+const uiComponent = () => (
+  <UiEntity
+    uiTransform={{
+      width: '100%',
+      height: '100%',
+    }}
+  >
+    <NpcUtilsUi/>
+  </UiEntity>
+  
+)
