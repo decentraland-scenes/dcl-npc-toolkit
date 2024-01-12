@@ -182,9 +182,23 @@ export function getButtonText(button:number){
         let dialogData = npcDialogComponent.get(activeNPC)
         if(dialogData.isQuestion && dialogData.buttons > button){
             text = dialogData.script[dialogData.index].buttons[button].label
+            text = text.slice(0, 15)
         }
     }
     return text
+}
+
+export function getbuttonSize(button:number) {
+  let ButtonSize: number | string | undefined
+  if (activeNPC != 0 && npcDialogComponent.has(activeNPC)) {
+      let dialogData = npcDialogComponent.get(activeNPC);
+      if (dialogData.isQuestion && dialogData.buttons > button) {
+          if (dialogData.script[dialogData.index].buttons[button].size !== undefined) {
+              ButtonSize = dialogData.script[dialogData.index].buttons[button]?.size;
+          }
+      }
+  }
+  return ButtonSize
 }
 
 export function getFontSize(){

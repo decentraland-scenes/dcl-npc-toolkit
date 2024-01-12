@@ -12,6 +12,7 @@ import {
   displaySecondButtonContainer,
   displaySkipable,
   getButtonText,
+  getbuttonSize,
   getFontSize,
   getImage,
   getImageAtlasMapping,
@@ -127,7 +128,17 @@ function getScaledFontSize(size: number): number {
 function getScaledTextWrap(size: number): number {
   return size * modalTextWrapScale
 }
-
+function getScaledParentsButtonWidth(firstButton:number, secondButton:number) {
+  return getScaledSize(getButtonText(firstButton).length * 16 + getButtonText(secondButton).length * 16) >= 300 && (getbuttonSize(firstButton) != '' || getbuttonSize(secondButton) != '')
+  ? getScaledSize(
+      (typeof(getbuttonSize(firstButton)) === 'number' ? getbuttonSize(firstButton) as number : getButtonText(firstButton).length * 14) 
+      + (typeof(getbuttonSize(secondButton)) === 'number' ? getbuttonSize(secondButton) as number : getButtonText(secondButton).length * 14)) 
+  : getScaledSize(300)
+}
+function getScaledButtonWidth(button:number) {
+  return getbuttonSize(button) === 'auto' ? getScaledSize(getButtonText(button).length * 8 + 80) 
+  : getScaledSize(typeof(getbuttonSize(button)) === 'number' ? getbuttonSize(button) as number : getScaledSize(150))
+}
 export const NpcUtilsUi = () => {
   const width = getScaledSize(realWidth(700))
   const height = getScaledSize(realHeight(225))
@@ -141,9 +152,9 @@ export const NpcUtilsUi = () => {
         justifyContent: 'center',
         positionType: 'absolute',
         position: { bottom: '10%', left: '50%' },
-        margin: { top: -height / 2, left: -width / 2 },
+        margin: { top: (-height + getText().length / 2) / 2, left: -width / 2 },
         width,
-        height
+        height: height + getText().length / 1.5
       }}
     >
       <UiEntity
@@ -258,7 +269,8 @@ export const NpcUtilsUi = () => {
           alignItems: 'flex-start',
           justifyContent: 'flex-start',
           flexDirection: 'row',
-          position: getTextPosition()
+          position: getTextPosition(),
+          margin: {bottom: getText().length/10}
         }}
         uiText={{
           value: getText(),
@@ -270,25 +282,25 @@ export const NpcUtilsUi = () => {
 
       <UiEntity
         uiTransform={{
-          width: getScaledSize(300),
+          width: getScaledParentsButtonWidth(0,1),
           alignItems: 'center',
           flexDirection: 'row',
           justifyContent: 'space-between',
           display: displayFirstButtonContainer() ? 'flex' : 'none',
-          position: { top: '20%' }
+          position: { top: getText().length / 4 }
         }}
       >
         {/* Button1 (Top-Left) */}
         <UiEntity
           uiTransform={{
-            width: getScaledSize(150),
+            width: getScaledButtonWidth(0),
             height: getScaledSize(45),
             margin: { right: '5%' },
             flexDirection: 'row',
             alignItems: 'center',
             justifyContent: 'flex-start',
             alignContent: 'flex-start',
-            display: displayButton(1) ? 'flex' : 'none'
+            display: displayButton(1) ? 'flex' : 'none',
           }}
           uiBackground={{
             textureMode: 'stretch',
@@ -321,7 +333,7 @@ export const NpcUtilsUi = () => {
         {/* Button2 (Top-Right) */}
         <UiEntity
           uiTransform={{
-            width: getScaledSize(150),
+            width: getScaledButtonWidth(1),
             height: getScaledSize(45),
             flexDirection: 'row',
             alignItems: 'center',
@@ -361,19 +373,19 @@ export const NpcUtilsUi = () => {
       {/* Second row of buttons */}
       <UiEntity
         uiTransform={{
-          width: getScaledSize(300),
+          width: getScaledParentsButtonWidth(2,3),
           alignItems: 'center',
           flexDirection: 'row',
           justifyContent: 'space-between',
           margin: { top: getScaledSize(20) },
           display: displaySecondButtonContainer() ? 'flex' : 'none',
-          position: { top: '15%' }
+          position: { top: getText().length / 4 }
         }}
       >
         {/* Button3 */}
         <UiEntity
           uiTransform={{
-            width: getScaledSize(150),
+            width: getScaledButtonWidth(2),
             height: getScaledSize(45),
             margin: { right: '5%' },
             alignItems: 'center',
@@ -397,7 +409,7 @@ export const NpcUtilsUi = () => {
         {/* Button4 */}
         <UiEntity
           uiTransform={{
-            width: getScaledSize(150),
+            width: getScaledButtonWidth(3),
             height: getScaledSize(45),
             alignItems: 'center',
             justifyContent: 'center',

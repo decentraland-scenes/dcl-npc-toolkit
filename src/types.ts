@@ -80,6 +80,7 @@ export type ButtonData = {
   fontSize?: number
   offsetX?: number
   offsetY?: number
+  size?: number | string
 }
 
 export enum ButtonStyles {
