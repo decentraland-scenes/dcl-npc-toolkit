@@ -141,7 +141,7 @@ function getScaledButtonWidth(button:number) {
 }
 export const NpcUtilsUi = () => {
   const width = getScaledSize(realWidth(700))
-  const height = getScaledSize(realHeight(225))
+  const height = getScaledSize(realHeight(300))
 
   return (
     <UiEntity
@@ -154,7 +154,7 @@ export const NpcUtilsUi = () => {
         position: { bottom: '10%', left: '50%' },
         margin: { top: (-height + getText().length / 2) / 2, left: -width / 2 },
         width,
-        height: getText().length <= 25 ? height : height + getText().length / 1.5 - 20
+        height: getText().length <= 100 ? height : height + getText().length / 1.6 - 60
       }}
     >
       <UiEntity
@@ -270,7 +270,7 @@ export const NpcUtilsUi = () => {
           justifyContent: 'flex-start',
           flexDirection: 'row',
           position: getTextPosition(),
-          margin: {bottom: getText().length <= 100 ? (getText().length <= 25 ? -40 : getText().length/3 - 60) : getText().length/10 - 50}
+          margin: {bottom: getText().length/10 + 70}
         }}
         uiText={{
           value: getText(),
@@ -287,7 +287,8 @@ export const NpcUtilsUi = () => {
           flexDirection: 'row',
           justifyContent: 'space-between',
           display: displayFirstButtonContainer() ? 'flex' : 'none',
-          position: { top: 70 + getText().length / 4 },
+          positionType: 'absolute',
+          position: { bottom: 90 },
         }}
       >
         {/* Button1 (Top-Left) */}
@@ -339,7 +340,7 @@ export const NpcUtilsUi = () => {
             alignItems: 'center',
             justifyContent: 'flex-start',
             alignContent: 'flex-start',
-            display: displayButton(2) ? 'flex' : 'none'
+            display: displayButton(2) ? 'flex' : 'none',
           }}
           uiBackground={{
             textureMode: 'stretch',
@@ -379,7 +380,8 @@ export const NpcUtilsUi = () => {
           justifyContent: 'space-between',
           margin: { top: getScaledSize(20), bottom:getScaledSize(40)},
           display: displaySecondButtonContainer() ? 'flex' : 'none',
-          position: { top: 70 + getText().length / 4},
+          positionType: 'absolute',
+          position: { bottom: -10 },
         }}
       >
         {/* Button3 */}
