@@ -154,7 +154,7 @@ export const NpcUtilsUi = () => {
         position: { bottom: '10%', left: '50%' },
         margin: { top: (-height + getText().length / 2) / 2, left: -width / 2 },
         width,
-        height: height + getText().length / 1.5
+        height: getText().length <= 25 ? height : height + getText().length / 1.5 - 20
       }}
     >
       <UiEntity
@@ -270,7 +270,7 @@ export const NpcUtilsUi = () => {
           justifyContent: 'flex-start',
           flexDirection: 'row',
           position: getTextPosition(),
-          margin: {bottom: getText().length <= 100 ? getText().length/3 : getText().length/10}
+          margin: {bottom: getText().length <= 100 ? (getText().length <= 25 ? -40 : getText().length/3 - 60) : getText().length/10 - 50}
         }}
         uiText={{
           value: getText(),
@@ -287,7 +287,7 @@ export const NpcUtilsUi = () => {
           flexDirection: 'row',
           justifyContent: 'space-between',
           display: displayFirstButtonContainer() ? 'flex' : 'none',
-          position: { top: getText().length / 4 }
+          position: { top: 70 + getText().length / 4 },
         }}
       >
         {/* Button1 (Top-Left) */}
@@ -377,9 +377,9 @@ export const NpcUtilsUi = () => {
           alignItems: 'center',
           flexDirection: 'row',
           justifyContent: 'space-between',
-          margin: { top: getScaledSize(20) },
+          margin: { top: getScaledSize(20), bottom:getScaledSize(40)},
           display: displaySecondButtonContainer() ? 'flex' : 'none',
-          position: { top: getText().length / 4 }
+          position: { top: 70 + getText().length / 4},
         }}
       >
         {/* Button3 */}
