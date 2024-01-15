@@ -36,7 +36,8 @@ import {
   positionTextY,
   realHeight,
   realWidth,
-  skipDialogs
+  skipDialogs,
+  getTextSize
 } from './dialog'
 import { sourcesComponentsCoordinates } from './uiResources'
 import { activeNPC } from './npc'
@@ -154,7 +155,7 @@ export const NpcUtilsUi = () => {
         position: { bottom: '10%', left: '50%' },
         margin: { top: (-height + getText().length / 2) / 2, left: -width / 2 },
         width,
-        height: getText().length <= 100 ? height : height + getText().length / 1.6 - 60
+        height: typeof(getTextSize()) === 'number' ? getTextSize() as number : (getText().length <= 100 ? height : height + getText().length / 1.6 - 60)
       }}
     >
       <UiEntity

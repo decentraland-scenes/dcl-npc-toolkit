@@ -209,6 +209,19 @@ export function displayDialog(){
     return !isActiveNpcSet() ? false :  npcDialogComponent.get(activeNPC).visible
 }
 
+export function getTextSize() {
+  let textSizes: number | string | undefined
+  if (activeNPC != 0 && npcDialogComponent.has(activeNPC)) {
+      let dialogData = npcDialogComponent.get(activeNPC);
+      if (dialogData.isQuestion) {
+          if (dialogData.script[dialogData.index].textSize !== undefined) {
+            textSizes = dialogData.script[dialogData.index]?.textSize;
+          }
+      }
+  }
+  return textSizes
+}
+
 export function displayButton(button:number){
     return !isActiveNpcSet() ? false :  npcDialogComponent.get(activeNPC).isQuestion && npcDialogComponent.get(activeNPC).buttons >= button
 }
