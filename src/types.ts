@@ -23,7 +23,7 @@ import { Vector3 } from '@dcl/sdk/math'
  */
 export type Dialog = {
   text: string
-  textSize?: string | number
+  textSize?: 'auto' | number
   name?: string
   fontSize?: number
   offsetX?: number
@@ -81,7 +81,7 @@ export type ButtonData = {
   fontSize?: number
   offsetX?: number
   offsetY?: number
-  size?: number | string
+  size?: number | 'auto'
 }
 
 export enum ButtonStyles {
