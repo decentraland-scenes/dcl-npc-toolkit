@@ -129,13 +129,6 @@ function getScaledFontSize(size: number): number {
 function getScaledTextWrap(size: number): number {
   return size * modalTextWrapScale
 }
-function getScaledParentsButtonWidth(firstButton:number, secondButton:number) {
-  return getScaledSize(getButtonText(firstButton).length * 16 + getButtonText(secondButton).length * 16) >= 300 && (getbuttonSize(firstButton) != '' || getbuttonSize(secondButton) != '')
-  ? getScaledSize(
-      (typeof(getbuttonSize(firstButton)) === 'number' ? getbuttonSize(firstButton) as number : getButtonText(firstButton).length * 14) 
-      + (typeof(getbuttonSize(secondButton)) === 'number' ? getbuttonSize(secondButton) as number : getButtonText(secondButton).length * 14)) 
-  : getScaledSize(300)
-}
 function getScaledButtonWidth(button:number) {
 return typeof(getbuttonSize(button)) === 'number' ? getScaledSize(getbuttonSize(button) as number) : 'auto'
 }
@@ -289,10 +282,10 @@ export const NpcUtilsUi = () => {
 
       <UiEntity
         uiTransform={{
-          width: 'auto',
+          width: 450,
           alignItems: 'center',
           flexDirection: 'row',
-          justifyContent: 'space-between',
+          justifyContent: 'center',
           display: displayFirstButtonContainer() ? 'flex' : 'none',
         }}
       >
@@ -379,10 +372,10 @@ export const NpcUtilsUi = () => {
       {/* Second row of buttons */}
       <UiEntity
         uiTransform={{
-          width: 'auto',
+          width: 450,
           alignItems: 'center',
           flexDirection: 'row',
-          justifyContent: 'space-between',
+          justifyContent: 'center',
           margin: { top: getScaledSize(20)},
           display: displaySecondButtonContainer() ? 'flex' : 'none',
         }}
