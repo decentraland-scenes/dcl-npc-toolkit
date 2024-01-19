@@ -1360,6 +1360,7 @@ The script must adhere to the following schema:
 ```ts
 class  Dialog {
 text: string
+textSize?: 'auto' | number
 name?: string
 fontSize?: number
 offsetX?: number
@@ -1502,6 +1503,11 @@ When on a question entry, you must provide at least the following for each butto
 
 -  `goToDialog`: _(number | string)_ The index or name of the next dialog entry to display when activated.
 
+  
+
+  
+
+-  `size`: _('auto' | number)_ The size of the button.
   
 
   
