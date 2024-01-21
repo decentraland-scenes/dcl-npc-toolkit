@@ -149,8 +149,7 @@ export const NpcUtilsUi = () => {
         margin: { top: (-height + getText().length / 2) / 2, left: -width / 2 },
         padding: {top: 40, bottom: 40},
         width,
-        // minHeight: typeof(getTextSize()) === 'number' ? 0 : 100,
-        height: typeof(getTextSize()) === 'number' ? getTextSize() as number : (getText().length <= 100 ? height : 'auto')
+        height: typeof(getTextSize()) === 'number' ? getTextSize() as number : 'auto'
       }} 
     >
       <UiEntity
@@ -269,8 +268,8 @@ export const NpcUtilsUi = () => {
           flexDirection: 'row',
           position: getTextPosition(),
           display: 'flex',
-          flexGrow: 1
-          // margin: {bottom: getText().length/10 + 70}
+          flexGrow: 1,
+          minHeight: 100
         }}
         uiText={{
           value: getText(),

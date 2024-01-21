@@ -1,5 +1,5 @@
 import ReactEcs, { ReactEcsRenderer, UiEntity } from '@dcl/sdk/react-ecs'
-import { NpcUtilsUi } from './ui';
+import * as npc from 'dcl-npc-toolkit'
 
 export function setupUi() {
   ReactEcsRenderer.setUiRenderer(uiComponent)
@@ -12,7 +12,7 @@ const uiComponent = () => (
       height: '100%',
     }}
   >
-    <NpcUtilsUi/>
+    <npc.NpcUtilsUi/>
   </UiEntity>
   
 )

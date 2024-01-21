@@ -7,7 +7,8 @@
     "deploy": "sdk-commands deploy",
     "build": "sdk-commands build",
     "upgrade-sdk": "npm install --save-dev @dcl/sdk@latest",
-    "upgrade-sdk:next": "npm install --save-dev @dcl/sdk@next"
+    "upgrade-sdk:next": "npm install --save-dev @dcl/sdk@next",
+    "link-sdk": "cd node_modules/@dcl/sdk && npm link && cd ../js-runtime && npm link"
   },
   "devDependencies": {
     "@dcl/js-runtime": "7.3.36",

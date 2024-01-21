@@ -11,7 +11,14 @@
     "type": "git",
     "url": "https://github.com/decentraland-scenes/dcl-npc-toolkit.git"
   },
-  "keywords": ["decentraland", "sdk7", "sdk 7", "sdk utils", "npc", "sdk library"],
+  "keywords": [
+    "decentraland",
+    "sdk7",
+    "sdk 7",
+    "sdk utils",
+    "npc",
+    "sdk library"
+  ],
   "author": "Decentraland",
   "license": "Apache-2.0",
   "bugs": {
@@ -19,9 +26,9 @@
   },
   "homepage": "https://github.com/decentraland-scenes/dcl-npc-toolkit#readme",
   "devDependencies": {
+    "@dcl-sdk/utils": "latest",
     "@dcl/sdk": "latest",
-    "typescript": "^5.0.2",
-    "@dcl-sdk/utils": "latest"
+    "typescript": "^5.0.2"
   },
   "files": [
     "dist"
