@@ -23,7 +23,7 @@ import { Vector3 } from '@dcl/sdk/math'
  */
 export type Dialog = {
   text: string
-  textSize?: 'auto' | number
+  windowHeight?: 'auto' | number
   name?: string
   fontSize?: number
   offsetX?: number

@@ -1360,7 +1360,7 @@ The script must adhere to the following schema:
 ```ts
 class  Dialog {
 text: string
-textSize?: 'auto' | number
+windowHeight?: 'auto' | number
 name?: string
 fontSize?: number
 offsetX?: number

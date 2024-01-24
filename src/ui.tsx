@@ -37,7 +37,7 @@ import {
   realHeight,
   realWidth,
   skipDialogs,
-  getTextSize
+  getWindowHeight
 } from './dialog'
 import { sourcesComponentsCoordinates } from './uiResources'
 import { activeNPC } from './npc'
@@ -146,10 +146,10 @@ export const NpcUtilsUi = () => {
         positionType: 'absolute',
         flexGrow: 1,
         position: { bottom: '10%', left: '50%' },
-        margin: { top: (-height + getText().length / 2) / 2, left: -width / 2 },
+        margin: { top: -height  / 2, left: -width / 2 },
         padding: {top: 40, bottom: 40},
         width,
-        height: typeof(getTextSize()) === 'number' ? getTextSize() as number : 'auto'
+        height: typeof(getWindowHeight()) === 'number' ? getWindowHeight() as number : 'auto'
       }} 
     >
       <UiEntity
@@ -292,6 +292,8 @@ export const NpcUtilsUi = () => {
         <UiEntity
           uiTransform={{
             width: getScaledButtonWidth(0),
+            maxWidth: getScaledSize(300),
+            overflow: 'hidden',
             height: getScaledSize(45),
             margin: { right: '5%' },
             flexDirection: 'row-reverse',
@@ -316,7 +318,7 @@ export const NpcUtilsUi = () => {
             uiTransform={{
               width: getScaledSize(25),
               height: getScaledSize(25),
-              margin: {left: 5, right: 5}
+              margin: {left: getScaledSize(5), right: getScaledSize(5)}
             }}
             uiBackground={{
               textureMode: 'stretch',
@@ -332,6 +334,8 @@ export const NpcUtilsUi = () => {
         <UiEntity
           uiTransform={{
             width: getScaledButtonWidth(1),
+            maxWidth: getScaledSize(300),
+            overflow: 'hidden',
             height: getScaledSize(45),
             flexDirection: 'row-reverse',
             alignItems: 'center',
@@ -355,7 +359,7 @@ export const NpcUtilsUi = () => {
             uiTransform={{
               width: getScaledSize(25),
               height: getScaledSize(25),
-              margin: {left: 5, right: 5}
+              margin: {left: getScaledSize(5), right: getScaledSize(5)}
             }}
             uiBackground={{
               textureMode: 'stretch',
@@ -383,6 +387,8 @@ export const NpcUtilsUi = () => {
         <UiEntity
           uiTransform={{
             width: getScaledButtonWidth(2),
+            maxWidth: getScaledSize(300),
+            overflow: 'hidden',
             height: getScaledSize(45),
             margin: { right: '5%' },
             alignItems: 'center',
@@ -407,6 +413,8 @@ export const NpcUtilsUi = () => {
         <UiEntity
           uiTransform={{
             width: getScaledButtonWidth(3),
+            maxWidth: getScaledSize(300),
+            overflow: 'hidden',
             height: getScaledSize(45),
             alignItems: 'center',
             justifyContent: 'center',

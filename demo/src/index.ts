@@ -17,7 +17,7 @@ export function main() {
                 npc.talk(myNPC, [
                     {
                         text: `Quest Overview: In the mystical realm of Eldoria, a sinister force has swept through the winter lands, freezing the hearts of magical creatures and stealing the essence of Frostfire Crystals - the source of warmth and magic. As a valiant hero, you are called upon to embark on a quest to restore balance and save the fantastical festivities. `,
-                        textSize: 'auto',
+                        windowHeight: 'auto',
                         isQuestion: true,
                         buttons: [
                             { label: `Restore magic!`, goToDialog: 2, size: 'auto'},

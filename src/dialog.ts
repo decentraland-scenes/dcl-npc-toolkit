@@ -182,7 +182,6 @@ export function getButtonText(button:number){
         let dialogData = npcDialogComponent.get(activeNPC)
         if(dialogData.isQuestion && dialogData.buttons > button){
             text = dialogData.script[dialogData.index].buttons[button].label
-            text = text.slice(0, 15)
         }
     }
     return text
@@ -209,17 +208,17 @@ export function displayDialog(){
     return !isActiveNpcSet() ? false :  npcDialogComponent.get(activeNPC).visible
 }
 
-export function getTextSize() {
-  let textSizes: number | string | undefined
+export function getWindowHeight() {
+  let windowHeights: number | string | undefined
   if (activeNPC != 0 && npcDialogComponent.has(activeNPC)) {
       let dialogData = npcDialogComponent.get(activeNPC);
       if (dialogData.isQuestion) {
-          if (dialogData.script[dialogData.index].textSize !== undefined) {
-            textSizes = dialogData.script[dialogData.index]?.textSize;
+          if (dialogData.script[dialogData.index].windowHeight !== undefined) {
+            windowHeights = dialogData.script[dialogData.index]?.windowHeight;
           }
       }
   }
-  return textSizes
+  return windowHeights
 }
 
 export function displayButton(button:number){
@@ -686,5 +685,3 @@ while(dialogData.visibleChars < dialogData.fullText.length && dialogData.fullTex
 }
 return
 }
-
-export { Dialog };
