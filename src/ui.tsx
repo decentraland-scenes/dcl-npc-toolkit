@@ -267,7 +267,6 @@ export const NpcUtilsUi = () => {
           flexDirection: 'row',
           position: getTextPosition(),
           display: 'flex',
-          flexGrow: 1,
           minHeight: 100
         }}
         uiText={{
@@ -332,6 +331,7 @@ export const NpcUtilsUi = () => {
               width: 'auto',
               maxWidth: getScaledSize(265),
               overflow: 'hidden',
+              padding: {right: 5},
               margin: {left: getScaledSize(30), right: getScaledSize(5)}
             }}
             uiText={{ value: getButtonText(0), fontSize: getScaledFontSize(16), textAlign: 'middle-left' }}
@@ -382,6 +382,7 @@ export const NpcUtilsUi = () => {
               width: 'auto',
               maxWidth: getScaledSize(265),
               overflow: 'hidden',
+              padding: {right: 5},
               margin: {left: getScaledSize(30), right: getScaledSize(5)}
             }}
             uiText={{ value: getButtonText(1), fontSize: getScaledFontSize(16), textAlign: 'middle-left' }}
@@ -430,6 +431,7 @@ export const NpcUtilsUi = () => {
               width: 'auto',
               maxWidth: getScaledSize(300),
               overflow: 'hidden',
+              padding: {right: 3},
               margin: {left: getScaledSize(5), right: getScaledSize(5)}
             }}
             uiText={{ value: getButtonText(2), fontSize: getScaledFontSize(16), textAlign: 'middle-left' }}
@@ -465,6 +467,7 @@ export const NpcUtilsUi = () => {
               width: 'auto',
               maxWidth: getScaledSize(300),
               overflow: 'hidden',
+              padding: {right: 3},
               margin: {left: getScaledSize(5), right: getScaledSize(5)}
             }}
             uiText={{ value: getButtonText(3), fontSize: getScaledFontSize(16), textAlign: 'middle-left' }}
