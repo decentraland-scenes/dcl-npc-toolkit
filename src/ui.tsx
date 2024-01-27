@@ -267,6 +267,7 @@ export const NpcUtilsUi = () => {
           flexDirection: 'row',
           position: getTextPosition(),
           display: 'flex',
+          flexGrow: 1,
           minHeight: 100
         }}
         uiText={{
