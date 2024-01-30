@@ -20,10 +20,10 @@ export function main() {
                         windowHeight: 'auto',
                         isQuestion: true,
                         buttons: [
-                            { label: `Restore magic!`, goToDialog: 2, size: 'auto'},
-                            { label: `Crystal theft`, goToDialog: 1, size: 'auto'},
-                            { label: `Icy crisis`, goToDialog: 1, size: 100},
-                            { label: `Heroes darkness.`, goToDialog: 1 },
+                            { label: `Restore magic!`, goToDialog: 0, size: 'auto'},
+                            { label: `Crystal theft`, goToDialog: 0, size: 'auto'},
+                            { label: `Icy crisis`, goToDialog: 0, size: 100},
+                            { label: `Heroes darkness.`, goToDialog: 0 },
                         ],
                     }
                 ])

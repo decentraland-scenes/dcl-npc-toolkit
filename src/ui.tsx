@@ -288,7 +288,7 @@ export const NpcUtilsUi = () => {
           width: 'auto',
           alignSelf: 'flex-start',
           alignItems: 'flex-start',
-          justifyContent: 'flex-start',
+          justifyContent: 'center',
           flexDirection: 'row',
           position: getTextPosition(),
           display: 'flex',
@@ -313,7 +313,11 @@ export const NpcUtilsUi = () => {
         }}
       >
         {/* Button1 (Top-Left) */}
-        <UiEntity>
+        <UiEntity
+          onMouseDown={() => {
+            buttonClick(0)
+          }}
+        >
           <UiEntity
             uiTransform={{
               height: 'auto',
@@ -344,9 +348,6 @@ export const NpcUtilsUi = () => {
                 src: getTheme()
               },
               uvs: getImageAtlasMapping(darkButtonSection)
-            }}
-            onMouseDown={() => {
-              buttonClick(0)
             }}
           >
             <UiEntity
@@ -392,7 +393,11 @@ export const NpcUtilsUi = () => {
         </UiEntity>
 
         {/* Button2 (Top-Right) */}
-        <UiEntity>
+        <UiEntity
+          onMouseDown={() => {
+            buttonClick(1)
+          }}
+        >
           <UiEntity
             uiTransform={{
               height: 'auto',
@@ -423,9 +428,6 @@ export const NpcUtilsUi = () => {
                 src: getTheme()
               },
               uvs: getImageAtlasMapping(redButtonSection)
-            }}
-            onMouseDown={() => {
-              buttonClick(1)
             }}
           >
             <UiEntity
@@ -482,7 +484,11 @@ export const NpcUtilsUi = () => {
         }}
       >
         {/* Button3 */}
-        <UiEntity>
+        <UiEntity
+          onMouseDown={() => {
+            buttonClick(3)
+          }}
+        >
           <UiEntity
             uiTransform={{
               height: 'auto',
@@ -514,9 +520,6 @@ export const NpcUtilsUi = () => {
               },
               uvs: getImageAtlasMapping(darkButtonSection)
             }}
-            onMouseDown={() => {
-              buttonClick(3)
-            }}
           >
             <UiEntity
               uiTransform={{
@@ -544,7 +547,11 @@ export const NpcUtilsUi = () => {
         </UiEntity>
 
         {/* Button4 */}
-        <UiEntity>
+        <UiEntity
+          onMouseDown={() => {
+            buttonClick(4)
+          }}
+        >
           <UiEntity
             uiTransform={{
               height: 'auto',
@@ -575,9 +582,6 @@ export const NpcUtilsUi = () => {
                 src: getTheme()
               },
               uvs: getImageAtlasMapping(darkButtonSection)
-            }}
-            onMouseDown={() => {
-              buttonClick(4)
             }}
           >
             <UiEntity
