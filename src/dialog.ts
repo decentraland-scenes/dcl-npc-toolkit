@@ -205,7 +205,7 @@ export function getFontSize(){
 }
 
 export function getButtonFontSize(button:number){
-  let ButtonFontSize: number = 54
+  let ButtonFontSize: number = 0
   if (activeNPC != 0 && npcDialogComponent.has(activeNPC)) {
       let dialogData = npcDialogComponent.get(activeNPC);
       if (dialogData.isQuestion && dialogData.buttons > button) {
