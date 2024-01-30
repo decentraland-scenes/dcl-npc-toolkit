@@ -301,7 +301,7 @@ export const NpcUtilsUi = () => {
           fontSize: getScaledFontSize(getFontSize()),
           textAlign: 'middle-left'
         }}
-      ></UiEntity>
+      />
 
       <UiEntity
         uiTransform={{
@@ -313,10 +313,7 @@ export const NpcUtilsUi = () => {
         }}
       >
         {/* Button1 (Top-Left) */}
-        <UiEntity
-          uiTransform={{
-          }}
-        >
+        <UiEntity>
           <UiEntity
             uiTransform={{
               height: 'auto',
@@ -366,7 +363,7 @@ export const NpcUtilsUi = () => {
                 },
                 uvs: getImageAtlasMapping(secondaryButtonSection)
               }}
-            ></UiEntity>
+            />
             <UiEntity
               uiTransform={{
                 width: 'auto',
@@ -376,8 +373,7 @@ export const NpcUtilsUi = () => {
                 margin: { left: getScaledSize(30) }
               }}
               uiText={{ value: getButtonText(0), fontSize: getScaledFontSize(16), textAlign: 'middle-left' }}
-            >
-            </UiEntity>
+            />
           </UiEntity>
           <UiEntity
             uiTransform={{
@@ -446,7 +442,7 @@ export const NpcUtilsUi = () => {
                 },
                 uvs: getImageAtlasMapping(primaryButtonSection)
               }}
-            ></UiEntity>
+            />
             <UiEntity
               uiTransform={{
                 width: 'auto',
@@ -456,8 +452,7 @@ export const NpcUtilsUi = () => {
                 margin: { left: getScaledSize(30) }
               }}
               uiText={{ value: getButtonText(1), fontSize: getScaledFontSize(16), textAlign: 'middle-left' }}
-            >
-            </UiEntity>
+            />
           </UiEntity>
           <UiEntity
             uiTransform={{
@@ -530,8 +525,7 @@ export const NpcUtilsUi = () => {
                 overflow: 'hidden',
               }}
               uiText={{ value: getButtonText(2), fontSize: getScaledFontSize(16), textAlign: 'middle-left' }}
-            >
-            </UiEntity>
+            />
           </UiEntity>
           <UiEntity
             uiTransform={{
@@ -593,8 +587,7 @@ export const NpcUtilsUi = () => {
                 overflow: 'hidden',
               }}
               uiText={{ value: getButtonText(3), fontSize: getScaledFontSize(16), textAlign: 'middle-left' }}
-            >
-            </UiEntity>
+            />
           </UiEntity>
           <UiEntity
             uiTransform={{
