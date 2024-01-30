@@ -369,7 +369,7 @@ export const NpcUtilsUi = () => {
                 width: 'auto',
                 overflow: 'hidden',
                 maxWidth: getScaledSize(217),
-                padding: { right: 5 },
+                padding: { right: getScaledSize(5) },
                 margin: { left: getScaledSize(30) }
               }}
               uiText={{ value: getButtonText(0), fontSize: getScaledFontSize(16), textAlign: 'middle-left' }}
@@ -448,7 +448,7 @@ export const NpcUtilsUi = () => {
                 width: 'auto',
                 maxWidth: getScaledSize(217),
                 overflow: 'hidden',
-                padding: { right: 5 },
+                padding: { right: getScaledSize(5) },
                 margin: { left: getScaledSize(30) }
               }}
               uiText={{ value: getButtonText(1), fontSize: getScaledFontSize(16), textAlign: 'middle-left' }}
