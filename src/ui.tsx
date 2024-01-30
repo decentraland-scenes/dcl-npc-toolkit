@@ -14,6 +14,7 @@ import {
   getButtonText,
   getbuttonSize,
   getFontSize,
+  getButtonFontSize,
   getImage,
   getImageAtlasMapping,
   getLeftClickTheme,
@@ -288,7 +289,7 @@ export const NpcUtilsUi = () => {
           width: 'auto',
           alignSelf: 'flex-start',
           alignItems: 'flex-start',
-          justifyContent: 'center',
+          justifyContent: 'flex-start',
           flexDirection: 'row',
           position: getTextPosition(),
           display: 'flex',
@@ -373,7 +374,7 @@ export const NpcUtilsUi = () => {
                 padding: { right: getScaledSize(5) },
                 margin: { left: getScaledSize(30) }
               }}
-              uiText={{ value: getButtonText(0), fontSize: getScaledFontSize(16), textAlign: 'middle-left' }}
+              uiText={{ value: getButtonText(0), fontSize: getScaledFontSize(getButtonFontSize(0)), textAlign: 'middle-left' }}
             />
           </UiEntity>
           <UiEntity
@@ -453,7 +454,7 @@ export const NpcUtilsUi = () => {
                 padding: { right: getScaledSize(5) },
                 margin: { left: getScaledSize(30) }
               }}
-              uiText={{ value: getButtonText(1), fontSize: getScaledFontSize(16), textAlign: 'middle-left' }}
+              uiText={{ value: getButtonText(1), fontSize: getScaledFontSize(getButtonFontSize(1)), textAlign: 'middle-left' }}
             />
           </UiEntity>
           <UiEntity
@@ -527,7 +528,7 @@ export const NpcUtilsUi = () => {
                 maxWidth: getScaledSize(252),
                 overflow: 'hidden',
               }}
-              uiText={{ value: getButtonText(2), fontSize: getScaledFontSize(16), textAlign: 'middle-left' }}
+              uiText={{ value: getButtonText(2), fontSize: getScaledFontSize(getButtonFontSize(2)), textAlign: 'middle-left' }}
             />
           </UiEntity>
           <UiEntity
@@ -590,7 +591,7 @@ export const NpcUtilsUi = () => {
                 maxWidth: getScaledSize(252),
                 overflow: 'hidden',
               }}
-              uiText={{ value: getButtonText(3), fontSize: getScaledFontSize(16), textAlign: 'middle-left' }}
+              uiText={{ value: getButtonText(3), fontSize: getScaledFontSize(getButtonFontSize(3)), textAlign: 'middle-left' }}
             />
           </UiEntity>
           <UiEntity

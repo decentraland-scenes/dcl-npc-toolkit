@@ -204,6 +204,19 @@ export function getFontSize(){
     return !isActiveNpcSet() ? 22 : npcDialogComponent.get(activeNPC).fontSize
 }
 
+export function getButtonFontSize(button:number){
+  let ButtonFontSize: number = 54
+  if (activeNPC != 0 && npcDialogComponent.has(activeNPC)) {
+      let dialogData = npcDialogComponent.get(activeNPC);
+      if (dialogData.isQuestion && dialogData.buttons > button) {
+          if (dialogData.script[dialogData.index].buttons[button].fontSize !== undefined) {
+            ButtonFontSize = dialogData.script[dialogData.index].buttons[button]?.fontSize;
+          } else {ButtonFontSize = 16}
+      }
+  }
+  return ButtonFontSize
+}
+
 export function displayDialog(){
     return !isActiveNpcSet() ? false :  npcDialogComponent.get(activeNPC).visible
 }
