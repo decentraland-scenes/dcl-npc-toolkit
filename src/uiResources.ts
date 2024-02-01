@@ -27,15 +27,39 @@ export const sourcesComponentsCoordinates = {
 		sourceTop: 611,
 	  },
 	  buttonE: {
-		sourceWidth: 174,
+		sourceWidth: 126,
+		sourceHeight: 46,
+		sourceLeft: 536,
+		sourceTop: 662,
+	  },
+	  buttonECorner: {
+		sourceWidth: 12,
 		sourceHeight: 46,
 		sourceLeft: 512,
 		sourceTop: 662,
 	  },
+	  buttonEEdge: {
+		sourceWidth: 12,
+		sourceHeight: 46,
+		sourceLeft: 674,
+		sourceTop: 662,
+	  },
 	  buttonF: {
-		sourceWidth: 174,
+		sourceWidth: 126,
+		sourceHeight: 46,
+		sourceLeft: 536,
+		sourceTop: 612,
+	  },
+	  buttonFCorner: {
+		sourceWidth: 12,
 		sourceHeight: 46,
 		sourceLeft: 512,
+		sourceTop: 612,
+	  },
+	  buttonFEdge: {
+		sourceWidth: 12,
+		sourceHeight: 46,
+		sourceLeft: 674,
 		sourceTop: 612,
 	  },
 	  white: {
