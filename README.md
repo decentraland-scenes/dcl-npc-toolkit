@@ -608,21 +608,22 @@ The player advances through each entry by clicking the mouse button. Once the la
 The script must adhere to the following schema:
 
 ```ts
-class Dialog {
-	text: string
-	name?: string
-	fontSize?: number
-	offsetX?: number
-	offsetY?: number
-	typeSpeed?: number
-	isEndOfDialog?: boolean
-	triggeredByNext?: () => void
-	portrait?: ImageData
-	image?: ImageData
-	isQuestion?: boolean
-	buttons?: ButtonData[]
-	audio?: string
-	skipable?: boolean
+class  Dialog {
+  text: string
+  windowHeight?: 'auto' | number
+  name?: string
+  fontSize?: number
+  offsetX?: number
+  offsetY?: number
+  typeSpeed?: number
+  isEndOfDialog?: boolean
+  triggeredByNext?: () =>  void
+  portrait?: ImageData
+  image?: ImageData
+  isQuestion?:boolean
+  buttons?: ButtonData[]
+  audio?: string
+  skipable?: boolean
 }
 ```
 
@@ -659,6 +660,8 @@ When on a question entry, you must provide at least the following for each butto
 - `label`: _(string)_ The label to show on the button.
 
 - `goToDialog`: _(number | string)_ The index or name of the next dialog entry to display when activated.
+
+- `size`: _('auto' | number)_ The size of the button.
 
 > TIP: It's always better to refer to an entry by name, since the array index might shift if you add more entries and it can get hard to keep track of these references.
 

@@ -187,12 +187,51 @@ export function getButtonText(button:number){
     return text
 }
 
+export function getbuttonSize(button:number) {
+  let ButtonSize: number | string | undefined
+  if (activeNPC != 0 && npcDialogComponent.has(activeNPC)) {
+      let dialogData = npcDialogComponent.get(activeNPC);
+      if (dialogData.isQuestion && dialogData.buttons > button) {
+          if (dialogData.script[dialogData.index].buttons[button].size !== undefined) {
+              ButtonSize = dialogData.script[dialogData.index].buttons[button]?.size;
+          }
+      }
+  }
+  return ButtonSize
+}
+
 export function getFontSize(){
     return !isActiveNpcSet() ? 22 : npcDialogComponent.get(activeNPC).fontSize
 }
 
+export function getButtonFontSize(button:number){
+  let ButtonFontSize: number = 0
+  if (activeNPC != 0 && npcDialogComponent.has(activeNPC)) {
+      let dialogData = npcDialogComponent.get(activeNPC);
+      if (dialogData.isQuestion && dialogData.buttons > button) {
+          if (dialogData.script[dialogData.index].buttons[button].fontSize !== undefined) {
+            ButtonFontSize = dialogData.script[dialogData.index].buttons[button]?.fontSize;
+          } else {ButtonFontSize = 16}
+      }
+  }
+  return ButtonFontSize
+}
+
 export function displayDialog(){
     return !isActiveNpcSet() ? false :  npcDialogComponent.get(activeNPC).visible
+}
+
+export function getWindowHeight() {
+  let windowHeights: number | string | undefined
+  if (activeNPC != 0 && npcDialogComponent.has(activeNPC)) {
+      let dialogData = npcDialogComponent.get(activeNPC);
+      if (dialogData.isQuestion) {
+          if (dialogData.script[dialogData.index].windowHeight !== undefined) {
+            windowHeights = dialogData.script[dialogData.index]?.windowHeight;
+          }
+      }
+  }
+  return windowHeights
 }
 
 export function displayButton(button:number){
