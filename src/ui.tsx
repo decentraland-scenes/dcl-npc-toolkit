@@ -334,7 +334,7 @@ export const NpcUtilsUi = () => {
           />
           <UiEntity
             uiTransform={{
-              width: getScaledButtonWidth(0),
+              width:  'auto',
               maxWidth: getScaledSize(300),
               height: getScaledSize(45),
               flexDirection: 'row',
@@ -353,7 +353,7 @@ export const NpcUtilsUi = () => {
           >
             <UiEntity
               uiTransform={{
-                width: getScaledSize(25),
+                width:  'auto',
                 height: getScaledSize(25),
                 margin: { right: getScaledSize(5) },
                 positionType: 'absolute'
@@ -380,7 +380,7 @@ export const NpcUtilsUi = () => {
           <UiEntity
             uiTransform={{
               height: 'auto',
-              width: getScaledSize(12),
+              width:  'auto',
               margin: { right: '5%' },
             }}
             uiBackground={{
@@ -414,7 +414,7 @@ export const NpcUtilsUi = () => {
           />
           <UiEntity
             uiTransform={{
-              width: getScaledButtonWidth(1),
+              width:  'auto',
               maxWidth: getScaledSize(300),
               height: getScaledSize(45),
               flexDirection: 'row',
@@ -433,7 +433,7 @@ export const NpcUtilsUi = () => {
           >
             <UiEntity
               uiTransform={{
-                width: getScaledSize(25),
+                width:  'auto',
                 height: getScaledSize(25),
                 margin: { right: getScaledSize(5) },
                 positionType: 'absolute',
@@ -460,7 +460,7 @@ export const NpcUtilsUi = () => {
           <UiEntity
             uiTransform={{
               height: 'auto',
-              width: getScaledSize(12)
+              width:  'auto',
             }}
             uiBackground={{
               textureMode: 'stretch',
@@ -476,7 +476,7 @@ export const NpcUtilsUi = () => {
       {/* Second row of buttons */}
       <UiEntity
         uiTransform={{
-          width: getScaledButtonWidth(450),
+          width: 'auto',
           alignItems: 'center',
           flexDirection: 'row',
           justifyContent: 'center',
@@ -505,7 +505,7 @@ export const NpcUtilsUi = () => {
           />
           <UiEntity
             uiTransform={{
-              width: getScaledButtonWidth(2),
+              width: 'auto',
               maxWidth: getScaledSize(300),
               overflow: 'hidden',
               height: getScaledSize(45),
@@ -534,7 +534,7 @@ export const NpcUtilsUi = () => {
           <UiEntity
             uiTransform={{
               height: 'auto',
-              width: getScaledSize(12),
+              width: 'auto',
               margin: { right: '5%' },
             }}
             uiBackground={{
@@ -556,7 +556,7 @@ export const NpcUtilsUi = () => {
           <UiEntity
             uiTransform={{
               height: 'auto',
-              width: getScaledSize(12),
+              width: 'auto',
             }}
             uiBackground={{
               textureMode: 'stretch',
@@ -568,7 +568,7 @@ export const NpcUtilsUi = () => {
           />
           <UiEntity
             uiTransform={{
-              width: getScaledButtonWidth(3),
+              width: 'auto',
               maxWidth: getScaledSize(300),
               overflow: 'hidden',
               height: getScaledSize(45),
@@ -597,7 +597,7 @@ export const NpcUtilsUi = () => {
           <UiEntity
             uiTransform={{
               height: 'auto',
-              width: getScaledSize(12),
+              width: 'auto',
             }}
             uiBackground={{
               textureMode: 'stretch',

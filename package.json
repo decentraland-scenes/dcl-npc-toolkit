@@ -1,36 +1,39 @@
 {
-  "name": "dcl-npc-toolkit",
-  "version": "1.0.3",
-  "description": "A collection of tools for creating Non-Player-Characters (NPCs). These are capable of having conversations with the player, and play different animations.",
-  "main": "./dist/index.js",
-  "typings": "./dist/index.d.ts",
-  "scripts": {
-    "build": "tsc -p tsconfig.json"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/decentraland-scenes/dcl-npc-toolkit.git"
-  },
-  "keywords": [
-    "decentraland",
-    "sdk7",
-    "sdk 7",
-    "sdk utils",
-    "npc",
-    "sdk library"
-  ],
-  "author": "Decentraland",
-  "license": "Apache-2.0",
-  "bugs": {
-    "url": "https://github.com/decentraland-scenes/dcl-npc-toolkit/issues"
-  },
-  "homepage": "https://github.com/decentraland-scenes/dcl-npc-toolkit#readme",
-  "devDependencies": {
-    "@dcl-sdk/utils": "latest",
-    "@dcl/sdk": "latest",
-    "typescript": "^5.0.2"
-  },
-  "files": [
-    "dist"
-  ]
+	"name": "dcl-npc-toolkit",
+	"version": "1.0.3",
+	"description": "A collection of tools for creating Non-Player-Characters (NPCs). These are capable of having conversations with the player, and play different animations.",
+	"main": "./dist/index.js",
+	"typings": "./dist/index.d.ts",
+	"scripts": {
+		"build": "tsc -p tsconfig.json"
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/decentraland-scenes/dcl-npc-toolkit.git"
+	},
+	"keywords": [
+		"decentraland",
+		"sdk7",
+		"sdk 7",
+		"sdk utils",
+		"npc",
+		"sdk library"
+	],
+	"author": "Decentraland",
+	"license": "Apache-2.0",
+	"bugs": {
+		"url": "https://github.com/decentraland-scenes/dcl-npc-toolkit/issues"
+	},
+	"homepage": "https://github.com/decentraland-scenes/dcl-npc-toolkit#readme",
+	"devDependencies": {
+		"@dcl-sdk/utils": "latest",
+		"@dcl/sdk": "latest",
+		"typescript": "^5.0.2"
+	},
+	"files": [
+		"dist"
+	],
+	"dependencies": {
+		"@dcl/js-runtime": "latest"
+	}
 }
