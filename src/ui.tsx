@@ -322,7 +322,7 @@ export const NpcUtilsUi = () => {
           <UiEntity
             uiTransform={{
               height: 'auto',
-              width: getScaledSize(12)
+              width: 'auto',
             }}
             uiBackground={{
               textureMode: 'stretch',
@@ -402,7 +402,7 @@ export const NpcUtilsUi = () => {
           <UiEntity
             uiTransform={{
               height: 'auto',
-              width: getScaledSize(12)
+              width: 'auto',
             }}
             uiBackground={{
               textureMode: 'stretch',
@@ -493,7 +493,7 @@ export const NpcUtilsUi = () => {
           <UiEntity
             uiTransform={{
               height: 'auto',
-              width: getScaledSize(12),
+              width: 'auto',
             }}
             uiBackground={{
               textureMode: 'stretch',
