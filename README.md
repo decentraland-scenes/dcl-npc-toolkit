@@ -599,22 +599,22 @@ The player advances through each entry by clicking the mouse button. Once the la
 The script must adhere to the following schema:
 
 ```ts
-class  Dialog {
-  text: string
-  windowHeight?: 'auto' | number
-  name?: string
-  fontSize?: number
-  offsetX?: number
-  offsetY?: number
-  typeSpeed?: number
-  isEndOfDialog?: boolean
-  triggeredByNext?: () =>  void
-  portrait?: ImageData
-  image?: ImageData
-  isQuestion?:boolean
-  buttons?: ButtonData[]
-  audio?: string
-  skipable?: boolean
+class Dialog {
+	text: string
+	windowHeight?: 'auto' | number
+	name?: string
+	fontSize?: number
+	offsetX?: number
+	offsetY?: number
+	typeSpeed?: number
+	isEndOfDialog?: boolean
+	triggeredByNext?: () => void
+	portrait?: ImageData
+	image?: ImageData
+	isQuestion?: boolean
+	buttons?: ButtonData[]
+	audio?: string
+	skipable?: boolean
 }
 ```
 
