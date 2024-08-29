@@ -256,7 +256,8 @@ export const NpcUtilsUi = () => {
           uiTransform={{
             display: 'flex',
             positionType: 'absolute',
-            position: { left: '215%' }
+            alignSelf: 'center',
+            position: { left: '110%' }
           }}
           uiText={{
             value: 'Skip',
@@ -306,10 +307,11 @@ export const NpcUtilsUi = () => {
 
       <UiEntity
         uiTransform={{
-          width: getScaledButtonWidth(450),
+          width: getScaledSize(300),
+          height: getScaledSize(50),
           alignItems: 'center',
           flexDirection: 'row',
-          justifyContent: 'center',
+          justifyContent: 'space-around',
           display: displayFirstButtonContainer() ? 'flex' : 'none',
         }}
       >
@@ -476,10 +478,11 @@ export const NpcUtilsUi = () => {
       {/* Second row of buttons */}
       <UiEntity
         uiTransform={{
-          width: 'auto',
+          width: getScaledSize(300),
+          height: getScaledSize(50),
           alignItems: 'center',
           flexDirection: 'row',
-          justifyContent: 'center',
+          justifyContent: 'space-around',
           margin: { top: getScaledSize(20) },
           display: displaySecondButtonContainer() ? 'flex' : 'none',
         }}
