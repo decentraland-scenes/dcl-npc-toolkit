@@ -1,6 +1,6 @@
 import { Color4 } from '@dcl/sdk/math'
 import ReactEcs, { Button, Label, ReactEcsRenderer, UiEntity } from '@dcl/sdk/react-ecs'
-import { Entity } from '@dcl/sdk/ecs'
+import { engine, Entity, UiCanvasInformation } from '@dcl/sdk/ecs'
 import {
   buttonClick,
   confirmText,
@@ -130,20 +130,51 @@ let modalScale = 1
 let modelFontSizeScale = 1
 let modalTextWrapScale = 1
 
-export function setupNPCUiScaling(inModalScale: number, inFontSize: number, inModalTextWrapScale: number) {
-  modalScale = inModalScale
-  modelFontSizeScale = inFontSize
-  modalTextWrapScale = inModalTextWrapScale
-  console.log(
-    'NPC-TOOLKIT',
-    'Scale UI:',
-    modalScale,
-    'TextFontSize:',
-    modelFontSizeScale,
-    'TextWrapScaling:',
-    modalTextWrapScale
-  )
+// export function setupNPCUiScaling(inModalScale: number, inFontSize: number, inModalTextWrapScale: number) {
+//   modalScale = inModalScale
+//   modelFontSizeScale = inFontSize
+//   modalTextWrapScale = inModalTextWrapScale
+//   console.log(
+//     'NPC-TOOLKIT',
+//     'Scale UI:',
+//     modalScale,
+//     'TextFontSize:',
+//     modelFontSizeScale,
+//     'TextWrapScaling:',
+//     modalTextWrapScale
+//   )
+// }
+
+let timer = 0
+let canvasInfoTimer = 0.5
+let scaleSystemAlreadyAdded = false
+
+export function UIScaleUpdate() {
+
+  if(scaleSystemAlreadyAdded) return
+  scaleSystemAlreadyAdded = true
+
+  engine.addSystem((dt) => {
+    timer += dt
+
+    if (timer <= canvasInfoTimer) return
+    timer = 0
+
+    const uiCanvasInfo = UiCanvasInformation.getOrNull(engine.RootEntity)
+
+    if (!uiCanvasInfo) return
+
+    const newScaleFactor = Math.min(uiCanvasInfo.width / 1920, uiCanvasInfo.height / 1080)
+
+    if (newScaleFactor !== modalScale) {
+      modalScale = newScaleFactor
+      modelFontSizeScale = newScaleFactor
+      modalTextWrapScale = newScaleFactor
+    }
+  })
+
 }
+
 
 function getScaledSize(size: number): number {
   return size * modalScale
@@ -159,6 +190,9 @@ function getScaledButtonWidth(button: number) {
 }
 
 export const NpcUtilsUi = () => {
+
+  UIScaleUpdate()
+
   const width = getScaledSize(realWidth(700))
   const height = getScaledSize(realHeight(284))
 
@@ -172,9 +206,11 @@ export const NpcUtilsUi = () => {
         positionType: 'absolute',
         position: { bottom: '10%', left: '50%' },
         margin: { top: -height / 2, left: -width / 2 },
-        padding: { top: 40, bottom: 40 },
+        padding: { top: getScaledSize(40), bottom: getScaledSize(40) },
         width,
         height: typeof (getWindowHeight()) === 'number' ? getWindowHeight() as number : 'auto'
+        , 
+        minHeight: getScaledSize(25)
       }}
     >
       <UiEntity
