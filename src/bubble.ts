@@ -86,7 +86,11 @@ export function createDialogBubble(npc:Entity, height?:number, sound?:string){
     Material.setBasicMaterial(panel, {
         texture: Material.Texture.Common({
           src: bubblesTexture
-        })
+        }),
+        alphaTexture: Material.Texture.Common({
+          src: bubblesTexture
+        }),
+        alphaTest: 0.5
       })
 
     let text = engine.addEntity()
@@ -420,26 +424,32 @@ function setUVs(
 	  _uv00.x,
 	  _uv00.y,
   
-	  _uv10.x,
-	  _uv10.y,
+    _uv01.x,
+	  _uv01.y,
   
 	  _uv11.x,
 	  _uv11.y,
-  
-	  _uv01.x,
-	  _uv01.y,
+
+    _uv10.x,
+	  _uv10.y,
+
+	  
 	  //----
 	  _uv00.x,
 	  _uv00.y,
-  
+
+    _uv01.x,
+	  _uv01.y,
+    
+    _uv11.x,
+	  _uv11.y,
+    
 	  _uv10.x,
 	  _uv10.y,
   
-	  _uv11.x,
-	  _uv11.y,
+	 
   
-	  _uv01.x,
-	  _uv01.y,
+	 
 	]
   }
 
