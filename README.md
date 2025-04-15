@@ -17,7 +17,7 @@ Capabilities of the NPCs in this library:
 The dialog messages can also require that the player chooses options, and any action can be triggered when the player picks an option or advances past a message.
 
 ## Install the library
-
+<!--
 ## Via the Decentraland Editor
 
 Follow the steps in [Manage Dependencies](https://docs.decentraland.org/creator/development-guide/sdk7/libraries/manage-dependencies/#via-the-editor) with Visual Studio Code open on your project folder.
@@ -68,7 +68,7 @@ export let ILoveCats: Dialog[] = [
 	},
 ]
 ```
-
+-->
 ## Via the CLI
 
 1. Install the library as an npm bundle. Run this command in your scene's project folder:
