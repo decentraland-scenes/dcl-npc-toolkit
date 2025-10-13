@@ -23,7 +23,7 @@ import { addDialog, closeDialog, findDialogByName, npcDialogComponent, openDialo
 import { faceUserSystem, handleBubbletyping, handleDialogTyping, handlePathTimes, inputListenerSystem } from './systems'
 import { Dialog, FollowPathData, ImageData, NPCData, NPCPathType, NPCState, NPCType, TriggerData } from './types'
 import { darkTheme, lightTheme } from './ui'
-import { debugTriggers, delayedFunction } from './utils/utils'
+import { debugTriggers, delayedFunction, clearDelayedFunction, DelayedHandle } from './utils/utils'
 import { paths } from './utils/path'
 
 
@@ -43,7 +43,7 @@ engine.addSystem(inputListenerSystem)
 const isCooldown: Map<Entity, any> = new Map()
 const onActivateCbs: Map<Entity, any> = new Map()
 const onWalkAwayCbs: Map<Entity, any> = new Map()
-const animTimers: Map<Entity, number> = new Map()
+const animTimers: Map<Entity, DelayedHandle> = new Map()
 const pointReachedCallbacks: Map<Entity, any> = new Map()
 const onFinishCallbacks: Map<Entity, any> = new Map()
 
@@ -323,11 +323,17 @@ function addTriggerArea(npc: Entity, data: NPCData) {
    TriggerArea.setSphere(triggerSphere)
 
     triggerAreaEventsSystem.onTriggerEnter(triggerSphere, function(result) {
-      if (triggerData.onCameraEnter) triggerData.onCameraEnter(result.trigger.entity ? result.trigger.entity : engine.PlayerEntity as Entity)
+      if (triggerData.onCameraEnter) {
+        const entity = (result?.trigger?.entity ?? engine.PlayerEntity) as Entity
+        triggerData.onCameraEnter(entity)
+      }
     })
 
     triggerAreaEventsSystem.onTriggerExit(triggerSphere, function(result) {
-      if (triggerData.onCameraExit) triggerData.onCameraExit(result?.trigger?.entity ? result.trigger.entity : engine.PlayerEntity as Entity)
+      if (triggerData.onCameraExit) {
+        const entity = (result?.trigger?.entity ?? engine.PlayerEntity) as Entity
+        triggerData.onCameraExit(entity)
+      }
     })
   }
 }
@@ -663,7 +669,6 @@ export function playAnimation(npc: Entity, anim: string, noLoop?: boolean, durat
     clearAnimationTimer(npc)
     animTimers.set(
       npc,
-      utils.timers.setTimeout(() => {
       delayedFunction(() => {
         clearAnimationTimer(npc)
         Animator.stopAllAnimations(npc, true)
@@ -729,7 +734,7 @@ export function closeDialogWindow(window: Entity) {
 
 function clearAnimationTimer(npc: Entity): boolean {
   if (animTimers.has(npc)) {
-    utils.timers.clearTimeout(animTimers.get(npc) as number)
+    clearDelayedFunction(animTimers.get(npc))
     animTimers.delete(npc)
     return true
   }

@@ -1,19 +1,51 @@
 import { engine, MeshRenderer, TriggerArea, Material } from "@dcl/sdk/ecs"
 import { Color3, Color4 } from "@dcl/sdk/math";
 
-export const delayedFunction = (cb: () => void, delaySeconds: number) => {
+let __delayedId = 0;
+
+export type DelayedHandle = {
+  id: string
+  cancel: () => void
+}
+
+export const delayedFunction = (cb: () => void, delaySeconds: number): DelayedHandle => {
+    const id = `delayedFunction_${++__delayedId}`
     let time = 0;
-  
-    engine.addSystem((dt: number) => {
+    let cancelled = false;
+
+    const system = (dt: number) => {
+      if (cancelled) {
+        engine.removeSystem(id)
+        return
+      }
       time += dt;
       if (time < delaySeconds) return;
       time = 0;
-      cb && cb();
-      engine.removeSystem("delayedFunction");
-  
-    }, undefined, 'delayedFunction');
-  
+      engine.removeSystem(id);
+      if (!cancelled) {
+        cb && cb();
+      }
+    }
+
+    engine.addSystem(system, undefined, id);
+
+    const cancel = () => {
+      cancelled = true
+      engine.removeSystem(id)
+    }
+
+    return { id, cancel }
+}
+
+export function clearDelayedFunction(handleOrId: DelayedHandle | string | undefined | null) {
+  if (!handleOrId) return
+  if (typeof handleOrId === 'string') {
+    // Best-effort cancel by id/name
+    engine.removeSystem(handleOrId)
+    return
   }
+  handleOrId.cancel()
+}
 
 
 
