@@ -1,4 +1,3 @@
-import * as utils from '@dcl-sdk/utils'
 
 import { AudioSource, Entity, engine } from "@dcl/sdk/ecs";
 import { activeNPC, clearNPC, closeDialogWindow, followPath, isActiveNpcSet, npcDataComponent, setActiveNPC, stopPath, stopWalking } from "./npc";
@@ -260,6 +259,7 @@ export function buttonClick(button:number){
 
 export function closeDialog(npc:Entity){
     let dialogData = npcDialogComponent.get(npc)
+    if(!dialogData) return
     dialogData.visible = false
     dialogData.typing = false
     dialogData.visibleText = ""

@@ -603,10 +603,11 @@ export function activate(npc: Entity, other: Entity) {
     {
       isCooldown.delete(npc)
       npcDataComponent.get(npc).inCooldown = false
+      console.log("cooldown deleted")
     }, 1000 * npcData.coolDownDuration
   )
 
-  console.log('activated npc,', npcDataComponent.get(npc))
+  console.log('activated npc,', npcDataComponent.get(npc), "cooldown duration: ", npcData.coolDownDuration)
 }
 
 function endInteraction(npc: Entity) {

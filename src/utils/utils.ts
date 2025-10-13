@@ -8,9 +8,9 @@ export type DelayedHandle = {
   cancel: () => void
 }
 
-export const delayedFunction = (cb: () => void, delaySeconds: number): DelayedHandle => {
+export const delayedFunction = (cb: () => void, delayMs: number): DelayedHandle => {
     const id = `delayedFunction_${++__delayedId}`
-    let time = 0;
+    let timeMs = 0;
     let cancelled = false;
 
     const system = (dt: number) => {
@@ -18,9 +18,9 @@ export const delayedFunction = (cb: () => void, delaySeconds: number): DelayedHa
         engine.removeSystem(id)
         return
       }
-      time += dt;
-      if (time < delaySeconds) return;
-      time = 0;
+      timeMs += dt * 1000;
+      if (timeMs < delayMs) return;
+      timeMs = 0;
       engine.removeSystem(id);
       if (!cancelled) {
         cb && cb();
