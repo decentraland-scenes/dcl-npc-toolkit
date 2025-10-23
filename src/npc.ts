@@ -23,6 +23,8 @@ import { faceUserSystem, handleBubbletyping, handleDialogTyping, handlePathTimes
 import { Dialog, FollowPathData, ImageData, NPCData, NPCPathType, NPCState, NPCType, TriggerData } from './types'
 import { darkTheme, lightTheme } from './ui'
 
+type NPCDataFromEntity = Omit<NPCData, 'type'> & { type?: NPCType }
+
 export const walkingTimers: Map<Entity, number> = new Map()
 export const npcDataComponent: Map<Entity, any> = new Map()
 export let NULL_NPC: Entity = 0 as Entity
@@ -140,6 +142,99 @@ export function create(transform: any, data: NPCData) {
   return npc
 }
 
+export function createFromEntity(entity: Entity, data: NPCDataFromEntity) {
+  const npc = entity
+
+  const resolvedType = (data && data.type !== undefined ? data.type : NPCType.CUSTOM)
+
+  if (!Transform.has(npc)) {
+    console.log('createFromEntity: Provided entity is missing Transform component')
+  }
+
+  if (resolvedType === NPCType.CUSTOM && !GltfContainer.has(npc)) {
+    console.log('createFromEntity: Expected a GltfContainer on CUSTOM NPC entity')
+  }
+
+  npcDataComponent.set(npc, {
+    introduced: false,
+    inCooldown: false,
+    coolDownDuration: data && data.coolDownDuration ? data.coolDownDuration : 5,
+    faceUser: data && data.faceUser ? data.faceUser : undefined,
+    walkingSpeed: 2,
+    walkingAnim: data && data.walkingAnim ? data.walkingAnim : undefined,
+    pathData: data.pathData ? data.pathData : undefined,
+    currentPathData: [],
+    manualStop: false,
+    pathIndex: 0,
+    state: NPCState.STANDING,
+    idleAnim: data && data.idleAnim ? data.idleAnim : 'Idle',
+    bubbleHeight: data && data.textBubble && data.bubbleHeight ? data.bubbleHeight : undefined,
+    bubbleSound: data.dialogSound ? data.dialogSound : undefined,
+    hasBubble: data && data.textBubble ? true : false,
+    turnSpeed: data && data.turningSpeed ? data.turningSpeed : 2,
+    theme: data.darkUI ? darkTheme : lightTheme,
+    bubbleXOffset: data.bubbleXOffset ? data.bubbleXOffset : 0,
+    bubbleYOffset: data.bubbleYOffset ? data.bubbleYOffset : 0
+  })
+
+  if (data && data.noUI) {
+  } else if (data && data.portrait) {
+    addDialog(
+      npc,
+      data && data.dialogSound ? data.dialogSound : undefined,
+      typeof data.portrait === `string` ? { path: data.portrait } : data.portrait
+    )
+  } else {
+    addDialog(npc, data && data.dialogSound ? data.dialogSound : undefined)
+  }
+
+  if (data && data.textBubble) {
+    createDialogBubble(npc, npcDataComponent.get(npc).bubbleHeight)
+  }
+
+  onActivateCbs.set(npc, (other: Entity) => {
+    data.onActivate(other)
+  })
+
+  if (data && data.hasOwnProperty('onWalkAway')) {
+    onWalkAwayCbs.set(npc, (other: Entity) => {
+      if (!data || !data.continueOnWalkAway) {
+        if (npcDialogComponent.has(npc)) {
+          npcDialogComponent.get(npc).visible = false
+        }
+      } else {
+        if (npcDialogComponent.has(npc)) {
+          npcDialogComponent.get(npc).visible = false
+        }
+      }
+      data.onWalkAway!(other)
+    })
+  }
+
+  const dataWithType = { ...data, type: resolvedType } as NPCData
+  seedAnimatorForExisting(npc, dataWithType)
+  addClickReactions(npc, dataWithType)
+  addTriggerArea(npc, dataWithType)
+
+  if (data && data.pathData && data.pathData.speed) {
+    let npcData = npcDataComponent.get(npc)
+    npcData.walkingSpeed = data.pathData.speed
+  }
+
+  if (data && data.coolDownDuration) {
+    let npcData = npcDataComponent.get(npc)
+    npcData.coolDownDuration = data.coolDownDuration
+  }
+
+  if (data && data.pathData) {
+    let npcData = npcDataComponent.get(npc)
+    npcData.pathData.loop = true
+    followPath(npc, npcData.pathData)
+  }
+
+  return npc
+}
+
 function addNPCBones(npc: Entity, data: NPCData) {
   const modelIsString = data && data.model && typeof data.model === `string`
   const modelAvatarData: PBAvatarShape | undefined = modelIsString
@@ -211,6 +306,45 @@ function addNPCBones(npc: Entity, data: NPCData) {
   }
 }
 
+function seedAnimatorForExisting(npc: Entity, data: NPCData) {
+  if (data.type !== NPCType.CUSTOM) return
+
+  const idleClip = data && data.idleAnim ? data.idleAnim : 'Idle'
+
+  if (!Animator.has(npc)) {
+    Animator.create(npc, {
+      states: [
+        {
+          clip: idleClip,
+          loop: true
+        }
+      ]
+    })
+  } else {
+    const animations = Animator.getMutable(npc)
+    if (animations.states.filter((animation: PBAnimationState) => animation.clip === idleClip).length === 0) {
+      animations.states.push({ clip: idleClip, loop: true })
+    }
+  }
+
+  let npcData = npcDataComponent.get(npc)
+  npcData.idleAnim = idleClip
+  npcData.lastPlayedAnim = idleClip
+  if (typeof idleClip === 'string' && idleClip.length > 0) {
+    Animator.playSingleAnimation(npc, idleClip)
+  }
+
+  if (data && data.walkingAnim) {
+    const animations = Animator.getMutable(npc)
+    if (typeof data.walkingAnim === 'string' && data.walkingAnim.length > 0 && animations.states.filter((animation: PBAnimationState) => animation.clip === data.walkingAnim!).length === 0) {
+      animations.states.push({ clip: data.walkingAnim!, loop: true })
+    }
+    if (typeof data.walkingAnim === 'string') {
+      npcData.walkingAnim = data.walkingAnim
+    }
+  }
+}
+
 function addClickReactions(npc: Entity, data: NPCData) {
   let activateButton = data && data.onlyClickTrigger ? InputAction.IA_POINTER : InputAction.IA_PRIMARY
 
@@ -239,7 +373,7 @@ function addClickReactions(npc: Entity, data: NPCData) {
     },
     {
       button: activateButton,
-      hoverText: data && data.hoverText ? data.hoverText : 'Talk',
+      hoverText: data && data.hoverText ? String(data.hoverText) : 'Talk',
       showFeedback: data && data.onlyExternalTrigger ? false : true
     }
   )

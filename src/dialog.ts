@@ -156,11 +156,15 @@ export function imageHeight(){
 }
 
 export function getPortrait(){
-  return !isActiveNpcSet() ? "" : npcDialogComponent.get(activeNPC).currentPortrait
+  if (!isActiveNpcSet()) return lightTheme
+  const p = npcDialogComponent.get(activeNPC).currentPortrait
+  return typeof p === 'string' && p.length >= 0 ? p : lightTheme
 }
 
 export function getImage(){
-  return !isActiveNpcSet() ? "" : npcDialogComponent.get(activeNPC).dialogImageTexture
+  if (!isActiveNpcSet()) return ""
+  const img = npcDialogComponent.get(activeNPC).dialogImageTexture
+  return typeof img === 'string' ? img : ""
 }
 
 export function getText(){

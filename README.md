@@ -177,6 +177,31 @@ With this default configuration, the NPC behaves in the following way:
 
 Many of these behaviors can be overridden or tweaked with the exposed properties.
 
+### Attach NPC behaviors to an existing entity
+
+If you already created an entity with a Transform and (for CUSTOM NPCs) a GltfContainer, you can reuse it with `createFromEntity`:
+
+```ts
+import { engine, Transform, GltfContainer } from '@dcl/sdk/ecs'
+import { Vector3 } from '@dcl/sdk/math'
+import { createFromEntity, NPCType } from 'dcl-npc-toolkit'
+
+const npcEntity = engine.addEntity()
+Transform.create(npcEntity, { position: Vector3.create(8, 0, 8) })
+GltfContainer.create(npcEntity, { src: 'models/npc.glb' })
+
+createFromEntity(npcEntity, {
+  type: NPCType.CUSTOM,
+  idleAnim: 'Idle',
+  walkingAnim: 'Walk',
+  onActivate: () => {
+    // ...
+  },
+  textBubble: true,
+  bubbleHeight: 2
+})
+```
+
 ## SDK7 UI
 
 With sdk7, there are new ways to implement similar features from sdk6, one of them being the way 2D UI objects get created. To add the NPC dialogs to your sdk7 2D UI:
