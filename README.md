@@ -118,7 +118,28 @@ export let ILoveCats: Dialog[] = [
 ]
 ```
 
-## NPC Default Behavior
+6. Use that dialog when the NPC gets activated
+
+```ts
+export let myNPC = npc.create(
+	{
+		position: Vector3.create(8, 0, 8),
+		rotation: Quaternion.Zero(),
+		scale: Vector3.create(1, 1, 1),
+	},
+	//NPC Data Object
+	{
+		type: npc.NPCType.CUSTOM,
+		model: 'models/npc.glb',
+		onActivate: () => {
+			npc.talk(myNPC, ILoveCats, 0)
+		},
+	}
+)
+```
+
+
+# NPC Default Behavior
 
 NPCs at the very least must have:
 
@@ -225,17 +246,6 @@ const SceneOwnedUi = () => (
 export function setupUi() {
 	ReactEcsRenderer.setUiRenderer(SceneOwnedUi)
 }
-```
-
-Note: The UI drawn by this library library requires fetching images from an external URL. For the scene to allow you to do this, you must include the `ALLOW_MEDIA_HOSTNAMES` scene permission and add `decentraland.org` to the list of allowed domains in your `scene.json` file. Learn more about [image permissions](https://docs.decentraland.org/creator/development-guide/sdk7/materials/#textures-from-an-external-url).
-
-```json
-	"requiredPermissions": [
-		"ALLOW_MEDIA_HOSTNAMES"
-	],
-	"allowedMediaHostnames": [
-		"decentraland.org"
-	],
 ```
 
 ## NPC Additional Properties
