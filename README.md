@@ -97,6 +97,11 @@ export let myNPC = npc.create(
 	//NPC Data Object
 	{
 		type: npc.NPCType.AVATAR,
+		name: 'Guide NPC',
+		bodyShape: 'urn:decentraland:off-chain:base-avatars:BaseFemale',
+		eyeColor: Color3.create(0.2, 0.6, 0.9),
+		skinColor: Color3.create(0.98, 0.82, 0.51),
+		hairColor: Color3.create(0.11, 0.11, 0.11),
 		// Optional: override default wearables for AVATAR type
 		wearables: [
 			'urn:decentraland:off-chain:base-avatars:f_eyes_00',
@@ -222,6 +227,23 @@ createFromEntity(npcEntity, {
   },
 })
 
+// AVATAR example (no GLTF required), with a custom display name
+createFromEntity(npcEntity, {
+  type: NPCType.AVATAR,
+  name: 'Shop Keeper',
+  bodyShape: 'urn:decentraland:off-chain:base-avatars:BaseMale',
+  eyeColor: Color3.create(0.22, 0.49, 0.69),
+  skinColor: Color3.create(0.98, 0.82, 0.51),
+  hairColor: Color3.create(0.3, 0.2, 0.1),
+  wearables: [
+    'urn:decentraland:off-chain:base-avatars:f_eyes_00',
+    'urn:decentraland:off-chain:base-avatars:f_eyebrows_00',
+    'urn:decentraland:off-chain:base-avatars:f_mouth_00'
+  ],
+  onActivate: () => {
+    // ...
+  }
+})
 ```
 
 For AVATAR NPCs, you can pass wearables and no GLTF is required. If a GLTF exists on the entity, it will be removed and an `AvatarShape` will be created:
@@ -300,6 +322,16 @@ To configure other properties of an NPC, add a fourth argument as an `NPCData` o
 - `walkingAnim`: _(string)_ Name of the walking animation on the model. This animation is looped when calling the `followPath()` function.
 
 - `wearables`: _(string[])_ Only for `NPCType.AVATAR`. List of wearable URNs to equip. If omitted, a default base-avatars set is used.
+
+- `name`: _(string)_ Only for `NPCType.AVATAR`. Display name shown above the NPC avatar. Defaults to \"NPC\" if not provided.
+
+- `bodyShape`: _(string)_ Only for `NPCType.AVATAR`. URN of the body shape to use.
+
+- `eyeColor`: _(Color3)_ Only for `NPCType.AVATAR`. Eye color for the avatar.
+
+- `skinColor`: _(Color3)_ Only for `NPCType.AVATAR`. Skin color for the avatar.
+
+- `hairColor`: _(Color3)_ Only for `NPCType.AVATAR`. Hair color for the avatar.
 
 - `walkingSpeed`: _(number)_ Speed of the NPC when walking. By default _2_.
 
