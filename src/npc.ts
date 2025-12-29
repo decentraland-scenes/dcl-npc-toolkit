@@ -219,7 +219,38 @@ export function createFromEntity(entity: Entity, data: NPCDataFromEntity) {
   }
 
   const dataWithType = { ...data, type: resolvedType } as NPCData
-  seedAnimatorForExisting(npc, dataWithType)
+  // Attach visual components based on type
+  if (resolvedType === NPCType.AVATAR) {
+    if (GltfContainer.has(npc)) {
+      GltfContainer.deleteFrom(npc)
+    }
+    if (!AvatarShape.has(npc)) {
+      AvatarShape.create(
+        npc,
+        {
+          id: 'npc',
+          name: 'NPC',
+          bodyShape: 'urn:decentraland:off-chain:base-avatars:BaseMale',
+          emotes: [],
+          wearables: (dataWithType.wearables && dataWithType.wearables.length > 0)
+            ? dataWithType.wearables
+            : [
+              'urn:decentraland:off-chain:base-avatars:f_eyes_00',
+              'urn:decentraland:off-chain:base-avatars:f_eyebrows_00',
+              'urn:decentraland:off-chain:base-avatars:f_mouth_00',
+              'urn:decentraland:off-chain:base-avatars:comfy_sport_sandals',
+              'urn:decentraland:off-chain:base-avatars:soccer_pants',
+              'urn:decentraland:off-chain:base-avatars:elegant_sweater'
+            ]
+        }
+      )
+    } else if (dataWithType.wearables && dataWithType.wearables.length > 0) {
+      const avatar = AvatarShape.getMutable(npc)
+      avatar.wearables = dataWithType.wearables
+    }
+  } else if (resolvedType === NPCType.CUSTOM) {
+    seedAnimatorForExisting(npc, dataWithType)
+  }
   addClickReactions(npc, dataWithType)
   addTriggerArea(npc, dataWithType)
 
@@ -265,14 +296,16 @@ function addNPCBones(npc: Entity, data: NPCData) {
             name: 'NPC',
             bodyShape: 'urn:decentraland:off-chain:base-avatars:BaseMale',
             emotes: [],
-            wearables: [
-              'urn:decentraland:off-chain:base-avatars:f_eyes_00',
-              'urn:decentraland:off-chain:base-avatars:f_eyebrows_00',
-              'urn:decentraland:off-chain:base-avatars:f_mouth_00',
-              'urn:decentraland:off-chain:base-avatars:comfy_sport_sandals',
-              'urn:decentraland:off-chain:base-avatars:soccer_pants',
-              'urn:decentraland:off-chain:base-avatars:elegant_sweater'
-            ]
+            wearables: (data && data.wearables && data.wearables.length > 0)
+              ? data.wearables
+              : [
+                'urn:decentraland:off-chain:base-avatars:f_eyes_00',
+                'urn:decentraland:off-chain:base-avatars:f_eyebrows_00',
+                'urn:decentraland:off-chain:base-avatars:f_mouth_00',
+                'urn:decentraland:off-chain:base-avatars:comfy_sport_sandals',
+                'urn:decentraland:off-chain:base-avatars:soccer_pants',
+                'urn:decentraland:off-chain:base-avatars:elegant_sweater'
+              ]
           }
           : modelAvatarData
       )

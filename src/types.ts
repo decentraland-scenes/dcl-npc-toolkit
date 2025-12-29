@@ -131,6 +131,7 @@ export type NPCData = {
   type: NPCType
   body?: NPCBodyType
   model?: string | PBGltfContainer | PBAvatarShape
+  wearables?: string[]
 
   walkingAnim?: string
   portrait?: string | ImageData

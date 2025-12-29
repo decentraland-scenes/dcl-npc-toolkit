@@ -96,8 +96,16 @@ export let myNPC = npc.create(
 	},
 	//NPC Data Object
 	{
-		type: npc.NPCType.CUSTOM,
-		model: 'models/npc.glb',
+		type: npc.NPCType.AVATAR,
+		// Optional: override default wearables for AVATAR type
+		wearables: [
+			'urn:decentraland:off-chain:base-avatars:f_eyes_00',
+			'urn:decentraland:off-chain:base-avatars:f_eyebrows_00',
+			'urn:decentraland:off-chain:base-avatars:f_mouth_00',
+			'urn:decentraland:off-chain:base-avatars:comfy_sport_sandals',
+			'urn:decentraland:off-chain:base-avatars:soccer_pants',
+			'urn:decentraland:off-chain:base-avatars:elegant_sweater'
+		],
 		onActivate: () => {
 			console.log('npc activated')
 		},
@@ -212,14 +220,31 @@ createFromEntity(npcEntity, {
   onActivate: () => {
     // ...
   },
-  volume: {
-    radius: 4,
-    shape: 'sphere'
-  }
 })
 
+```
 
+For AVATAR NPCs, you can pass wearables and no GLTF is required. If a GLTF exists on the entity, it will be removed and an `AvatarShape` will be created:
 
+```ts
+import { engine, Transform } from '@dcl/sdk/ecs'
+import { Vector3 } from '@dcl/sdk/math'
+import { createFromEntity, NPCType } from 'dcl-npc-toolkit'
+
+const npcEntity = engine.addEntity()
+Transform.create(npcEntity, { position: Vector3.create(4, 0, 4) })
+
+createFromEntity(npcEntity, {
+  type: NPCType.AVATAR,
+  wearables: [
+    'urn:decentraland:off-chain:base-avatars:f_eyes_00',
+    'urn:decentraland:off-chain:base-avatars:f_eyebrows_00',
+    'urn:decentraland:off-chain:base-avatars:f_mouth_00'
+  ],
+  onActivate: () => {
+    // ...
+  }
+})
 ```
 
 ## SDK7 UI
@@ -273,6 +298,8 @@ To configure other properties of an NPC, add a fourth argument as an `NPCData` o
 - `onWalkAway`: (_()=> void_) Function to call every time the player walks out of the `reactDistance` radius.
 
 - `walkingAnim`: _(string)_ Name of the walking animation on the model. This animation is looped when calling the `followPath()` function.
+
+- `wearables`: _(string[])_ Only for `NPCType.AVATAR`. List of wearable URNs to equip. If omitted, a default base-avatars set is used.
 
 - `walkingSpeed`: _(number)_ Speed of the NPC when walking. By default _2_.
 
