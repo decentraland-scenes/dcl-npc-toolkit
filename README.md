@@ -236,12 +236,10 @@ With sdk7, there are new ways to implement similar features from sdk6, one of th
 import ReactEcs, { Label, ReactEcsRenderer, UiEntity } from '@dcl/sdk/react-ecs'
 import { NpcUtilsUi } from 'dcl-npc-toolkit'
 
-const SceneOwnedUi = () => (
-	<UiEntity>
-		<NpcUtilsUi />
-		{/* rest of user defined UI */}
-	</UiEntity>
-)
+const SceneOwnedUi = () => [
+    NpcUtilsUi(),
+    // other UI elements
+]
 
 export function setupUi() {
 	ReactEcsRenderer.setUiRenderer(SceneOwnedUi)
