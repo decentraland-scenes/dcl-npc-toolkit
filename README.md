@@ -325,7 +325,7 @@ To configure other properties of an NPC, add a fourth argument as an `NPCData` o
 
 - `name`: _(string)_ Only for `NPCType.AVATAR`. Display name shown above the NPC avatar. Defaults to \"NPC\" if not provided.
 
-- `bodyShape`: _(string)_ Only for `NPCType.AVATAR`. URN of the body shape to use.
+- `bodyShape`: _(string)_ Only for `NPCType.AVATAR`. URN of the body shape to use. Valid options are 'urn:decentraland:off-chain:base-avatars:BaseMale' and 'urn:decentraland:off-chain:base-avatars:BaseFemale'.
 
 - `eyeColor`: _(Color3)_ Only for `NPCType.AVATAR`. Eye color for the avatar.
 
