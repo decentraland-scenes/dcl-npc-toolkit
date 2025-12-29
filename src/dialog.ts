@@ -326,23 +326,14 @@ export function openDialog(npc:Entity, dialog:Dialog[], startIndex:number){
     
     let currentText: Dialog = dialog[startIndex] ? dialog[startIndex] : { text: '' }
 
-    if (currentText.audio) {
-        AudioSource.createOrReplace(dialogData.soundPlayer, {
-            audioClipUrl: currentText.audio,
-            loop: false,
-            playing: false
-        })
-        let audio = AudioSource.getMutable(dialogData.soundPlayer)
-        audio.volume = 0.5
-        audio.playing = true
-    } else if (dialogData.sound) {
+    if (dialogData.sound) {
         AudioSource.createOrReplace(dialogData.soundPlayer, {
             audioClipUrl: dialogData.sound,
             loop: false,
             playing: false
         })
         let audio = AudioSource.getMutable(dialogData.soundPlayer)
-        audio.volume = 0.5
+        audio.volume = npcDataComponent.get(npc).volume
         audio.playing = true
     }
 
@@ -371,6 +362,19 @@ function beginTyping(npc:Entity){
     dialogData.skipable = false
 
     let currentText: Dialog = dialogData.script[dialogData.index] ? dialogData.script[dialogData.index] : { text: '' }
+
+    // Play audio for the current dialogue entry
+    if (currentText.audio) {
+      AudioSource.createOrReplace(dialogData.soundPlayer, {
+        audioClipUrl: currentText.audio,
+        loop: false,
+        playing: false
+      })
+      let audio = AudioSource.getMutable(dialogData.soundPlayer)
+      audio.volume = npcDataComponent.get(npc).volume
+      audio.playing = true
+    }
+
     if(currentText.portrait){
       dialogData.currentPortrait = currentText.portrait.path
 

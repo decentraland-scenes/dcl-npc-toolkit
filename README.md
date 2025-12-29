@@ -275,7 +275,16 @@ To configure other properties of an NPC, add a fourth argument as an `NPCData` o
 
 - `textBubble`: _(boolean)_ If true, NPC starts with a speech bubble object ready to be accessed from the start. Otherwise, they text bubble is only built on the first call to `talkBubble()` on the NPC.
 
-- `noUI`: _(boolean)_ If true, no UI object is built for UI dialogs for this NPC. This may help optimize the scene if this feature is not used.
+-  `noUI`: _(boolean)_ If true, no UI object is built for UI dialogs for this NPC. This may help optimize the scene if this feature is not used.
+
+
+-  `volume`: _(number)_ Controls dialogue audio volume, ranging from 0 to 1, default is 0.5.".
+
+  
+
+  
+
+  
 
 ```ts
 export let myNPC = npc.create(
