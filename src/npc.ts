@@ -229,8 +229,8 @@ export function createFromEntity(entity: Entity, data: NPCDataFromEntity) {
         npc,
         {
           id: 'npc',
-          name: 'NPC',
-          bodyShape: 'urn:decentraland:off-chain:base-avatars:BaseMale',
+          name: dataWithType && dataWithType.name ? dataWithType.name : 'NPC',
+          bodyShape: dataWithType && dataWithType.bodyShape ? dataWithType.bodyShape : 'urn:decentraland:off-chain:base-avatars:BaseMale',
           emotes: [],
           wearables: (dataWithType.wearables && dataWithType.wearables.length > 0)
             ? dataWithType.wearables
@@ -241,12 +241,22 @@ export function createFromEntity(entity: Entity, data: NPCDataFromEntity) {
               'urn:decentraland:off-chain:base-avatars:comfy_sport_sandals',
               'urn:decentraland:off-chain:base-avatars:soccer_pants',
               'urn:decentraland:off-chain:base-avatars:elegant_sweater'
-            ]
+            ],
+          eyeColor: dataWithType && dataWithType.eyeColor ? dataWithType.eyeColor : undefined,
+          skinColor: dataWithType && dataWithType.skinColor ? dataWithType.skinColor : undefined,
+          hairColor: dataWithType && dataWithType.hairColor ? dataWithType.hairColor : undefined
         }
       )
     } else if (dataWithType.wearables && dataWithType.wearables.length > 0) {
       const avatar = AvatarShape.getMutable(npc)
       avatar.wearables = dataWithType.wearables
+      if (dataWithType && dataWithType.name) {
+        avatar.name = dataWithType.name
+      }
+      if (dataWithType.bodyShape) avatar.bodyShape = dataWithType.bodyShape
+      if (dataWithType.eyeColor) avatar.eyeColor = dataWithType.eyeColor
+      if (dataWithType.skinColor) avatar.skinColor = dataWithType.skinColor
+      if (dataWithType.hairColor) avatar.hairColor = dataWithType.hairColor
     }
   } else if (resolvedType === NPCType.CUSTOM) {
     seedAnimatorForExisting(npc, dataWithType)
@@ -293,8 +303,8 @@ function addNPCBones(npc: Entity, data: NPCData) {
         !data || !data.model || !modelAvatarData
           ? {
             id: 'npc',
-            name: 'NPC',
-            bodyShape: 'urn:decentraland:off-chain:base-avatars:BaseMale',
+            name: data && data.name ? data.name : 'NPC',
+            bodyShape: data && data.bodyShape ? data.bodyShape : 'urn:decentraland:off-chain:base-avatars:BaseMale',
             emotes: [],
             wearables: (data && data.wearables && data.wearables.length > 0)
               ? data.wearables
@@ -305,10 +315,22 @@ function addNPCBones(npc: Entity, data: NPCData) {
                 'urn:decentraland:off-chain:base-avatars:comfy_sport_sandals',
                 'urn:decentraland:off-chain:base-avatars:soccer_pants',
                 'urn:decentraland:off-chain:base-avatars:elegant_sweater'
-              ]
+              ],
+            eyeColor: data && data.eyeColor ? data.eyeColor : undefined,
+            skinColor: data && data.skinColor ? data.skinColor : undefined,
+            hairColor: data && data.hairColor ? data.hairColor : undefined
           }
           : modelAvatarData
       )
+      // If avatar data came from model, still honor provided name override
+      if (data && data.name) {
+        const avatar = AvatarShape.getMutable(npc)
+        avatar.name = data.name
+        if (data.bodyShape) avatar.bodyShape = data.bodyShape
+        if (data.eyeColor) avatar.eyeColor = data.eyeColor
+        if (data.skinColor) avatar.skinColor = data.skinColor
+        if (data.hairColor) avatar.hairColor = data.hairColor
+      }
       break
 
     case NPCType.CUSTOM:

@@ -1,5 +1,5 @@
 import { Entity, PBAvatarShape, PBGltfContainer } from '@dcl/sdk/ecs'
-import { Vector3 } from '@dcl/sdk/math'
+import { Vector3, Color3 } from '@dcl/sdk/math'
 
 /**
  * Fragment of a conversation with an NPC
@@ -131,7 +131,12 @@ export type NPCData = {
   type: NPCType
   body?: NPCBodyType
   model?: string | PBGltfContainer | PBAvatarShape
+  name?: string
   wearables?: string[]
+  bodyShape?: string
+  eyeColor?: Color3
+  skinColor?: Color3
+  hairColor?: Color3
 
   walkingAnim?: string
   portrait?: string | ImageData
