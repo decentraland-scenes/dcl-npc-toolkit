@@ -816,10 +816,46 @@ export function handleWalkAway(npc: Entity, other: Entity) {
 }
 
 export function playAnimation(npc: Entity, anim: string, noLoop?: boolean, duration?: number) {
-  let animations = Animator.getMutable(npc)
-  let npcData = npcDataComponent.get(npc)
+  const npcData = npcDataComponent.get(npc)
+  if (!npcData) return
 
-  if (!animations || !npcData) return
+  // AvatarShape path: trigger emote by expressionTriggerId/expressionTriggerTimestamp
+  if (AvatarShape.has(npc)) {
+    if (npcData.state == NPCState.FOLLOWPATH) {
+      paths.stopPath(npc)
+    }
+    clearAnimationTimer(npc)
+
+    const triggerOnce = () => {
+      const avatar = AvatarShape.getMutable(npc)
+      ;(avatar as any).expressionTriggerId = anim
+      ;(avatar as any).expressionTriggerTimestamp = (avatar as any).expressionTriggerTimestamp
+        ? (avatar as any).expressionTriggerTimestamp + 1
+        : 0
+    }
+
+    triggerOnce()
+
+    if (!noLoop && duration && duration > 0) {
+      const scheduleNext = () => {
+        animTimers.set(
+          npc,
+          delayedFunction(() => {
+            triggerOnce()
+            scheduleNext()
+          }, 1000 * duration)
+        )
+      }
+      scheduleNext()
+    }
+
+    npcData.lastPlayedAnim = anim
+    return
+  }
+
+  // GLTF/Animator path
+  const animations = Animator.getMutable(npc)
+  if (!animations) return
 
   if (animations.states && animations.states.filter((animation: PBAnimationState) => animation.clip === anim).length == 0) {
     animations.states.push({ clip: anim, loop: noLoop ? false : true })
@@ -834,7 +870,6 @@ export function playAnimation(npc: Entity, anim: string, noLoop?: boolean, durat
   Animator.stopAllAnimations(npc, true)
   Animator.playSingleAnimation(npc, anim, true)
   if (duration) {
-    console.log('have a duration to play animation')
     clearAnimationTimer(npc)
     animTimers.set(
       npc,
@@ -848,7 +883,6 @@ export function playAnimation(npc: Entity, anim: string, noLoop?: boolean, durat
       }, 1000 * duration)
     )
   }
-  
 
   npcData.lastPlayedAnim = anim
 }

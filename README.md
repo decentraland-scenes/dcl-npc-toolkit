@@ -395,7 +395,7 @@ By default, the NPC will loop an animation named 'Idle', or with a name passed i
 
 Make the NPC play another animation by calling the `playAnimation()` function. The function takes the following **required** parameter:
 
-- `animationName`: _(string)_ The name of the animation to play.
+- `animationName`: _(string)_ The name of the animation/emote to play.
 
 It can also take the following optional parameters:
 
@@ -408,6 +408,18 @@ It can also take the following optional parameters:
 ```ts
 npc.playAnimation(myNPC, `Head_Yes`, true, 2.63)
 ```
+
+For `NPCType.AVATAR` (AvatarShape), `playAnimation` accepts emote names or default animation names, and triggers them via `AvatarShape.expressionTriggerId`. Looping emotes require re-triggering:
+
+```ts
+// One-shot emote
+npc.playAnimation(myAvatarNpc, 'clap', true)
+
+// Loop emote every 2 seconds
+npc.playAnimation(myAvatarNpc, 'robot', false, 2)
+```
+
+See the official docs on Avatar animations for details: [Decentraland NPC Avatars - Animations](https://docs.decentraland.org/creator/scenes-sdk7/interactivity/npc-avatars#animations)
 
 ### Change idle animation
 
