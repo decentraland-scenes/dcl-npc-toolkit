@@ -219,7 +219,38 @@ export function createFromEntity(entity: Entity, data: NPCDataFromEntity) {
   }
 
   const dataWithType = { ...data, type: resolvedType } as NPCData
-  seedAnimatorForExisting(npc, dataWithType)
+  // Attach visual components based on type
+  if (resolvedType === NPCType.AVATAR) {
+    if (GltfContainer.has(npc)) {
+      GltfContainer.deleteFrom(npc)
+    }
+    if (!AvatarShape.has(npc)) {
+      AvatarShape.create(
+        npc,
+        {
+          id: 'npc',
+          name: 'NPC',
+          bodyShape: 'urn:decentraland:off-chain:base-avatars:BaseMale',
+          emotes: [],
+          wearables: (dataWithType.wearables && dataWithType.wearables.length > 0)
+            ? dataWithType.wearables
+            : [
+              'urn:decentraland:off-chain:base-avatars:f_eyes_00',
+              'urn:decentraland:off-chain:base-avatars:f_eyebrows_00',
+              'urn:decentraland:off-chain:base-avatars:f_mouth_00',
+              'urn:decentraland:off-chain:base-avatars:comfy_sport_sandals',
+              'urn:decentraland:off-chain:base-avatars:soccer_pants',
+              'urn:decentraland:off-chain:base-avatars:elegant_sweater'
+            ]
+        }
+      )
+    } else if (dataWithType.wearables && dataWithType.wearables.length > 0) {
+      const avatar = AvatarShape.getMutable(npc)
+      avatar.wearables = dataWithType.wearables
+    }
+  } else if (resolvedType === NPCType.CUSTOM) {
+    seedAnimatorForExisting(npc, dataWithType)
+  }
   addClickReactions(npc, dataWithType)
   addTriggerArea(npc, dataWithType)
 
@@ -265,14 +296,16 @@ function addNPCBones(npc: Entity, data: NPCData) {
             name: 'NPC',
             bodyShape: 'urn:decentraland:off-chain:base-avatars:BaseMale',
             emotes: [],
-            wearables: [
-              'urn:decentraland:off-chain:base-avatars:f_eyes_00',
-              'urn:decentraland:off-chain:base-avatars:f_eyebrows_00',
-              'urn:decentraland:off-chain:base-avatars:f_mouth_00',
-              'urn:decentraland:off-chain:base-avatars:comfy_sport_sandals',
-              'urn:decentraland:off-chain:base-avatars:soccer_pants',
-              'urn:decentraland:off-chain:base-avatars:elegant_sweater'
-            ]
+            wearables: (data && data.wearables && data.wearables.length > 0)
+              ? data.wearables
+              : [
+                'urn:decentraland:off-chain:base-avatars:f_eyes_00',
+                'urn:decentraland:off-chain:base-avatars:f_eyebrows_00',
+                'urn:decentraland:off-chain:base-avatars:f_mouth_00',
+                'urn:decentraland:off-chain:base-avatars:comfy_sport_sandals',
+                'urn:decentraland:off-chain:base-avatars:soccer_pants',
+                'urn:decentraland:off-chain:base-avatars:elegant_sweater'
+              ]
           }
           : modelAvatarData
       )
@@ -783,10 +816,46 @@ export function handleWalkAway(npc: Entity, other: Entity) {
 }
 
 export function playAnimation(npc: Entity, anim: string, noLoop?: boolean, duration?: number) {
-  let animations = Animator.getMutable(npc)
-  let npcData = npcDataComponent.get(npc)
+  const npcData = npcDataComponent.get(npc)
+  if (!npcData) return
 
-  if (!animations || !npcData) return
+  // AvatarShape path: trigger emote by expressionTriggerId/expressionTriggerTimestamp
+  if (AvatarShape.has(npc)) {
+    if (npcData.state == NPCState.FOLLOWPATH) {
+      paths.stopPath(npc)
+    }
+    clearAnimationTimer(npc)
+
+    const triggerOnce = () => {
+      const avatar = AvatarShape.getMutable(npc)
+      ;(avatar as any).expressionTriggerId = anim
+      ;(avatar as any).expressionTriggerTimestamp = (avatar as any).expressionTriggerTimestamp
+        ? (avatar as any).expressionTriggerTimestamp + 1
+        : 0
+    }
+
+    triggerOnce()
+
+    if (!noLoop && duration && duration > 0) {
+      const scheduleNext = () => {
+        animTimers.set(
+          npc,
+          delayedFunction(() => {
+            triggerOnce()
+            scheduleNext()
+          }, 1000 * duration)
+        )
+      }
+      scheduleNext()
+    }
+
+    npcData.lastPlayedAnim = anim
+    return
+  }
+
+  // GLTF/Animator path
+  const animations = Animator.getMutable(npc)
+  if (!animations) return
 
   if (animations.states && animations.states.filter((animation: PBAnimationState) => animation.clip === anim).length == 0) {
     animations.states.push({ clip: anim, loop: noLoop ? false : true })
@@ -801,7 +870,6 @@ export function playAnimation(npc: Entity, anim: string, noLoop?: boolean, durat
   Animator.stopAllAnimations(npc, true)
   Animator.playSingleAnimation(npc, anim, true)
   if (duration) {
-    console.log('have a duration to play animation')
     clearAnimationTimer(npc)
     animTimers.set(
       npc,
@@ -815,7 +883,6 @@ export function playAnimation(npc: Entity, anim: string, noLoop?: boolean, durat
       }, 1000 * duration)
     )
   }
-  
 
   npcData.lastPlayedAnim = anim
 }

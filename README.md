@@ -96,8 +96,16 @@ export let myNPC = npc.create(
 	},
 	//NPC Data Object
 	{
-		type: npc.NPCType.CUSTOM,
-		model: 'models/npc.glb',
+		type: npc.NPCType.AVATAR,
+		// Optional: override default wearables for AVATAR type
+		wearables: [
+			'urn:decentraland:off-chain:base-avatars:f_eyes_00',
+			'urn:decentraland:off-chain:base-avatars:f_eyebrows_00',
+			'urn:decentraland:off-chain:base-avatars:f_mouth_00',
+			'urn:decentraland:off-chain:base-avatars:comfy_sport_sandals',
+			'urn:decentraland:off-chain:base-avatars:soccer_pants',
+			'urn:decentraland:off-chain:base-avatars:elegant_sweater'
+		],
 		onActivate: () => {
 			console.log('npc activated')
 		},
@@ -212,14 +220,31 @@ createFromEntity(npcEntity, {
   onActivate: () => {
     // ...
   },
-  volume: {
-    radius: 4,
-    shape: 'sphere'
-  }
 })
 
+```
 
+For AVATAR NPCs, you can pass wearables and no GLTF is required. If a GLTF exists on the entity, it will be removed and an `AvatarShape` will be created:
 
+```ts
+import { engine, Transform } from '@dcl/sdk/ecs'
+import { Vector3 } from '@dcl/sdk/math'
+import { createFromEntity, NPCType } from 'dcl-npc-toolkit'
+
+const npcEntity = engine.addEntity()
+Transform.create(npcEntity, { position: Vector3.create(4, 0, 4) })
+
+createFromEntity(npcEntity, {
+  type: NPCType.AVATAR,
+  wearables: [
+    'urn:decentraland:off-chain:base-avatars:f_eyes_00',
+    'urn:decentraland:off-chain:base-avatars:f_eyebrows_00',
+    'urn:decentraland:off-chain:base-avatars:f_mouth_00'
+  ],
+  onActivate: () => {
+    // ...
+  }
+})
 ```
 
 ## SDK7 UI
@@ -273,6 +298,8 @@ To configure other properties of an NPC, add a fourth argument as an `NPCData` o
 - `onWalkAway`: (_()=> void_) Function to call every time the player walks out of the `reactDistance` radius.
 
 - `walkingAnim`: _(string)_ Name of the walking animation on the model. This animation is looped when calling the `followPath()` function.
+
+- `wearables`: _(string[])_ Only for `NPCType.AVATAR`. List of wearable URNs to equip. If omitted, a default base-avatars set is used.
 
 - `walkingSpeed`: _(number)_ Speed of the NPC when walking. By default _2_.
 
@@ -368,7 +395,7 @@ By default, the NPC will loop an animation named 'Idle', or with a name passed i
 
 Make the NPC play another animation by calling the `playAnimation()` function. The function takes the following **required** parameter:
 
-- `animationName`: _(string)_ The name of the animation to play.
+- `animationName`: _(string)_ The name of the animation/emote to play.
 
 It can also take the following optional parameters:
 
@@ -381,6 +408,18 @@ It can also take the following optional parameters:
 ```ts
 npc.playAnimation(myNPC, `Head_Yes`, true, 2.63)
 ```
+
+For `NPCType.AVATAR` (AvatarShape), `playAnimation` accepts emote names or default animation names, and triggers them via `AvatarShape.expressionTriggerId`. Looping emotes require re-triggering:
+
+```ts
+// One-shot emote
+npc.playAnimation(myAvatarNpc, 'clap', true)
+
+// Loop emote every 2 seconds
+npc.playAnimation(myAvatarNpc, 'robot', false, 2)
+```
+
+See the official docs on Avatar animations for details: [Decentraland NPC Avatars - Animations](https://docs.decentraland.org/creator/scenes-sdk7/interactivity/npc-avatars#animations)
 
 ### Change idle animation
 
