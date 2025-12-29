@@ -77,21 +77,15 @@ export let ILoveCats: Dialog[] = [
 npm i dcl-npc-toolkit
 ```
 
-2. Install the dependent sdk utils library as an npm bundle. Run this command in your scene's project folder:
+2. Run `dcl start` or `dcl build` so the dependencies are correctly installed.
 
-```
-npm i @dcl-sdk/utils -B
-```
-
-3. Run `dcl start` or `dcl build` so the dependencies are correctly installed.
-
-4. Import the library into the scene's script. Add this line at the start of your `index.ts` file, or any other TypeScript files that require it:
+3. Import the library into the scene's script. Add this line at the start of your `index.ts` file, or any other TypeScript files that require it:
 
 ```ts
 import * as npc from 'dcl-npc-toolkit'
 ```
 
-5. In your TypeScript file, call the `create` function passing it a `TransformType` and a `NPCData` object. The `NPCData` object requires a minimum of a `NPCType` and a function to trigger when the NPC is activated:
+4. In your TypeScript file, call the `create` function passing it a `TransformType` and a `NPCData` object. The `NPCData` object requires a minimum of a `NPCType` and a function to trigger when the NPC is activated:
 
 ```ts
 export let myNPC = npc.create(
@@ -111,7 +105,7 @@ export let myNPC = npc.create(
 )
 ```
 
-6. Write a dialog script for your character, preferably on a separate file, making it of type `Dialog[]`.
+5. Write a dialog script for your character, preferably on a separate file, making it of type `Dialog[]`.
 
 ```ts
 import { Dialog } from 'dcl-npc-toolkit'
