@@ -191,9 +191,14 @@ createFromEntity(npcEntity, {
   onActivate: () => {
     // ...
   },
-  textBubble: true,
-  bubbleHeight: 2
+  volume: {
+    radius: 4,
+    shape: 'sphere'
+  }
 })
+
+
+
 ```
 
 ## SDK7 UI
