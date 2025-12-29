@@ -1,4 +1,3 @@
-import * as utils from '@dcl-sdk/utils'
 import {
   Animator,
   AvatarShape,
@@ -13,7 +12,9 @@ import {
   pointerEventsSystem,
   Transform,
   TransformType,
-  PBAnimationState
+  PBAnimationState,
+  TriggerArea, 
+  triggerAreaEventsSystem
 } from '@dcl/sdk/ecs'
 import { Color3, Quaternion, Vector3 } from '@dcl/sdk/math'
 import { bubbles, closeBubble, createDialogBubble, openBubble } from './bubble'
@@ -22,6 +23,9 @@ import { addDialog, closeDialog, findDialogByName, npcDialogComponent, openDialo
 import { faceUserSystem, handleBubbletyping, handleDialogTyping, handlePathTimes, inputListenerSystem } from './systems'
 import { Dialog, FollowPathData, ImageData, NPCData, NPCPathType, NPCState, NPCType, TriggerData } from './types'
 import { darkTheme, lightTheme } from './ui'
+import { debugTriggers, delayedFunction, clearDelayedFunction, DelayedHandle } from './utils/utils'
+import { paths } from './utils/path'
+
 
 type NPCDataFromEntity = Omit<NPCData, 'type'> & { type?: NPCType }
 
@@ -41,12 +45,14 @@ engine.addSystem(inputListenerSystem)
 const isCooldown: Map<Entity, any> = new Map()
 const onActivateCbs: Map<Entity, any> = new Map()
 const onWalkAwayCbs: Map<Entity, any> = new Map()
-const animTimers: Map<Entity, number> = new Map()
+const animTimers: Map<Entity, DelayedHandle> = new Map()
 const pointReachedCallbacks: Map<Entity, any> = new Map()
 const onFinishCallbacks: Map<Entity, any> = new Map()
 
 export function showDebug(debug: boolean) {
-  utils.triggers.enableDebugDraw(debug)
+  if(debug) {
+    debugTriggers()
+  }
 }
 
 export function getData(npc: Entity) {
@@ -429,20 +435,40 @@ function addTriggerArea(npc: Entity, data: NPCData) {
   }
 
   // add trigger
+
   if (triggerData.onCameraEnter || triggerData.onCameraExit) {
-    utils.triggers.addTrigger(
-      npc,
-      triggerData.layer != undefined ? triggerData.layer : utils.NO_LAYERS,
-      triggerData.triggeredByLayer != undefined ? triggerData.triggeredByLayer : utils.LAYER_1,
-      [{ type: 'sphere', position: Vector3.Zero(), radius: data.reactDistance != undefined ? data.reactDistance : 6 }],
-      (other) => {
-        if (triggerData.onCameraEnter) triggerData.onCameraEnter(other)
-      },
-      (other) => {
-        if (triggerData.onCameraExit) triggerData.onCameraExit(other)
-      },
-      Color3.Red()
-    )
+
+
+    let sphereScale = {
+      x: data.reactDistance != undefined ? data.reactDistance : 6,
+      y: data.reactDistance != undefined ? data.reactDistance : 6,
+      z: data.reactDistance != undefined ? data.reactDistance : 6
+    }
+
+   let triggerSphere = engine.addEntity()
+
+   Transform.create(triggerSphere, {
+    position: Vector3.Zero(),
+    rotation: Quaternion.Zero(),
+    scale: sphereScale,
+    parent: npc
+   })
+
+   TriggerArea.setSphere(triggerSphere)
+
+    triggerAreaEventsSystem.onTriggerEnter(triggerSphere, function(result) {
+      if (triggerData.onCameraEnter) {
+        const entity = (result?.trigger?.entity ?? engine.PlayerEntity) as Entity
+        triggerData.onCameraEnter(entity)
+      }
+    })
+
+    triggerAreaEventsSystem.onTriggerExit(triggerSphere, function(result) {
+      if (triggerData.onCameraExit) {
+        const entity = (result?.trigger?.entity ?? engine.PlayerEntity) as Entity
+        triggerData.onCameraExit(entity)
+      }
+    })
   }
 }
 
@@ -545,7 +571,7 @@ function walkNPC(
 
   if (type) {
     if (type == NPCPathType.RIGID_PATH) {
-      utils.paths.startStraightPath(
+      paths.startStraightPath(
         npc,
         path,
         duration,
@@ -558,7 +584,7 @@ function walkNPC(
         }
       )
     } else {
-      utils.paths.startSmoothPath(
+      paths.startSmoothPath(
         npc,
         path,
         duration,
@@ -573,7 +599,7 @@ function walkNPC(
       )
     }
   } else {
-    utils.paths.startSmoothPath(
+    paths.startSmoothPath(
       npc,
       path,
       duration,
@@ -605,8 +631,7 @@ export function stopWalking(npc: Entity, duration?: number, finished?: boolean) 
   stopPath(npc)
 
   if (duration) {
-    utils.timers.setTimeout(() => {
-      //if (this.dialog && this.dialog.isDialogOpen) return
+    delayedFunction(() => {
       if (npcData.path) {
         Animator.stopAllAnimations(npc, true)
         if (npcDataComponent.get(npc).walkingAnim) {
@@ -641,12 +666,13 @@ export function stopWalking(npc: Entity, duration?: number, finished?: boolean) 
           onFinishCallbacks.get(npc)
         )
       }
+
     }, duration * 1000)
   }
 }
 
 export function stopPath(npc: Entity) {
-  utils.paths.stopPath(npc)
+  paths.stopPath(npc)
   IsFollowingPath.deleteFrom(npc)
 
   let npcData = npcDataComponent.get(npc)
@@ -707,11 +733,15 @@ export function activate(npc: Entity, other: Entity) {
   isCooldown.set(npc, true)
   npcData.inCooldown = true
 
-  utils.timers.setTimeout(function () {
-    isCooldown.delete(npc)
-    npcDataComponent.get(npc).inCooldown = false
-  }, 1000 * npcData.coolDownDuration)
-  console.log('activated npc,', npcDataComponent.get(npc))
+  delayedFunction(() => 
+    {
+      isCooldown.delete(npc)
+      npcDataComponent.get(npc).inCooldown = false
+      console.log("cooldown deleted")
+    }, 1000 * npcData.coolDownDuration
+  )
+
+  console.log('activated npc,', npcDataComponent.get(npc), "cooldown duration: ", npcData.coolDownDuration)
 }
 
 function endInteraction(npc: Entity) {
@@ -762,7 +792,7 @@ export function playAnimation(npc: Entity, anim: string, noLoop?: boolean, durat
   }
 
   if (npcData.state == NPCState.FOLLOWPATH) {
-    utils.paths.stopPath(npc)
+    paths.stopPath(npc)
   }
 
   clearAnimationTimer(npc)
@@ -774,7 +804,7 @@ export function playAnimation(npc: Entity, anim: string, noLoop?: boolean, durat
     clearAnimationTimer(npc)
     animTimers.set(
       npc,
-      utils.timers.setTimeout(() => {
+      delayedFunction(() => {
         clearAnimationTimer(npc)
         Animator.stopAllAnimations(npc, true)
         if (npcData.idleAnim) {
@@ -782,8 +812,9 @@ export function playAnimation(npc: Entity, anim: string, noLoop?: boolean, durat
           npcData.lastPlayedAnim = npcData.idleAnim
         }
       }, 1000 * duration)
-    ) //
+    )
   }
+  
 
   npcData.lastPlayedAnim = anim
 }
@@ -838,7 +869,7 @@ export function closeDialogWindow(window: Entity) {
 
 function clearAnimationTimer(npc: Entity): boolean {
   if (animTimers.has(npc)) {
-    utils.timers.clearTimeout(animTimers.get(npc) as number)
+    clearDelayedFunction(animTimers.get(npc))
     animTimers.delete(npc)
     return true
   }

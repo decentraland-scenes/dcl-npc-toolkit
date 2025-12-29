@@ -1,4 +1,3 @@
-import * as utils from '@dcl-sdk/utils'
 
 import { AudioSource, Entity, engine } from "@dcl/sdk/ecs";
 import { activeNPC, clearNPC, closeDialogWindow, followPath, isActiveNpcSet, npcDataComponent, setActiveNPC, stopPath, stopWalking } from "./npc";
@@ -8,6 +7,7 @@ import { Dialog, ImageData, NPCState } from "./types";
 import { leftClickSection, leftClickSectionbBlack, lightTheme, section, skipButtonSection, skipButtonSectionBlack } from './ui';
 import { getBubbleTextLength } from './bubble';
 import { Color4 } from '@dcl/sdk/math';
+import { delayedFunction } from './utils/utils';
 
 
 export const npcDialogComponent: Map<Entity, any> = new Map()
@@ -263,6 +263,7 @@ export function buttonClick(button:number){
 
 export function closeDialog(npc:Entity){
     let dialogData = npcDialogComponent.get(npc)
+    if(!dialogData) return
     dialogData.visible = false
     dialogData.typing = false
     dialogData.visibleText = ""
@@ -403,13 +404,11 @@ function beginTyping(npc:Entity){
         }
 
         console.log(dialogData)
-        utils.timers.setTimeout(
-            function() {
-                console.log('setting question to true')
-                dialogData.isQuestion = true
-            },
-            700
-          )
+
+        delayedFunction(() => {
+          console.log('setting question to true')
+          dialogData.isQuestion = true
+        }, 700)
     }
 
     dialogData.openTime = Math.floor(Date.now())

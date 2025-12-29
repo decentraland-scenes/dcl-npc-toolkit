@@ -45,3 +45,8 @@ export {
 }
 
 export const debugLabel: string = 'NPC-Toolkit'
+
+export {
+	Paths,
+	paths
+} from './utils/path'

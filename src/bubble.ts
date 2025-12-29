@@ -1,6 +1,5 @@
 
 import { Animator, AudioSource, AvatarShape, Billboard, BillboardMode, engine, Entity, Font, GltfContainer, InputAction,Material,MeshCollider,MeshRenderer,pointerEventsSystem,TextAlignMode,TextShape,Transform, TransformType, VisibilityComponent } from '@dcl/sdk/ecs'
-import * as utils from '@dcl-sdk/utils'
 import { Dialog, ImageSection } from './types'
 import { Color3,Color4, Quaternion, Vector3 } from '@dcl/sdk/math'
 import { addLineBreak, addLineBreaks, findDialogByName } from './dialog'
