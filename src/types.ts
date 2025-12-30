@@ -163,8 +163,8 @@ export type NPCData = {
 
   bubbleXOffset?: number
   bubbleYOffset?: number
-
-  volume: any
+  // Dialog audio volume [0..1]. Optional, defaults to 0.5.
+  volume?: number
 }
 
 /**
