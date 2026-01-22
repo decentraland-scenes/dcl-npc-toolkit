@@ -236,7 +236,7 @@ function beginTyping(npc:Entity, text:string, textId:number, timeOn?:number, spe
     }
     else{
         if(!IsTypingBubble.has(npc)){
-            console.log('creating typuing bubble')
+            //console.log('creating typuing bubble')
             IsTypingBubble.create(npc)
         }
     }

@@ -541,7 +541,7 @@ export function followPath(npc: Entity, data?: FollowPathData) {
   if (npcData.manualStop) {
     let duration = npcData.pathData.totalDuration
     let currentTimer: number = walkingTimers.get(npc)!
-    console.log('current time is', currentTimer)
+    //console.log('current time is', currentTimer)
     if (currentTimer) {
       duration -= currentTimer
     }
@@ -578,7 +578,7 @@ export function followPath(npc: Entity, data?: FollowPathData) {
       })
 
       onFinishCallbacks.set(npc, () => {
-        console.log('on finished callback')
+        //console.log('on finished callback')
         if (data && data.onFinishCallback && !data.loop) {
           data.onFinishCallback()
         }
@@ -586,7 +586,7 @@ export function followPath(npc: Entity, data?: FollowPathData) {
       })
 
       pointReachedCallbacks.set(npc, () => {
-        console.log('on point reached callback')
+        //console.log('on point reached callback')
         let data = npcDataComponent.get(npc)
         data.pathIndex += 1
         data.onReachedPointCallback ? data.onReachedPointCallback : undefined
@@ -742,9 +742,9 @@ export function stopPath(npc: Entity) {
     if (npcData.pathData.loop) {
       npcData.pathIndex = 0
       walkingTimers.delete(npc)
-      console.log('we are looping path', npcData)
+      //console.log('we are looping path', npcData)
       followPath(npc, npcData.pathData)
-      console.log(npcData)
+      //console.log(npcData)
     }
   }
 }
@@ -766,7 +766,7 @@ export function isActiveNpcSet() {
  */
 export function activate(npc: Entity, other: Entity) {
   if (activeNPC != 0) {
-    console.log('we have a current npc, needto remove')
+    //console.log('we have a current npc, needto remove')
     endInteraction(activeNPC)
     // closeDialog(activeNPC)
   }
@@ -793,11 +793,11 @@ export function activate(npc: Entity, other: Entity) {
     {
       isCooldown.delete(npc)
       npcDataComponent.get(npc).inCooldown = false
-      console.log("cooldown deleted")
+      //console.log("cooldown deleted")
     }, 1000 * npcData.coolDownDuration
   )
 
-  console.log('activated npc,', npcDataComponent.get(npc), "cooldown duration: ", npcData.coolDownDuration)
+  //console.log('activated npc,', npcDataComponent.get(npc), "cooldown duration: ", npcData.coolDownDuration)
 }
 
 function endInteraction(npc: Entity) {
@@ -815,7 +815,7 @@ function endInteraction(npc: Entity) {
     }
   }
 
-  console.log('ending interaction', npcData, bubbles.get(npc))
+  //console.log('ending interaction', npcData, bubbles.get(npc))
   if (npcData.hasBubble && bubbles.get(npc).isBubbleOpen) {
     closeBubble(npc)
   }

@@ -63,7 +63,7 @@ let buttonIconHeight = 26 * UIscaleMultiplier
 //
 
 export function addDialog(npc:Entity, sound?:string, defaultPortrait?:ImageData){
-    console.log('adding dialog for npc', npc)
+    //console.log('adding dialog for npc', npc)
     npcDialogComponent.set(npc, {
         typing:true,
         visible:false,
@@ -277,7 +277,7 @@ export function closeDialog(npc:Entity){
     dialogData.displayPortrait = false
     dialogData.skipable = false
     dialogData.displayImage = false
-    console.log('dialog data is now ', dialogData)
+    //console.log('dialog data is now ', dialogData)
 
     if(IsTypingDialog.has(npc)){
       IsTypingDialog.deleteFrom(npc)
@@ -295,7 +295,7 @@ export function talk(npc:Entity, dialog:Dialog[], startIndex?:number | string, d
 
         setActiveNPC(npc)
         if(npcDataComponent.get(npc).state == NPCState.FOLLOWPATH){
-          console.log("speaking dialog, need to stop path")
+          //console.log("speaking dialog, need to stop path")
           stopWalking(npc)
         }
 
@@ -317,12 +317,12 @@ export function talk(npc:Entity, dialog:Dialog[], startIndex?:number | string, d
 }
 
 export function openDialog(npc:Entity, dialog:Dialog[], startIndex:number){
-    console.log('script to talk is', dialog)
+    //console.log('script to talk is', dialog)
     let dialogData = npcDialogComponent.get(npc)
     dialogData.script = dialog.slice()
     dialogData.index = startIndex
 
-    console.log('dialog data is now', dialogData)
+    //console.log('dialog data is now', dialogData)
     
     let currentText: Dialog = dialog[startIndex] ? dialog[startIndex] : { text: '' }
 
@@ -407,10 +407,10 @@ function beginTyping(npc:Entity){
             dialogData.margin = -25
         }
 
-        console.log(dialogData)
+        //console.log(dialogData)
 
         delayedFunction(() => {
-          console.log('setting question to true')
+          //console.log('setting question to true')
           dialogData.isQuestion = true
         }, 700)
     }
@@ -486,7 +486,7 @@ function lineBreak(text: string, maxLineLength: number): string {
 }
 
 export function handleDialogClick(){
-  console.log('handling click')
+  //console.log('handling click')
     let npc = activeNPC
     if(npcDialogComponent.has(npc)){
         let dialogData = npcDialogComponent.get(npc)
@@ -511,7 +511,7 @@ export function rushText(npc:Entity){
 }
 
 export function confirmText(npc:Entity, mode: ConfirmMode): void {
-  console.log('confirm text')
+  //console.log('confirm text')
     let dialogData = npcDialogComponent.get(npc)
     dialogData.openTime = Math.floor(Date.now())
 
