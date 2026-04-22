@@ -515,6 +515,7 @@ function addTriggerArea(npc: Entity, data: NPCData) {
     triggerAreaEventsSystem.onTriggerEnter(triggerSphere, function(result) {
       if (triggerData.onCameraEnter) {
         const entity = (result?.trigger?.entity ?? engine.PlayerEntity) as Entity
+        if (entity !== engine.PlayerEntity) return;
         triggerData.onCameraEnter(entity)
       }
     })
@@ -522,6 +523,7 @@ function addTriggerArea(npc: Entity, data: NPCData) {
     triggerAreaEventsSystem.onTriggerExit(triggerSphere, function(result) {
       if (triggerData.onCameraExit) {
         const entity = (result?.trigger?.entity ?? engine.PlayerEntity) as Entity
+        if (entity !== engine.PlayerEntity) return;
         triggerData.onCameraExit(entity)
       }
     })
