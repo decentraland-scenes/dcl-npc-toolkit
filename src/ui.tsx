@@ -159,7 +159,7 @@ function getKeyIconTextColor(): Color4 {
   return isDarkTheme() ? COLOR_KEY_ICON_TEXT_DARK : COLOR_KEY_ICON_TEXT_LIGHT
 }
 
-const HOVER_BRIGHTEN = 0.4
+const HOVER_BRIGHTEN = 0.1
 
 function brighten(color: Color4, amount: number = HOVER_BRIGHTEN): Color4 {
   return Color4.create(
