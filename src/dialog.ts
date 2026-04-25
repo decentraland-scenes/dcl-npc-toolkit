@@ -71,7 +71,7 @@ export function addDialog(npc:Entity, sound?:string, defaultPortrait?:ImageData)
         visibleChars:0,
         fullText:"",
         timer:0,
-        speed:30,
+        speed:45,
         originalScript:[],
         script:[],
         index:0,
@@ -343,13 +343,22 @@ export function openDialog(npc:Entity, dialog:Dialog[], startIndex:number){
     beginTyping(npc)
 } 
 
-export function addLineBreak(text:string, bubble?:boolean){
-  return lineBreak(text, bubble? getBubbleTextLength(text)! : 45)
+const BASE_DIALOG_FONT_SIZE = 22
+const BASE_DIALOG_LINE_CHARS = 45
+
+export function addLineBreak(text:string, bubble?:boolean, fontSize?:number){
+  if (bubble) {
+    return lineBreak(text, getBubbleTextLength(text)!)
+  }
+  const fs = fontSize && fontSize > 0 ? fontSize : BASE_DIALOG_FONT_SIZE
+  const maxChars = Math.max(15, Math.round(BASE_DIALOG_LINE_CHARS * BASE_DIALOG_FONT_SIZE / fs))
+  return lineBreak(text, maxChars)
 }
 
 function beginTyping(npc:Entity){
     let dialogData = npcDialogComponent.get(npc)
-    dialogData.fullText = addLineBreak(dialogData.script[dialogData.index].text) //dialogData.script[dialogData.index].text
+    let currentText: Dialog = dialogData.script[dialogData.index] ? dialogData.script[dialogData.index] : { text: '' }
+
     dialogData.visible = true
     dialogData.typing = true
     dialogData.visibleText = ""
@@ -357,11 +366,21 @@ function beginTyping(npc:Entity){
     dialogData.timer = 0
     dialogData.isQuestion = false
     dialogData.buttons = 0
+    dialogData.margin = 0
     dialogData.displayPortrait = false
     dialogData.displayImage = false
     dialogData.skipable = false
 
-    let currentText: Dialog = dialogData.script[dialogData.index] ? dialogData.script[dialogData.index] : { text: '' }
+    // Resolve every per-entry property explicitly: each must either come from
+    // the current entry or be reset to its default. Otherwise values leak
+    // from the previous entry.
+    dialogData.fontSize = currentText.fontSize ? currentText.fontSize : BASE_DIALOG_FONT_SIZE
+    dialogData.skipable = currentText.skipable ? true : false
+    dialogData.speed = currentText.hasOwnProperty('typeSpeed') ? currentText.typeSpeed : 45
+    dialogData.positionX = currentText.offsetX ? currentText.offsetX * UIscaleMultiplier : '22%'
+    dialogData.positionY = currentText.offsetY ? currentText.offsetY * UIscaleMultiplier + textYPos : textYPos
+
+    dialogData.fullText = addLineBreak(currentText.text, false, dialogData.fontSize)
 
     // Play audio for the current dialogue entry
     if (currentText.audio) {
@@ -391,15 +410,20 @@ function beginTyping(npc:Entity){
       dialogData.portraitHeight = currentText.portrait.height ? currentText.portrait.height * UIscaleMultiplier : portraitScale
       dialogData.displayPortrait = true
     }else if(dialogData.defaultPortrait){
+      const dp = dialogData.defaultPortrait
       dialogData.currentPortrait = dialogData.defaultPortraitTexture
+      dialogData.portraitX = dp.offsetX ? dp.offsetX * UIscaleMultiplier + portraitXPos : portraitXPos
+      dialogData.portraitY = dp.offsetY ? dp.offsetY * UIscaleMultiplier + portraitYPos : portraitYPos
+      dialogData.portraitWidth = dp.width ? dp.width * UIscaleMultiplier : portraitScale
+      dialogData.portraitHeight = dp.height ? dp.height * UIscaleMultiplier : portraitScale
       dialogData.displayPortrait = true
     }
     else{
       dialogData.displayPortrait = false
     }
 
-    if(dialogData.script[dialogData.index].isQuestion){
-        dialogData.buttons = dialogData.script[dialogData.index].buttons.length
+    if(currentText.isQuestion){
+        dialogData.buttons = currentText.buttons!.length
         if(dialogData.buttons >= 3){
             dialogData.margin = -25
         }
@@ -407,43 +431,20 @@ function beginTyping(npc:Entity){
             dialogData.margin = -25
         }
 
-        //console.log(dialogData)
-
         delayedFunction(() => {
-          //console.log('setting question to true')
           dialogData.isQuestion = true
         }, 700)
     }
 
     dialogData.openTime = Math.floor(Date.now())
-    if(dialogData.script[dialogData.index].fontSize){
-        dialogData.fontSize = dialogData.script[dialogData.index].fontSize
-    }
 
-    if(dialogData.script[dialogData.index].skipable){
-      dialogData.skipable = true
-    }
-    else{
-      dialogData.skipable = false
-    }
-
-    if(dialogData.script[dialogData.index].image){
-      dialogData.dialogImageTexture = dialogData.script[dialogData.index].image.path
-      dialogData.imageX = dialogData.script[dialogData.index].image.offsetX ? dialogData.script[dialogData.index].image.offsetX * UIscaleMultiplier + imageXPos : -40
-      dialogData.imageY = dialogData.script[dialogData.index].image.offsetY ? dialogData.script[dialogData.index].image.offsetY * UIscaleMultiplier + imageYPos : 40
-      dialogData.imageHeight = dialogData.script[dialogData.index].image.height ? dialogData.script[dialogData.index].height * UIscaleMultiplier : imageScale
-      dialogData.imageWidth = dialogData.script[dialogData.index].image.width ? dialogData.script[dialogData.index].width * UIscaleMultiplier : imageScale
+    if(currentText.image){
+      dialogData.dialogImageTexture = currentText.image.path
+      dialogData.imageX = currentText.image.offsetX ? currentText.image.offsetX * UIscaleMultiplier + imageXPos : -40
+      dialogData.imageY = currentText.image.offsetY ? currentText.image.offsetY * UIscaleMultiplier + imageYPos : 40
+      dialogData.imageHeight = currentText.image.height ? currentText.image.height * UIscaleMultiplier : imageScale
+      dialogData.imageWidth = currentText.image.width ? currentText.image.width * UIscaleMultiplier : imageScale
       dialogData.displayImage = true
-    }
-
-    dialogData.positionX = dialogData.script[dialogData.index].offsetX ? dialogData.script[dialogData.index].offsetX * UIscaleMultiplier : '22%'
-    dialogData.positionY = dialogData.script[dialogData.index].offsetY ? dialogData.script[dialogData.index].offsetY * UIscaleMultiplier + textYPos : textYPos
-    
-    if(dialogData.script[dialogData.index].hasOwnProperty("typeSpeed")){
-        dialogData.speed = dialogData.script[dialogData.index].typeSpeed
-    }
-    else{
-        dialogData.speed = 30
     }
 
     if(dialogData.speed <= 0){
