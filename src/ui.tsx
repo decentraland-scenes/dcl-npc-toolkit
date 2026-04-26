@@ -1,9 +1,7 @@
 import { Color4 } from '@dcl/sdk/math'
-import ReactEcs, { Button, Label, ReactEcsRenderer, UiEntity } from '@dcl/sdk/react-ecs'
-import { engine, Entity, UiCanvasInformation } from '@dcl/sdk/ecs'
+import ReactEcs, { UiEntity } from '@dcl/sdk/react-ecs'
 import {
   buttonClick,
-  confirmText,
   displayButton,
   displayDialog,
   displayFirstButtonContainer,
@@ -12,14 +10,12 @@ import {
   displaySecondButtonContainer,
   displaySkipable,
   getButtonText,
-  getbuttonSize,
   getFontSize,
   getButtonFontSize,
   getImage,
   getImageAtlasMapping,
   getLeftClickTheme,
   getPortrait,
-  getSkipableTheme,
   getText,
   getTextColor,
   getTextPosition,
@@ -33,8 +29,6 @@ import {
   positionImageY,
   positionPortaitX,
   positionPortaitY,
-  positionTextX,
-  positionTextY,
   realHeight,
   realWidth,
   skipDialogs,
@@ -48,6 +42,10 @@ export let darkTheme = 'https://decentraland.org/images/ui/dark-atlas-v3.png'
 
 export let bubblesTexture = 'https://decentraland.org/images/ui/dialog-bubbles.png'
 
+// Legacy section exports preserved for backwards compatibility. The library no
+// longer renders the UI from these atlas slices — backgrounds and buttons are
+// now drawn with solid colors and borderRadius — but external code that
+// imports them will still resolve.
 export let section = {
   ...sourcesComponentsCoordinates.backgrounds.NPCDialog,
   atlasHeight: sourcesComponentsCoordinates.atlasHeight,
@@ -126,75 +124,71 @@ export let redButtonEdge = {
   atlasWidth: sourcesComponentsCoordinates.atlasWidth
 }
 
-let modalScale = 1
-let modelFontSizeScale = 1
-let modalTextWrapScale = 1
+// Color palette extracted from the original atlas textures.
+export const COLOR_DIALOG_BG_LIGHT = Color4.create(1, 1, 1, 1)
+export const COLOR_DIALOG_BG_DARK = Color4.create(0.243, 0.220, 0.286, 1)
+export const COLOR_PRIMARY_BUTTON = Color4.create(0.953, 0.180, 0.357, 1)
+export const COLOR_SECONDARY_BUTTON = Color4.create(0.243, 0.220, 0.286, 1)
+export const COLOR_BUTTON_TEXT = Color4.White()
 
-// export function setupNPCUiScaling(inModalScale: number, inFontSize: number, inModalTextWrapScale: number) {
-//   modalScale = inModalScale
-//   modelFontSizeScale = inFontSize
-//   modalTextWrapScale = inModalTextWrapScale
-//   console.log(
-//     'NPC-TOOLKIT',
-//     'Scale UI:',
-//     modalScale,
-//     'TextFontSize:',
-//     modelFontSizeScale,
-//     'TextWrapScaling:',
-//     modalTextWrapScale
-//   )
-// }
+const COLOR_KEY_ICON_BG_LIGHT = Color4.White()
+const COLOR_KEY_ICON_BORDER_LIGHT = Color4.create(0.78, 0.78, 0.80, 1)
+const COLOR_KEY_ICON_TEXT_LIGHT = Color4.create(0.15, 0.15, 0.18, 1)
 
-let timer = 0
-let canvasInfoTimer = 0.5
-let scaleSystemAlreadyAdded = false
+const COLOR_KEY_ICON_BG_DARK = Color4.create(0.243, 0.220, 0.286, 1)
+const COLOR_KEY_ICON_BORDER_DARK = Color4.create(0.78, 0.78, 0.80, 1)
+const COLOR_KEY_ICON_TEXT_DARK = Color4.White()
 
-export function UIScaleUpdate() {
-
-  if(scaleSystemAlreadyAdded) return
-  scaleSystemAlreadyAdded = true
-
-  engine.addSystem((dt) => {
-    timer += dt
-
-    if (timer <= canvasInfoTimer) return
-    timer = 0
-
-    const uiCanvasInfo = UiCanvasInformation.getOrNull(engine.RootEntity)
-
-    if (!uiCanvasInfo) return
-
-    const newScaleFactor = Math.min(uiCanvasInfo.width / 1920, uiCanvasInfo.height / 1080)
-
-    if (newScaleFactor !== modalScale) {
-      modalScale = newScaleFactor
-      modelFontSizeScale = newScaleFactor
-      modalTextWrapScale = newScaleFactor
-    }
-  })
-
+function isDarkTheme(): boolean {
+  return getTheme() === darkTheme
 }
 
+function getDialogBgColor(): Color4 {
+  return isDarkTheme() ? COLOR_DIALOG_BG_DARK : COLOR_DIALOG_BG_LIGHT
+}
 
-function getScaledSize(size: number): number {
-  return size * modalScale
+function getKeyIconBgColor(): Color4 {
+  return isDarkTheme() ? COLOR_KEY_ICON_BG_DARK : COLOR_KEY_ICON_BG_LIGHT
 }
-function getScaledFontSize(size: number): number {
-  return size * modelFontSizeScale
+
+function getKeyIconBorderColor(): Color4 {
+  return isDarkTheme() ? COLOR_KEY_ICON_BORDER_DARK : COLOR_KEY_ICON_BORDER_LIGHT
 }
-function getScaledTextWrap(size: number): number {
-  return size * modalTextWrapScale
+
+function getKeyIconTextColor(): Color4 {
+  return isDarkTheme() ? COLOR_KEY_ICON_TEXT_DARK : COLOR_KEY_ICON_TEXT_LIGHT
 }
-function getScaledButtonWidth(button: number) {
-  return typeof (getbuttonSize(button)) === 'number' ? getScaledSize(getbuttonSize(button) as number) : 'auto'
+
+const HOVER_BRIGHTEN = 0.1
+
+function brighten(color: Color4, amount: number = HOVER_BRIGHTEN): Color4 {
+  return Color4.create(
+    Math.min(1, color.r + amount),
+    Math.min(1, color.g + amount),
+    Math.min(1, color.b + amount),
+    color.a
+  )
 }
+
+let hoveredButton: number | null = null
+
+function buttonColor(buttonIdx: number, base: Color4): Color4 {
+  return hoveredButton === buttonIdx ? brighten(base) : base
+}
+
+const DIALOG_WIDTH = 700
+const DIALOG_HEIGHT = 284
+const BUTTON_HEIGHT = 45
+const BUTTON_RADIUS = 12
+const DIALOG_RADIUS = 20
+const KEY_ICON_SIZE = 25
+const KEY_ICON_RADIUS = 6
+const SKIP_KEY_ICON_SIZE = 15
 
 export const NpcUtilsUi = () => {
 
-  UIScaleUpdate()
-
-  const width = getScaledSize(realWidth(700))
-  const height = getScaledSize(realHeight(284))
+  const width = realWidth(DIALOG_WIDTH)
+  const height = realHeight(DIALOG_HEIGHT)
 
   return (
     <UiEntity
@@ -206,11 +200,10 @@ export const NpcUtilsUi = () => {
         positionType: 'absolute',
         position: { bottom: '10%', left: '50%' },
         margin: { top: -height / 2, left: -width / 2 },
-        padding: { top: getScaledSize(40), bottom: getScaledSize(40) },
+        padding: { top: 40, bottom: 40 },
         width,
-        height: typeof (getWindowHeight()) === 'number' ? getWindowHeight() as number : 'auto'
-        , 
-        minHeight: getScaledSize(25)
+        height: typeof (getWindowHeight()) === 'number' ? getWindowHeight() as number : 'auto',
+        minHeight: 25
       }}
     >
       <UiEntity
@@ -218,14 +211,11 @@ export const NpcUtilsUi = () => {
           positionType: 'absolute',
           position: { top: 0, left: 0 },
           width: '100%',
-          height: '100%'
+          height: '100%',
+          borderRadius: DIALOG_RADIUS
         }}
         uiBackground={{
-          textureMode: 'stretch',
-          texture: {
-            src: getTheme()
-          },
-          uvs: getImageAtlasMapping(section)
+          color: getDialogBgColor()
         }}
         onMouseDown={() => {
           handleDialogClick()
@@ -235,12 +225,12 @@ export const NpcUtilsUi = () => {
       <UiEntity
         uiTransform={{
           display: displayPortrait() ? 'flex' : 'none',
-          width: getScaledSize(portraitWidth()),
-          height: getScaledSize(portraitHeight()),
+          width: portraitWidth(),
+          height: portraitHeight(),
           positionType: 'absolute',
           position: {
-            bottom: getScaledSize(positionPortaitY()),
-            left: getScaledSize(positionPortaitX())
+            bottom: positionPortaitY(),
+            left: positionPortaitX()
           }
         }}
         uiBackground={{
@@ -248,15 +238,14 @@ export const NpcUtilsUi = () => {
           texture: {
             src: getPortrait()
           }
-          // uvs: getImageAtlasMapping(skipButtonSection),
         }}
       />
 
       <UiEntity
         uiTransform={{
           display: displayImage() ? 'flex' : 'none',
-          width: getScaledSize(imageWidth()),
-          height: getScaledSize(imageHeight()),
+          width: imageWidth(),
+          height: imageHeight(),
           positionType: 'absolute',
           position: { bottom: positionImageY(), right: positionImageX() }
         }}
@@ -265,24 +254,29 @@ export const NpcUtilsUi = () => {
           texture: {
             src: getImage()
           }
-          // uvs: getImageAtlasMapping(skipButtonSection),
         }}
       />
 
       <UiEntity
         uiTransform={{
           display: displaySkipable() ? 'flex' : 'none',
-          width: getScaledSize(15),
-          height: getScaledSize(15),
+          width: SKIP_KEY_ICON_SIZE,
+          height: SKIP_KEY_ICON_SIZE,
+          alignItems: 'center',
+          justifyContent: 'center',
           positionType: 'absolute',
-          position: { bottom: '7%', left: '25%' }
+          position: { bottom: '7%', left: '25%' },
+          borderRadius: 3,
+          borderWidth: 1,
+          borderColor: getKeyIconBorderColor()
         }}
         uiBackground={{
-          textureMode: 'stretch',
-          texture: {
-            src: getTheme()
-          },
-          uvs: getImageAtlasMapping(getSkipableTheme())
+          color: getKeyIconBgColor()
+        }}
+        uiText={{
+          value: 'F',
+          color: getKeyIconTextColor(),
+          fontSize: 10
         }}
         onMouseDown={() => {
           skipDialogs(activeNPC)
@@ -298,7 +292,7 @@ export const NpcUtilsUi = () => {
           uiText={{
             value: 'Skip',
             color: getTextColor(),
-            fontSize: getScaledFontSize(12)
+            fontSize: 12
           }}
         />
       </UiEntity>
@@ -306,8 +300,8 @@ export const NpcUtilsUi = () => {
       <UiEntity
         uiTransform={{
           display: 'flex',
-          width: getScaledSize(24),
-          height: getScaledSize(36),
+          width: 24,
+          height: 36,
           positionType: 'absolute',
           position: { bottom: '5%', right: '2%' }
         }}
@@ -336,176 +330,134 @@ export const NpcUtilsUi = () => {
         uiText={{
           value: getText(),
           color: getTextColor(),
-          fontSize: getScaledFontSize(getFontSize()),
+          fontSize: getFontSize(),
           textAlign: 'middle-left'
         }}
       />
 
       <UiEntity
         uiTransform={{
-          width: getScaledSize(300),
-          height: getScaledSize(50),
+          width: 300,
+          height: 50,
           alignItems: 'center',
           flexDirection: 'row',
           justifyContent: 'space-around',
           display: displayFirstButtonContainer() ? 'flex' : 'none',
         }}
       >
-        {/* Button1 (Top-Left) */}
+        {/* Button1 (Top-Left) — secondary/dark with F key prompt */}
         <UiEntity
+          uiTransform={{
+            display: displayButton(1) ? 'flex' : 'none',
+            width: 'auto',
+            maxWidth: 300,
+            height: BUTTON_HEIGHT,
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'flex-start',
+            margin: { right: '5%' },
+            padding: { left: 8, right: 16 },
+            borderRadius: BUTTON_RADIUS
+          }}
+          uiBackground={{
+            color: buttonColor(0, COLOR_SECONDARY_BUTTON)
+          }}
           onMouseDown={() => {
             buttonClick(0)
           }}
+          onMouseEnter={() => { hoveredButton = 0 }}
+          onMouseLeave={() => { if (hoveredButton === 0) hoveredButton = null }}
         >
           <UiEntity
             uiTransform={{
-              height: 'auto',
-              width: getScaledSize(12),
+              width: KEY_ICON_SIZE,
+              height: KEY_ICON_SIZE,
+              alignItems: 'center',
+              justifyContent: 'center',
+              borderRadius: KEY_ICON_RADIUS,
+              borderWidth: 1,
+              borderColor: getKeyIconBorderColor()
             }}
             uiBackground={{
-              textureMode: 'stretch',
-              texture: {
-                src: getTheme()
-              },
-              uvs: getImageAtlasMapping(darkButtonCorner)
+              color: getKeyIconBgColor()
+            }}
+            uiText={{
+              value: 'F',
+              color: getKeyIconTextColor(),
+              fontSize: 14
             }}
           />
           <UiEntity
             uiTransform={{
-              width:  'auto',
-              maxWidth: getScaledSize(300),
-              height: getScaledSize(45),
-              flexDirection: 'row',
-              alignItems: 'center',
-              justifyContent: 'flex-start',
-              alignContent: 'flex-start',
-              display: displayButton(1) ? 'flex' : 'none',
+              width: 'auto',
+              overflow: 'hidden',
+              maxWidth: 217,
+              padding: { left: 10, right: 5 }
             }}
-            uiBackground={{
-              textureMode: 'stretch',
-              texture: {
-                src: getTheme()
-              },
-              uvs: getImageAtlasMapping(darkButtonSection)
-            }}
-          >
-            <UiEntity
-              uiTransform={{
-                width:  getScaledSize(25),
-                height: getScaledSize(25),
-                margin: { right: getScaledSize(5) },
-                positionType: 'absolute'
-              }}
-              uiBackground={{
-                textureMode: 'stretch',
-                texture: {
-                  src: getTheme()
-                },
-                uvs: getImageAtlasMapping(secondaryButtonSection)
-              }}
-            />
-            <UiEntity
-              uiTransform={{
-                width: 'auto',
-                overflow: 'hidden',
-                maxWidth: getScaledSize(217),
-                padding: { right: getScaledSize(5) },
-                margin: { left: getScaledSize(30) }
-              }}
-              uiText={{ value: getButtonText(0), fontSize: getScaledFontSize(getButtonFontSize(0)), textAlign: 'middle-left', textWrap: 'nowrap' }}
-            />
-          </UiEntity>
-          <UiEntity
-            uiTransform={{
-              height: 'auto',
-              width:  getScaledSize(12),
-              margin: { right: '5%' },
-            }}
-            uiBackground={{
-              textureMode: 'stretch',
-              texture: {
-                src: getTheme()
-              },
-              uvs: getImageAtlasMapping(darkButtonEdge)
+            uiText={{
+              value: getButtonText(0),
+              color: COLOR_BUTTON_TEXT,
+              fontSize: getButtonFontSize(0),
+              textAlign: 'middle-left',
+              textWrap: 'nowrap'
             }}
           />
         </UiEntity>
 
-        {/* Button2 (Top-Right) */}
+        {/* Button2 (Top-Right) — primary/red with E key prompt */}
         <UiEntity
+          uiTransform={{
+            display: displayButton(2) ? 'flex' : 'none',
+            width: 'auto',
+            maxWidth: 300,
+            height: BUTTON_HEIGHT,
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'flex-start',
+            padding: { left: 8, right: 16 },
+            borderRadius: BUTTON_RADIUS
+          }}
+          uiBackground={{
+            color: buttonColor(1, COLOR_PRIMARY_BUTTON)
+          }}
           onMouseDown={() => {
             buttonClick(1)
           }}
+          onMouseEnter={() => { hoveredButton = 1 }}
+          onMouseLeave={() => { if (hoveredButton === 1) hoveredButton = null }}
         >
           <UiEntity
             uiTransform={{
-              height: 'auto',
-              width: getScaledSize(12),
+              width: KEY_ICON_SIZE,
+              height: KEY_ICON_SIZE,
+              alignItems: 'center',
+              justifyContent: 'center',
+              borderRadius: KEY_ICON_RADIUS,
+              borderWidth: 1,
+              borderColor: getKeyIconBorderColor()
             }}
             uiBackground={{
-              textureMode: 'stretch',
-              texture: {
-                src: getTheme()
-              },
-              uvs: getImageAtlasMapping(redButtonCorner)
+              color: getKeyIconBgColor()
+            }}
+            uiText={{
+              value: 'E',
+              color: getKeyIconTextColor(),
+              fontSize: 14
             }}
           />
           <UiEntity
             uiTransform={{
-              width:  'auto',
-              maxWidth: getScaledSize(300),
-              height: getScaledSize(45),
-              flexDirection: 'row',
-              alignItems: 'center',
-              justifyContent: 'flex-start',
-              alignContent: 'flex-start',
-              display: displayButton(2) ? 'flex' : 'none',
+              width: 'auto',
+              maxWidth: 217,
+              overflow: 'hidden',
+              padding: { left: 10, right: 5 }
             }}
-            uiBackground={{
-              textureMode: 'stretch',
-              texture: {
-                src: getTheme()
-              },
-              uvs: getImageAtlasMapping(redButtonSection)
-            }}
-          >
-            <UiEntity
-              uiTransform={{
-                width:  getScaledSize(25),
-                height: getScaledSize(25),
-                margin: { right: getScaledSize(5) },
-                positionType: 'absolute',
-              }}
-              uiBackground={{
-                textureMode: 'stretch',
-                texture: {
-                  src: getTheme()
-                },
-                uvs: getImageAtlasMapping(primaryButtonSection)
-              }}
-            />
-            <UiEntity
-              uiTransform={{
-                width: 'auto',
-                maxWidth: getScaledSize(217),
-                overflow: 'hidden',
-                padding: { right: getScaledSize(5) },
-                margin: { left: getScaledSize(30) }
-              }}
-              uiText={{ value: getButtonText(1), fontSize: getScaledFontSize(getButtonFontSize(1)), textAlign: 'middle-left', textWrap: 'nowrap' }}
-            />
-          </UiEntity>
-          <UiEntity
-            uiTransform={{
-              height: 'auto',
-              width:  getScaledSize(12),
-            }}
-            uiBackground={{
-              textureMode: 'stretch',
-              texture: {
-                src: getTheme()
-              },
-              uvs: getImageAtlasMapping(redButtonEdge)
+            uiText={{
+              value: getButtonText(1),
+              color: COLOR_BUTTON_TEXT,
+              fontSize: getButtonFontSize(1),
+              textAlign: 'middle-left',
+              textWrap: 'nowrap'
             }}
           />
         </UiEntity>
@@ -514,137 +466,88 @@ export const NpcUtilsUi = () => {
       {/* Second row of buttons */}
       <UiEntity
         uiTransform={{
-          width: getScaledSize(300),
-          height: getScaledSize(50),
+          width: 300,
+          height: 50,
           alignItems: 'center',
           flexDirection: 'row',
           justifyContent: 'space-around',
-          margin: { top: getScaledSize(20) },
+          margin: { top: 20 },
           display: displaySecondButtonContainer() ? 'flex' : 'none',
         }}
       >
-        {/* Button3 */}
+        {/* Button3 — secondary/dark, no key prompt */}
         <UiEntity
+          uiTransform={{
+            display: displayButton(3) ? 'flex' : 'none',
+            width: 'auto',
+            maxWidth: 300,
+            overflow: 'hidden',
+            height: BUTTON_HEIGHT,
+            alignItems: 'center',
+            justifyContent: 'center',
+            margin: { right: '5%' },
+            padding: { left: 20, right: 20 },
+            borderRadius: BUTTON_RADIUS
+          }}
+          uiBackground={{
+            color: buttonColor(3, COLOR_SECONDARY_BUTTON)
+          }}
           onMouseDown={() => {
             buttonClick(3)
           }}
+          onMouseEnter={() => { hoveredButton = 3 }}
+          onMouseLeave={() => { if (hoveredButton === 3) hoveredButton = null }}
         >
           <UiEntity
             uiTransform={{
-              height: 'auto',
-              width: getScaledSize(12),
-            }}
-            uiBackground={{
-              textureMode: 'stretch',
-              texture: {
-                src: getTheme()
-              },
-              uvs: getImageAtlasMapping(darkButtonCorner)
-            }}
-          />
-          <UiEntity
-            uiTransform={{
               width: 'auto',
-              maxWidth: getScaledSize(300),
+              maxWidth: 252,
               overflow: 'hidden',
-              height: getScaledSize(45),
-              alignItems: 'center',
-              justifyContent: 'center',
-              alignContent: 'flex-start',
-              display: displayButton(3) ? 'flex' : 'none'
             }}
-            uiBackground={{
-              textureMode: 'stretch',
-              texture: {
-                src: getTheme()
-              },
-              uvs: getImageAtlasMapping(darkButtonSection)
-            }}
-          >
-            <UiEntity
-              uiTransform={{
-                width: 'auto',
-                maxWidth: getScaledSize(252),
-                overflow: 'hidden',
-              }}
-              uiText={{ value: getButtonText(2), fontSize: getScaledFontSize(getButtonFontSize(2)), textAlign: 'middle-left', textWrap: 'nowrap' }}
-            />
-          </UiEntity>
-          <UiEntity
-            uiTransform={{
-              height: 'auto',
-              width: getScaledSize(12),
-              margin: { right: '5%' },
-            }}
-            uiBackground={{
-              textureMode: 'stretch',
-              texture: {
-                src: getTheme()
-              },
-              uvs: getImageAtlasMapping(darkButtonEdge)
+            uiText={{
+              value: getButtonText(2),
+              color: COLOR_BUTTON_TEXT,
+              fontSize: getButtonFontSize(2),
+              textAlign: 'middle-center',
+              textWrap: 'nowrap'
             }}
           />
         </UiEntity>
 
-        {/* Button4 */}
+        {/* Button4 — secondary/dark, no key prompt */}
         <UiEntity
+          uiTransform={{
+            display: displayButton(4) ? 'flex' : 'none',
+            width: 'auto',
+            maxWidth: 300,
+            overflow: 'hidden',
+            height: BUTTON_HEIGHT,
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: { left: 20, right: 20 },
+            borderRadius: BUTTON_RADIUS
+          }}
+          uiBackground={{
+            color: buttonColor(4, COLOR_SECONDARY_BUTTON)
+          }}
           onMouseDown={() => {
             buttonClick(4)
           }}
+          onMouseEnter={() => { hoveredButton = 4 }}
+          onMouseLeave={() => { if (hoveredButton === 4) hoveredButton = null }}
         >
           <UiEntity
             uiTransform={{
-              height: 'auto',
-              width: getScaledSize(12),
-            }}
-            uiBackground={{
-              textureMode: 'stretch',
-              texture: {
-                src: getTheme()
-              },
-              uvs: getImageAtlasMapping(darkButtonCorner)
-            }}
-          />
-          <UiEntity
-            uiTransform={{
               width: 'auto',
-              maxWidth: getScaledSize(300),
+              maxWidth: 252,
               overflow: 'hidden',
-              height: getScaledSize(45),
-              alignItems: 'center',
-              justifyContent: 'center',
-              alignContent: 'flex-start',
-              display: displayButton(4) ? 'flex' : 'none',
             }}
-            uiBackground={{
-              textureMode: 'stretch',
-              texture: {
-                src: getTheme()
-              },
-              uvs: getImageAtlasMapping(darkButtonSection)
-            }}
-          >
-            <UiEntity
-              uiTransform={{
-                width: 'auto',
-                maxWidth: getScaledSize(252),
-                overflow: 'hidden',
-              }}
-              uiText={{ value: getButtonText(3), fontSize: getScaledFontSize(getButtonFontSize(3)), textAlign: 'middle-left', textWrap: 'nowrap' }}
-            />
-            
-          </UiEntity>
-          <UiEntity
-            uiTransform={{
-              height: 'auto',
-              width: getScaledSize(12),
-            }}
-            uiBackground={{
-              textureMode: 'stretch',
-              texture: {
-                src: getTheme()
-              },
-              uvs: getImageAtlasMapping(darkButtonEdge)
+            uiText={{
+              value: getButtonText(3),
+              color: COLOR_BUTTON_TEXT,
+              fontSize: getButtonFontSize(3),
+              textAlign: 'middle-center',
+              textWrap: 'nowrap'
             }}
           />
         </UiEntity>
